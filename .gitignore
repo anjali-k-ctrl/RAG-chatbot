@@ -11,3 +11,7 @@ __pycache__/
 
 node_modules/
 training_docs/
+list_opensearch.py
+test_s3.py
+test_upload.py
+test_download.py

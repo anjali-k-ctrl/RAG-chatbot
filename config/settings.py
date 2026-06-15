@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     OPENSEARCH_HOST: str = ""
     OPENSEARCH_PORT: int = 443
 
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_REGION: str
+    AWS_BUCKET_NAME: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore"

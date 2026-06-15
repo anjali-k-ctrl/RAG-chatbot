@@ -1,9 +1,8 @@
 import os
-
+from services.s3_service import upload_document_to_s3
 from database.postgres import SessionLocal
 from database.models import Document
-
-from services.document_loader import extract_docx_text
+from datetime import datetime
 
 
 DOCS = [
@@ -24,14 +23,18 @@ for filename, workflow, page_name in DOCS:
 
     file_path = get_document_path(filename)
     print(f"Loading: {file_path}")
-    text = extract_docx_text(file_path)
+
+    s3_key = upload_document_to_s3(file_path)
+
+    print(f"Uploaded to S3: {s3_key}")
 
     document = Document(
         document_name=filename,
         workflow=workflow,
         page_name=page_name,
         file_path=file_path,
-        content=text
+        uploaded_at=datetime.utcnow(),
+        s3_key=s3_key
     )
 
     db.add(document)
