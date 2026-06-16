@@ -51,3 +51,15 @@ QUESTION:
     print(response.text)
 
     return response.text
+
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+
+    except Exception as e:
+        print("Gemini Error:", e)
+
+        return (
+            "The AI service is temporarily rate-limited. "
+            "Please try again in a minute."
+        )
