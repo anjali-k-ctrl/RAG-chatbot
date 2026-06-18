@@ -12,4 +12,14 @@ def retrieve_context(
         k=3
     )
 
-    return "\n\n".join(chunks)
+    if not chunks:
+        return "", 0
+
+    context = "\n\n".join(
+        chunk["text"]
+        for chunk in chunks
+    )
+
+    top_score = chunks[0]["score"]
+
+    return context, top_score

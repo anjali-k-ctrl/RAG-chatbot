@@ -1,18 +1,6 @@
-from docx import Document as DocxDocument
-
-
-def extract_docx_text(file_path: str) -> str:
-    doc = DocxDocument(file_path)
-
-    text = []
-
-    for paragraph in doc.paragraphs:
-        if paragraph.text.strip():
-            text.append(paragraph.text)
-
-    return "\n".join(text)
-
+import re
 from pypdf import PdfReader
+
 
 
 def extract_pdf_text(file_path: str):
@@ -28,4 +16,10 @@ def extract_pdf_text(file_path: str):
         if page_text:
             text += page_text + "\n"
 
-    return text
+    # Clean whitespace
+    text = re.sub(r"\s+", " ", text)
+
+    # Remove repeated spaces
+    text = re.sub(r" +", " ", text)
+
+    return text.strip()

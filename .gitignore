@@ -15,3 +15,26 @@ list_opensearch.py
 test_s3.py
 test_upload.py
 test_download.py
+
+# OpenSearch setup scripts
+check_*.py
+create_*.py
+delete_*.py
+get_collection_details.py
+
+# Test scripts
+test_*.py
+
+# Local indexing utilities
+index_pdf_chunks.py
+
+# Documentation files
+training_docs/*.pdf
+
+# Python
+__pycache__/
+*.pyc
+
+# Local env
+.env
+venv/

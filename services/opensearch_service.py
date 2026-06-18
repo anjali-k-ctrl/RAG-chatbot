@@ -89,6 +89,9 @@ def search_similar_chunks(
     )
 
     return [
-        hit["_source"]["text"]
+        {
+            "text": hit["_source"]["text"],
+            "score": hit["_score"]
+        }
         for hit in response["hits"]["hits"]
     ]

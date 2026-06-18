@@ -26,7 +26,7 @@ STRICT RULES:
 - Never use external knowledge.
 - Never guess.
 - Never make assumptions.
-- If the answer is not explicitly stated in the documentation, respond exactly:
+-If the documentation does not contain the answer, respond EXACTLY with:
 
 I could not find this information in the MediaShipper documentation.
 
