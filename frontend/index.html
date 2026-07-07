@@ -97,9 +97,146 @@
     .widget-messages::-webkit-scrollbar { width: 3px; }
     .widget-messages::-webkit-scrollbar-track { background: transparent; }
     .widget-messages::-webkit-scrollbar-thumb { background: #252840; border-radius: 3px; }
+
+    /*something*/
+    .analytics-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; }
+    .analytics-title h1{ color:white; font-size:42px; margin-bottom:6px; }
+    .analytics-title p{ color:#9aa5c3; }
+    .last-updated{ text-align:right; color:#9aa5c3; font-size:14px; }
+    #lastUpdated{ display:block; margin-top:6px; color:white; font-weight:600; }
+
+    /* chart */
+    .analytics-chart{ margin-top:30px; background:#1f2235; padding:25px; border-radius:15px; }
+    .analytics-chart canvas{ width:100%; height:380px !important; }
+    .chart-title{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:20px;
+        font-size:20px;
+        font-weight:700;
+    }
+
+    .chart-badge{
+        background:#2d6cff22;
+        color:#5b8cff;
+        padding:6px 12px;
+        border-radius:20px;
+        font-size:12px;
+        font-weight:600;
+    }
+
+    .chart-row{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:24px;
+        margin-top:25px;
+    }
+
+    /* dropdown */
+    .analytics-chart{ margin-top:30px; background:#1f2235; padding:25px; border-radius:15px; }
+    .analytics-chart h2{ margin-bottom:20px; color:white; }
+    .badge{ float:right; background:#4f8cff; color:white; padding:4px 12px; border-radius:20px; font-size:14px; font-weight:bold; min-width:26px; text-align:center; }
+    .analytics-dropdown { margin-top:20px; border-radius:12px; background:#1f2235; overflow:hidden; }
+    .analytics-dropdown summary{ padding:18px 22px; font-size:22px; font-weight:600; cursor:pointer; list-style:none; }
+    .analytics-dropdown summary::-webkit-details-marker{ display:none; }
+    .analytics-dropdown summary::before{ content:"▶ "; color:#4f8cff; }
+    .analytics-dropdown[open] summary::before{ content:"▼ "; }
+    .analytics-dropdown .deal-card{ margin:0; border:none; border-radius:0; }
+    .analytics-table{ width:100%; border-collapse:collapse; color:white; margin-top:10px; }
+    .analytics-table th{ background:#2c3150; padding:14px; text-align:left; font-size:15px; }
+    .analytics-table td{ padding:14px; border-top:1px solid #3b4266; font-size:14px; }
+    .analytics-table tr:hover{ background:#272c45; }
+
+    /* chart */
+    .chart-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; }
+    .chart-filter{ display:flex; align-items:center; gap:12px; }
+    .chart-filter input{ background:#1d2138; color:white; border:1px solid #3b4268; padding:8px 10px; border-radius:8px; }
+    .chart-filter button{ background:#4f8cff; color:white; border:none; padding:9px 16px; border-radius:8px; cursor:pointer; }
+    .chart-filter button:hover{ background:#3d78f5; }
+    .chart-card{
+        background:#232640;
+        border-radius:18px;
+        padding:22px;
+        border:1px solid rgba(255,255,255,.05);
+        min-height:470px;
+    }
+
+    .chart-card:hover{
+        transform:translateY(-3px);
+        box-shadow:0 12px 35px rgba(0,0,0,.35);
+    }
+
+    /*cards*/
+    #analytics-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin:28px 0; }
+    .kpi-card{ background:#1c2138; border-radius:18px; padding:22px; transition:.25s; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.05); }
+    .kpi-card:hover{ transform:translateY(-6px); box-shadow:0 18px 35px rgba(0,0,0,.35); }
+    .kpi-card::before{ content:""; position:absolute; left:0; top:0; width:5px; height:100%; }
+    .blue::before{ background:#4f8cff; }
+    .green::before{ background:#34d399; }
+    .red::before{ background:#ff6b6b; }
+    .orange::before{ background:#f59e0b; }
+    .teal::before{ background:#22d3ee; }
+    .purple::before{ background:#a855f7; }
+    .kpi-header{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .kpi-icon{ font-size:24px; }
+    .kpi-title{ color:#aab3d2; font-size:15px; font-weight:600; }
+    .kpi-value{ color:white; font-size:40px; font-weight:700; margin-bottom:12px; }
+    .kpi-footer{ color:#7d88ab; font-size:13px; }
+
+    /*export button*/
+    #exportBtn{
+        background:#4f8cff;
+        color:white;
+        border:none;
+        padding:12px 18px;
+        border-radius:10px;
+        cursor:pointer;
+        font-weight:600;
+        transition:.25s;
+    }
+
+    #exportBtn:hover{
+        background:#6ca0ff;
+        transform:translateY(-2px);
+    }
+
+    .export-buttons{
+        display:flex;
+        gap:12px;
+        margin-top:20px;
+    }
+
+    .export-buttons button{
+
+        padding:12px 22px;
+
+        border:none;
+
+        border-radius:10px;
+
+        background:#4f8cff;
+
+        color:white;
+
+        cursor:pointer;
+
+        font-weight:600;
+
+        transition:.25s;
+    }
+
+    .export-buttons button:hover{
+
+        background:#3b74db;
+
+        transform:translateY(-2px);
+
+    }
   </style>
 </head>
 <body>
+
 
 <!-- Fake page -->
 <nav class="page-nav">
@@ -110,6 +247,9 @@
     <button class="page-link">Titles</button>
     <button class="page-link">Deals</button>
     <button class="page-link">Rights Ledger</button>
+    <button class="page-link" onclick="loadAnalytics()">
+      Analytics
+    </button>
   </div>
 </nav>
 <div class="page-body">
@@ -120,6 +260,149 @@
     <div class="deal-card"><h3>Published Deals</h3><div class="val">10</div><div class="pub">● Active</div></div>
     <div class="deal-card"><h3>Expired Deals</h3><div class="val">0</div></div>
   </div>
+</div>
+
+<div
+  id="analytics-dashboard"
+  style="display:none;padding:40px 60px;"
+>
+
+  <div class="analytics-header">
+
+    <div class="analytics-title">
+
+        <h1>Knowledge Gap Analytics Dashboard</h1>
+
+        <p>
+            Monitor chatbot performance, unanswered documentation queries,
+            and knowledge gaps in real time.
+        </p>
+
+    </div>
+
+
+    <div class="last-updated">
+
+        Last Updated
+
+        <span id="lastUpdated"></span>
+
+    </div>
+
+</div>
+
+<div class="export-buttons">
+
+    <button id="exportCsvBtn">
+        📄 Export CSV
+    </button>
+
+    <button id="exportPdfBtn">
+        📑 Export PDF
+    </button>
+
+</div>
+
+
+<div
+id="analytics-cards"
+class="deal-cards"
+></div>
+
+
+  <div class="analytics-chart">
+
+      <div class="chart-header">
+
+          <h2>📈 Activity Trends</h2>
+
+          <div class="chart-filter">
+
+              <label>From</label>
+
+              <input
+                  type="date"
+                  id="fromDate"
+              >
+
+              <label>To</label>
+
+              <input
+                  type="date"
+                  id="toDate"
+              >
+
+              <button
+                  class="btn-primary"
+                  onclick="loadAnalytics()"
+              >
+                  Apply
+              </button>
+
+          </div>
+
+      </div>
+
+
+      <div class="chart-row">
+
+          <div class="chart-card">
+
+            <div class="chart-title">
+                <span>📅 Daily Activity</span>
+                <span class="chart-badge">Live</span>
+            </div>
+
+            <canvas id="dailyChart" height="380"></canvas>
+
+          </div>
+
+          <div class="chart-card">
+
+            <div class="chart-title">
+                <span>📊 Weekly Activity</span>
+                <span class="chart-badge">Weekly</span>
+            </div>
+
+            <canvas id="weeklyChart" height="380"></canvas>
+
+          </div>
+
+      </div>
+
+  </div>
+
+  <br><br>
+
+  <details class="analytics-dropdown">
+
+      <summary id="top-summary">
+          Top Unanswered Questions
+      </summary>
+
+      <div
+          id="top-unanswered"
+          class="deal-card"
+      ></div>
+
+  </details>
+
+
+  <br>
+
+  <details class="analytics-dropdown">
+
+      <summary id="recent-summary">
+          Recent Unanswered Questions
+      </summary>
+
+      <div
+          id="recent-unanswered"
+          class="deal-card"
+      ></div>
+
+  </details>
+
 </div>
 
 <!-- Launcher -->
@@ -182,14 +465,22 @@
   </div>
 </div>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
+    let analyticsData = null;
+    let topQuestions = [];
+    let recentQuestions = [];
+  let weeklyChartInstance = null;
   const API   = "http://localhost:8000";
   let history = [], busy = false, isOpen = false;
 
   const OFF_TOPIC = /\b(weather|recipe|cook|food|sport|cricket|football|netflix|instagram|facebook|twitter|whatsapp|joke|poem|story|python|javascript|sql|hospital|doctor|medicine|news|politics|election|stock|crypto|bitcoin|bank|loan|tax|exam|college|university|school|game|music|song|celebrity|actress|actor)\b/i;
-
+  
   function isOffTopic(msg) { return OFF_TOPIC.test(msg); }
-
+  
   function toggleChat() {
     isOpen = !isOpen;
     document.getElementById("chat-widget").classList.toggle("open", isOpen);
@@ -283,6 +574,657 @@
     } catch { hideTyping(); appendMsg("bot", "⚠️ Cannot reach backend. Make sure server.py is running."); }
     busy = false; document.getElementById("send-btn").disabled = false; inp.focus();
   }
+
+  async function loadAnalytics() {
+
+    document.getElementById(
+      "analytics-dashboard"
+    ).style.display = "block";
+
+    document.getElementById("lastUpdated").innerText =
+    new Date().toLocaleString();
+
+
+    analyticsData =
+      await fetch(
+        "http://127.0.0.1:8000/analytics"
+      ).then(r => r.json());
+
+    topQuestions =
+      await fetch(
+        "http://127.0.0.1:8000/top-unanswered-questions"
+      ).then(r => r.json());
+
+    recentQuestions =
+      await fetch(
+        "http://127.0.0.1:8000/recent-unanswered-questions"
+      ).then(r => r.json());
+
+    const fromDate =
+      document.getElementById("fromDate").value;
+
+    const toDate =
+      document.getElementById("toDate").value;
+
+    const daily =
+    await fetch(
+        `http://127.0.0.1:8000/daily-report?from_date=${fromDate}&to_date=${toDate}`
+    ).then(r => r.json());
+
+    console.log("Selected From:", fromDate);
+    console.log("Selected To:", toDate);
+    console.log("Filtered Daily:", daily);
+
+    const weekly = await fetch(
+        `http://127.0.0.1:8000/weekly-report?from_date=${fromDate}&to_date=${toDate}`
+    ).then(r => r.json());
+        
+    console.log("Weekly data:", weekly);
+    console.log(
+        document.getElementById("weeklyChart")
+    );
+
+    console.log("Daily data:", daily);
+
+    console.log(
+        document.getElementById("dailyChart")
+    );
+
+
+    document.getElementById(
+        "top-summary"
+    ).innerHTML =
+    `Top Unanswered Questions
+    <span class="badge">${topQuestions.length}</span>`;
+
+    document.getElementById(
+        "recent-summary"
+    ).innerHTML =
+    `Recent Unanswered Questions
+    <span class="badge">${recentQuestions.length}</span>`;
+
+    document.getElementById("analytics-cards").innerHTML = `
+
+
+    <div class="kpi-card blue">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📨</span>
+            <span class="kpi-title">Total Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.total_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Total chatbot interactions
+        </div>
+
+    </div>
+
+    <div class="kpi-card green">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">✅</span>
+            <span class="kpi-title">Relevant Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.relevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Successfully classified
+        </div>
+
+    </div>
+
+    <div class="kpi-card red">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">❌</span>
+            <span class="kpi-title">Irrelevant Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.irrelevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Outside documentation scope
+        </div>
+
+    </div>
+
+    <div class="kpi-card teal">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">💬</span>
+            <span class="kpi-title">Answered Relevant</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.answered_relevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Documentation answered
+        </div>
+
+    </div>
+
+    <div class="kpi-card orange">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">⚠️</span>
+            <span class="kpi-title">Knowledge Gaps</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.unanswered_relevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Needs documentation
+        </div>
+
+    </div>
+
+    <div class="kpi-card purple">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📈</span>
+            <span class="kpi-title">Answer Rate</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.answer_rate}%
+        </div>
+
+        <div class="kpi-footer">
+            Overall response quality
+        </div>
+
+    </div>
+
+    `;
+
+    document.getElementById(
+        "top-unanswered"
+    ).innerHTML = `
+    <table class="analytics-table">
+        <tr>
+            <th>Question</th>
+            <th>Count</th>
+        </tr>
+        ${
+            topQuestions.map(q => `
+            <tr>
+                <td>${q.question}</td>
+                <td>${q.count}</td>
+            </tr>
+            `).join("")
+        }
+    </table>
+    `;
+
+    document.getElementById(
+        "recent-unanswered"
+    ).innerHTML = `
+    <table class="analytics-table">
+        <tr>
+            <th>Question</th>
+            <th>Count</th>
+            <th>Created</th>
+        </tr>
+        ${
+            recentQuestions.map(q => `
+            <tr>
+                <td>${q.question}</td>
+                <td>${q.count}</td>
+                <td>${q.created_at}</td>
+            </tr>
+            `).join("")
+        }
+    </table>
+    `;
+
+    const ctx = document.getElementById("dailyChart");
+
+    if(!ctx){
+        return;
+    }
+
+    console.log("window.dailyChart =", window.dailyChart);
+    console.log("Type =", typeof window.dailyChart);
+
+    if (
+        window.dailyChart &&
+        typeof window.dailyChart.destroy === "function"
+    ){
+        window.dailyChart.destroy();
+    }
+    window.dailyChart = new Chart(ctx,{
+        type:"line",
+        data:{
+            labels:daily.map(
+                d => d.date
+            ),
+            datasets:[
+                {
+                    label:"Questions",
+                    data:daily.map(d => d.questions),
+
+                    borderColor:"#4f8cff",
+                    backgroundColor:"rgba(79,140,255,0.15)",
+
+                    fill:true,
+                    tension:0.4,
+
+                    pointRadius:4,
+                    pointHoverRadius:7,
+
+                    pointBackgroundColor:"#4f8cff",
+
+                    borderWidth:3
+                },
+                {
+                    label:"Answered",
+                    data:daily.map(d => d.answered),
+
+                    borderColor:"#33cc66",
+                    backgroundColor:"rgba(51,204,102,0.12)",
+
+                    fill:true,
+                    tension:0.4,
+
+                    pointRadius:4,
+                    pointHoverRadius:7,
+
+                    pointBackgroundColor:"#33cc66",
+
+                    borderWidth:3
+                },
+                {
+                    label:"Unanswered",
+                    data:daily.map(d => d.unanswered),
+
+                    borderColor:"#ff6666",
+                    backgroundColor:"rgba(255,102,102,0.12)",
+
+                    fill:true,
+                    tension:0.4,
+
+                    pointRadius:4,
+                    pointHoverRadius:7,
+
+                    pointBackgroundColor:"#ff6666",
+
+                    borderWidth:3
+                }
+            ]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{
+                legend:{
+                    position:"top",
+
+                    align:"start",
+
+                    labels:{
+                        color:"#fff",
+
+                        usePointStyle:true,
+
+                        pointStyle:"circle",
+
+                        padding:20,
+
+                        font:{
+                            size:13,
+                            weight:"600"
+                        }
+                    }
+                },
+
+                tooltip:{
+                    backgroundColor:"#202742",
+
+                    titleColor:"#fff",
+
+                    bodyColor:"#fff",
+
+                    borderColor:"#4f8cff",
+
+                    borderWidth:1,
+
+                    padding:12,
+
+                    cornerRadius:10,
+
+                    displayColors:true
+                }
+            },
+            scales:{
+                x:{
+                    grid:{
+                        display:false
+                    },
+
+                    ticks:{
+                        color:"#bfc7e0"
+                    }
+                },
+                y:{
+                    beginAtZero:true,
+
+                    grace:"5%",
+
+                    grid:{
+                        color:"rgba(255,255,255,0.06)"
+                    },
+
+                    ticks:{
+                        color:"#bfc7e0",
+
+                        stepSize:1,
+
+                        precision:0
+                    }
+                }
+            }
+        }
+    });
+
+    const weeklyCtx =
+    document.getElementById("weeklyChart");
+
+    if (weeklyCtx) {
+
+        if (weeklyChartInstance) {
+            weeklyChartInstance.destroy();
+        }
+
+        weeklyChartInstance = new Chart(
+            weeklyCtx,
+            {
+                type:"bar",
+                data:{
+                    labels:weekly.map(
+                        w => w.week
+                    ),
+                    datasets:[
+                        {
+                            label:"Questions",
+                            data:weekly.map(
+                                w => w.questions
+                            ),
+                            backgroundColor:"#4f8cff",
+
+                            borderRadius:10,
+
+                            borderSkipped:false,
+
+                            barPercentage:0.7,
+
+                            categoryPercentage:0.65
+                        },
+                        {
+                            label:"Answered",
+                            data:weekly.map(
+                                w => w.answered
+                            ),
+                            backgroundColor:"#4f8cff",
+
+                            borderRadius:10,
+
+                            borderSkipped:false,
+
+                            barPercentage:0.7,
+
+                            categoryPercentage:0.65
+                        },
+                        {
+                            label:"Unanswered",
+                            data:weekly.map(
+                                w => w.unanswered
+                            ),
+                            backgroundColor:"#4f8cff",
+
+                            borderRadius:10,
+
+                            borderSkipped:false,
+
+                            barPercentage:0.7,
+
+                            categoryPercentage:0.65
+                        }
+                    ]
+                },
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    plugins:{
+                        legend:{
+                            position:"top",
+
+                            align:"start",
+
+                            labels:{
+                                color:"#fff",
+
+                                usePointStyle:true,
+
+                                pointStyle:"circle",
+
+                                padding:20,
+
+                                font:{
+                                    size:13,
+                                    weight:"600"
+                                }
+                            }
+                        },
+
+                        tooltip:{
+                            backgroundColor:"#202742",
+
+                            titleColor:"#fff",
+
+                            bodyColor:"#fff",
+
+                            borderColor:"#4f8cff",
+
+                            borderWidth:1,
+
+                            padding:12,
+
+                            cornerRadius:10,
+
+                            displayColors:true
+                        }
+                    },
+                    scales:{
+                        x:{
+                            grid:{
+                                display:false
+                            },
+
+                            ticks:{
+                                color:"#bfc7e0"
+                            }
+                        },
+                        y:{
+                            beginAtZero:true,
+
+                            grace:"5%",
+
+                            grid:{
+                                color:"rgba(255,255,255,0.06)"
+                            },
+
+                            ticks:{
+                                color:"#bfc7e0",
+
+                                stepSize:1,
+
+                                precision:0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+        console.log("Weekly chart created!");
+        console.log(weeklyChartInstance);
+    }
+
+    document.getElementById("exportCsvBtn").onclick = function(){
+
+        let csv = "";
+
+        csv += "Knowledge Gap Analytics Report\n\n";
+
+        csv += "Metric,Value\n";
+
+        csv += `Total Questions,${analyticsData.total_questions}\n`;
+        csv += `Relevant Questions,${analyticsData.relevant_questions}\n`;
+        csv += `Irrelevant Questions,${analyticsData.irrelevant_questions}\n`;
+        csv += `Answered Relevant,${analyticsData.answered_relevant_questions}\n`;
+        csv += `Knowledge Gaps,${analyticsData.unanswered_relevant_questions}\n`;
+        csv += `Answer Rate,${analyticsData.answer_rate}%\n\n`;
+
+        csv += "Top Unanswered Questions\n";
+        csv += "Question,Count\n";
+
+        topQuestions.forEach(q=>{
+            csv += `"${q.question}",${q.count}\n`;
+        });
+
+        csv += "\nRecent Unanswered Questions\n";
+        csv += "Question\n";
+
+        recentQuestions.forEach(q=>{
+            csv += `"${q.question}"\n`;
+        });
+
+        const blob = new Blob(
+            [csv],
+            {type:"text/csv"}
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+
+        a.href = url;
+
+        a.download =
+            "Knowledge_Gap_Report.csv";
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+    };
+  }
+    document.addEventListener("DOMContentLoaded", () => {
+
+        document
+            .getElementById("exportPdfBtn")
+            .addEventListener("click", exportPDF);
+
+    });
+
+    async function exportPDF() {
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(24);
+    pdf.text("Knowledge Gap Analytics Report", 20, 22);
+
+    pdf.setFontSize(11);
+    pdf.setFont("helvetica", "normal");
+
+    pdf.text(
+        "Generated: " + new Date().toLocaleString(),
+        20,
+        32
+    );
+
+    pdf.setDrawColor(210);
+    pdf.line(20, 38, 190, 38);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+
+    pdf.text("Executive Summary",20,50);
+
+    pdf.setFont("helvetica","normal");
+    pdf.setFontSize(13);
+
+    let y = 65;
+
+    pdf.text(
+        `Total Questions : ${analyticsData.total_questions}`,
+        25,
+        y
+    );
+
+    y += 10;
+
+    pdf.text(
+        `Relevant Questions : ${analyticsData.relevant_questions}`,
+        25,
+        y
+    );
+
+    y += 10;
+
+    pdf.text(
+        `Knowledge Gaps : ${analyticsData.unanswered_relevant_questions}`,
+        25,
+        y
+    );
+
+    y += 10;
+
+    pdf.text(
+        `Answer Rate : ${analyticsData.answer_rate}%`,
+        25,
+        y
+    );
+
+    pdf.line(20,110,190,110);
+
+
+        // Capture Daily Chart
+        const dailyCanvas =
+            await html2canvas(
+                document.querySelector(".chart-row")
+            );
+
+        const dailyImg =
+            dailyCanvas.toDataURL("image/png");
+
+        pdf.addImage(
+            dailyImg,
+            "PNG",
+            10,
+            40,
+            190,
+            90
+        );
+
+        pdf.save("Knowledge_Gap_Report.pdf");
+    }
 </script>
+
 </body>
 </html>

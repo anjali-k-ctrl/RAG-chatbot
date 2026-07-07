@@ -1,9 +1,15 @@
-timestamp,question,score2026-06-18 15:14:20.817452,how do i add titles?,0.5200682
-2026-06-18 15:24:56.454905,how do i add title?,0.54778254
-2026-06-18 15:26:54.268455,How does Media Shippers help content owners?,0.7096585
-2026-06-18 15:27:42.226239,How can sellers increase visibility of their content?,0.56599766
-2026-06-18 15:45:08.781297,How does Media Shippers support revenue generation?,0.62674683
-2026-06-18 15:45:39.567592,Who can benefit from Media Shippers?,0.630459
-2026-06-18 15:46:03.628632,How do buyers discover content?,0.5916334
-2026-06-18 15:46:36.364077,What are the benefits of the Deals Module?,0.5986256
-2026-06-18 15:46:50.499404,How does Media Shippers help content owners?,0.7234375
+timestamp,question,score,relevant,answered
+2026-06-23 19:52:41.291433,How does Media Shippers help content owners?,0.7188937,YES,YES
+2026-06-23 19:52:58.154739,How do I add subtitles?,0.456825,YES,NO
+2026-06-23 19:53:14.000996,Who is the Prime Minister of India?,0.35179847,NO,NO
+2026-06-24 10:55:50.291639,how do i add subtitle,0.48707318,YES,NO
+2026-06-24 10:56:28.849211,how do i add subtitles?,0.456825,YES,NO
+2026-06-24 10:57:26.449325,how does mediashipper help owners?,0.55094415,YES,YES
+2026-06-26 11:04:01.381957,who is the president of india?,0.35101688,NO,NO
+2026-06-26 11:04:55.664797,what image types are supported in posters and banners?,0.49983466,YES,NO
+2026-06-26 11:06:53.019719,where can i buy movie posters?,0.44764206,NO,NO
+2026-06-30 11:02:31.642035,how do i reach pune?,0.37165254,NO,NO
+2026-06-30 11:03:17.983190,how do i add thumbnail?,0.37243962,NO,NO
+2026-06-30 11:04:07.021981,what image types are supported in posters and banners?,0.49983466,YES,NO
+2026-06-30 11:05:10.070543,how is the mediashipper is helpful for the owners?,0.55524844,YES,YES
+2026-07-01 14:42:33.278722,Can i recover deleted title?,0.4355188,NO,NO

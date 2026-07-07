@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routes.chatbot import router
 from routes.admin import router as admin_router
+from routes.analytics import router as analytics_router
 app = FastAPI()
 from database.postgres import SessionLocal
 from database.models import Document
@@ -31,6 +32,7 @@ def count_docs():
 
 app.include_router(router)
 app.include_router(admin_router)
+app.include_router(analytics_router)
 
 from database.postgres import SessionLocal
 from database.models import UnansweredQuestion

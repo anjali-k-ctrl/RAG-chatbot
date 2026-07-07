@@ -1,5 +1,21 @@
+import re
 from database.postgres import SessionLocal
 from database.models import UnansweredQuestion
+
+def normalize_question(
+    question: str
+):
+
+    question = question.lower()
+
+    question = re.sub(
+        r'[^\w\s]',
+        '',
+        question
+    )
+
+    return question.strip()
+
 
 
 def save_unanswered_question(
@@ -13,11 +29,14 @@ def save_unanswered_question(
 
     try:
 
+        normalized_question = normalize_question(
+            question
+        )
+
         existing = (
             db.query(UnansweredQuestion)
             .filter(
-                UnansweredQuestion.question == question,
-                UnansweredQuestion.page_name == page_name
+                UnansweredQuestion.question == normalized_question
             )
             .first()
         )
@@ -29,7 +48,7 @@ def save_unanswered_question(
         else:
 
             entry = UnansweredQuestion(
-                question=question,
+                question=normalized_question,
                 page_name=page_name,
                 source_document=source_document,
                 count=1

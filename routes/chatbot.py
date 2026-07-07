@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+RELEVANCE_THRESHOLD = 0.45
 
 from services.vector_retrieval_service import (
     retrieve_context
@@ -39,10 +40,6 @@ def chat(request: ChatRequest):
     print("\n===== SOURCE =====")
     print("website_documentation_-_sellers__buyers.pdf")
 
-    log_retrieval(
-        request.message,
-        top_score
-    )
 
     if not context.strip():
 
@@ -65,18 +62,48 @@ def chat(request: ChatRequest):
         context
     )
 
+    answered = "YES"
+
+    if (
+        "I could not find this information"
+        in answer
+    ):
+        answered = "NO"
+
+    relevant = "YES"
+
+    if top_score < RELEVANCE_THRESHOLD:
+        relevant = "NO"
+
+    log_retrieval(
+        request.message,
+        top_score,
+        relevant,
+        answered
+    )
+
     if (
         "I could not find this information"
         in answer
     ):
 
-        print("UNANSWERED QUESTION SAVED")
+        if top_score >= 0.45:
 
-        save_unanswered_question(
-            question=request.message,
-            page_name=request.page_name,
-            source_document="website_documentation_-_sellers__buyers.pdf"
-        )
+            print(
+                "RELEVANT UNANSWERED QUESTION SAVED"
+            )
+
+            save_unanswered_question(
+                question=request.message,
+                page_name=request.page_name,
+                source_document="website_documentation_-_sellers__buyers.pdf"
+            )
+
+        else:
+
+            print(
+                f"IGNORED IRRELEVANT QUESTION (score={top_score})"
+            )
 
     print("\n===== GEMINI RESPONSE =====")
     print(answer)

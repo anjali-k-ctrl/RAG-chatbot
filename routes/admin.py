@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from database.postgres import SessionLocal
 from database.models import UnansweredQuestion
+from services.analytics_service import ( get_weekly_report )
 
 router = APIRouter()
 
@@ -32,3 +33,4 @@ def get_knowledge_gaps():
 
     finally:
         db.close()
+

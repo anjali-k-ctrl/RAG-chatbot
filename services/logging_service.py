@@ -4,7 +4,9 @@ from datetime import datetime
 
 def log_retrieval(
     question,
-    score
+    score,
+    relevant,
+    answered
 ):
 
     with open(
@@ -19,5 +21,7 @@ def log_retrieval(
         writer.writerow([
             datetime.now(),
             question,
-            score
+            score,
+            relevant,
+            answered
         ])
