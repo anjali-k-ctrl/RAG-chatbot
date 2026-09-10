@@ -46,16 +46,120 @@
     .status-dot.offline { background: #ef4444; }
 
     /* Messages */
-    .widget-messages { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; }
+    .role-buttons { display: flex; gap: 8px; margin-top: 12px; }
+    .role-buttons button { flex: 1; padding: 8px 12px; border: 1px solid #3b82f6; border-radius: 8px; background: #1e3a5f; color: #e2e8f0; font-family: inherit; font-size: 12px; cursor: pointer; transition: background 0.2s, border-color 0.2s;}
+    .role-buttons button:hover { background: #2563eb; border-color: #60a5fa;}
+    .widget-messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 14px; display: flex; flex-direction: column; gap: 14px;}
     .greeting { display: flex; gap: 8px; align-items: flex-start; }
     .g-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
     .g-bubble { background: #252840; border-radius: 12px; border-top-left-radius: 4px; padding: 10px 13px; font-size: 13px; line-height: 1.6; color: #e2e8f0; max-width: 270px; }
     .g-bubble strong { color: #93c5fd; }
 
-    /* Chips */
-    .suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 4px; }
-    .sug-chip { background: #1e2a4a; border: 1px solid #2d4a7a; border-radius: 16px; padding: 5px 12px; font-size: 11.5px; color: #60a5fa; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-    .sug-chip:hover { background: #2d4a7a; color: #bfdbfe; }
+    /* =========================================
+    SUGGESTED QUESTIONS
+    ========================================= */
+
+    .suggestions {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        width: 100%;
+        padding: 0;
+
+        overflow: hidden;
+    }
+
+    .suggestions-title {
+        margin: 10px 0 7px;
+
+        font-size: 10px;
+        font-weight: 600;
+
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+
+        color: #718096;
+    }
+
+
+    /* Question */
+    .sug-chip {
+        width: 100%;
+        min-width: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        padding: 9px 10px 9px 12px;
+
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid transparent;
+        border-radius: 8px;
+
+        color: #aebed3;
+
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.4;
+
+        text-align: left;
+        cursor: pointer;
+
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+
+        transition:
+            background 0.18s ease,
+            border-color 0.18s ease;
+    }
+
+
+    /* Arrow on right */
+    .sug-chip::after {
+        content: "›";
+
+        flex-shrink: 0;
+
+        color: #5d7fae;
+
+        font-size: 20px;
+        font-weight: 300;
+
+        line-height: 1;
+    }
+
+
+    /* Remove old left arrow */
+    .sug-chip::before {
+        display: none;
+    }
+
+
+    /* Hover */
+    .sug-chip:hover {
+        background: rgba(59, 130, 246, 0.08);
+        border-color: rgba(59, 130, 246, 0.25);
+
+        color: #d6e5f7;
+    }
+
+
+    /* Keyboard accessibility */
+    .sug-chip:focus-visible {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+
+
+    /* Prevent horizontal overflow */
+    .widget-messages {
+        overflow-x: hidden;
+    }
 
     /* Message bubbles */
     .msg-row { display: flex; gap: 8px; align-items: flex-start; }
@@ -81,6 +185,8 @@
     .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
     .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes tdot { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-5px);opacity:1} }
+
+    .source-chip { max-width: 220px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* Input */
     .widget-input { padding: 12px 14px; border-top: 1px solid #252840; flex-shrink: 0; background: #151823; }
@@ -108,30 +214,19 @@
     /* chart */
     .analytics-chart{ margin-top:30px; background:#1f2235; padding:25px; border-radius:15px; }
     .analytics-chart canvas{ width:100%; height:380px !important; }
-    .chart-title{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:20px;
-        font-size:20px;
-        font-weight:700;
-    }
+    .chart-title{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:20px; font-weight:700; }
+    .chart-badge{ background:#2d6cff22; color:#5b8cff; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .chart-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:25px; }
 
-    .chart-badge{
-        background:#2d6cff22;
-        color:#5b8cff;
-        padding:6px 12px;
-        border-radius:20px;
-        font-size:12px;
-        font-weight:600;
-    }
-
-    .chart-row{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:24px;
-        margin-top:25px;
-    }
+    .knowledge-upload{ display:flex; flex-direction:column; gap:18px; }
+    .upload-box{ width:100%; min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .upload-box:hover{ background:#242c48; border-color:#6fa4ff; }
+    .upload-icon{ font-size:42px; margin-bottom:10px; }
+    .upload-title{ font-size:18px; color:white; font-weight:600; }
+    .upload-subtitle{ color:#94a3b8; margin-top:6px; }
+    .selected-file{ color:#cbd5e1; font-size:14px; }
+    #uploadKnowledgeBtn{ width:100%; margin-top:18px; border-radius:10px; padding:14px; font-size:15px; font-weight:600; }
+    .src-tag { display: inline-block; max-width: 220px; padding: 3px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
 
     /* dropdown */
     .analytics-chart{ margin-top:30px; background:#1f2235; padding:25px; border-radius:15px; }
@@ -154,18 +249,8 @@
     .chart-filter input{ background:#1d2138; color:white; border:1px solid #3b4268; padding:8px 10px; border-radius:8px; }
     .chart-filter button{ background:#4f8cff; color:white; border:none; padding:9px 16px; border-radius:8px; cursor:pointer; }
     .chart-filter button:hover{ background:#3d78f5; }
-    .chart-card{
-        background:#232640;
-        border-radius:18px;
-        padding:22px;
-        border:1px solid rgba(255,255,255,.05);
-        min-height:470px;
-    }
-
-    .chart-card:hover{
-        transform:translateY(-3px);
-        box-shadow:0 12px 35px rgba(0,0,0,.35);
-    }
+    .chart-card{ background:#232640; border-radius:18px; padding:22px; border:1px solid rgba(255,255,255,.05); min-height:470px; }
+    .chart-card:hover{ transform:translateY(-3px); box-shadow:0 12px 35px rgba(0,0,0,.35); }
 
     /*cards*/
     #analytics-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin:28px 0; }
@@ -178,60 +263,264 @@
     .orange::before{ background:#f59e0b; }
     .teal::before{ background:#22d3ee; }
     .purple::before{ background:#a855f7; }
+    .pink::before{ background:#da48e7; }
     .kpi-header{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
     .kpi-icon{ font-size:24px; }
     .kpi-title{ color:#aab3d2; font-size:15px; font-weight:600; }
     .kpi-value{ color:white; font-size:40px; font-weight:700; margin-bottom:12px; }
     .kpi-footer{ color:#7d88ab; font-size:13px; }
 
+    /*follow up question*/
+    .followup-container{ margin-top:12px; }
+    .followup-title{ font-size:13px; color:#999; margin-bottom:8px; }
+    .followup-chip{ display:block; width:100%; margin:6px 0; padding:8px 12px; border:none; border-radius:20px; background:#2d7ef7; color:white; cursor:pointer; transition:0.2s; }
+    .followup-chip:hover{ background:#1f63c5; }
+
+    /*feedback button*/
+    .feedback-container{ margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; gap:12px; }
+    .feedback-label{ font-size:13px; color:#cbd5e1; text-align:center; font-weight:500; }
+    .feedback-buttons{ display:flex; justify-content:center; gap:12px; }
+    .feedback-btn{ min-width:80px; padding:8px 18px; border:none; border-radius:20px; background:#2f6df6; color:#fff; cursor:pointer; font-size:13px; font-weight:600; transition:.2s; }
+    .feedback-btn:hover{ background:#255de0; transform:translateY(-1px); }
+    .feedback-title{ font-size:14px; font-weight:600; color:#fff; margin-bottom:4px; }
+    .feedback-options{ display:flex; flex-direction:column; gap:10px; }
+    .feedback-option{ display:flex; align-items:center; gap:8px; color:#d1d5db; font-size:13px; }
+    .feedback-textarea{ width:100%; min-height:80px; margin-top:8px; padding:10px; border-radius:10px; border:1px solid #475569; background:#1b2137; color:white; resize:vertical; box-sizing:border-box; font-family:inherit; }
+    .feedback-textarea:focus{ outline:none; border-color:#3b82f6; }
+    .feedback-submit{ width:100%; margin-top:12px; padding:10px; border:none; border-radius:10px; background:#2f6df6; color:white; font-weight:600; cursor:pointer; transition:.2s; }
+    .feedback-submit:hover{ background:#255de0; }
+    .feedback-success{ display:block; padding:10px; text-align:center; color:#22c55e; font-weight:600; }
+    .feedback-expanded{ display:block !important; width:100%; }
+    .feedback-summary{ display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; }
+    .feedback-filter{ display:flex; align-items:center; gap:8px; margin-right:15px; }
+    .feedback-filter label{ color:#cbd5e1; font-size:14px; font-weight:500; }
+    .feedback-filter select{ background:#1e2238; color:white; border:1px solid #475569; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; outline:none; }
+    .feedback-filter select:hover{ border-color:#3b82f6; }
+    .feedback-filter select:focus{ border-color:#3b82f6; }
+    .feedback-summary{ display:flex; align-items:center; }
+    .feedback-left{ display:flex; align-items:center; gap:8px; margin-right:auto; padding-left:6px;}
+    .feedback-title{ all:unset; font:inherit; color:inherit; }
+    #feedback-count{ margin-left:6px; }
+    .feedback-filter{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .analytics-dropdown .feedback-filter{ display:none; }
+    .analytics-dropdown[open] .feedback-filter{ display:flex; }
+
+    /*knowledge base add*/
+    .knowledge-layout{ display:flex; gap:25px; align-items:flex-start; margin-top:20px; }
+    .knowledge-upload{ flex:1; }
+    .upload-summary-card{ flex:1; background:#252944; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:22px; min-height:340px; }
+    .upload-summary-card h3{ margin-top:0; margin-bottom:18px; color:#fff; }
+    .summary-empty{ height:260px; display:flex; align-items:center; justify-content:center; color:#8c93b3; font-size:15px; }
+    .summary-item{ display:flex; align-items:center; gap:10px; margin-bottom:16px; color:#fff; font-size:15px; }
+    .summary-stats{ margin-top:30px; border-top:1px solid rgba(255,255,255,.08); padding-top:20px; }
+    .summary-stat{ display:flex; justify-content:space-between; margin-bottom:14px; font-size:15px; }
+    .summary-stat span:first-child{ color:#b8bfd8; }
+    .summary-stat span:last-child{ color:#fff; font-weight:600; }
+    .selected-file-card{ margin-top:22px; background:#252944; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:16px; }
+    .selected-label{ color:#9ca3af; font-size:13px; text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+    .selected-file{ color:#fff; font-size:15px; font-weight:600; word-break:break-word; }
+    .recent-uploads-section{ margin-top:30px; }
+    .upload-table{ width:100%; border-collapse:collapse; margin-top:15px; }
+    .upload-table th{ text-align:left; padding:14px; color:#b7bfd6; font-size:14px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .upload-table td{ padding:14px; color:white; border-bottom:1px solid rgba(255,255,255,.05); }
+    .upload-table tr:hover{ background:rgba(255,255,255,.03); }
+    .status-badge{ display:inline-block; padding:5px 12px; border-radius:20px; background:#1e7d42; color:white; font-size:12px; font-weight:600; }
+    .empty-state{ padding:30px; text-align:center; color:#9ca3af; }
+
+    .table-pagination{ display:flex; justify-content:space-between; align-items:center; margin-top:20px; }
+    .table-pagination button{ background:#3b82f6; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .table-pagination button:disabled{ opacity:.4; cursor:not-allowed; }
+    .table-pagination span{ color:#b7bfd6; font-size:14px; }
     /*export button*/
-    #exportBtn{
-        background:#4f8cff;
-        color:white;
-        border:none;
-        padding:12px 18px;
-        border-radius:10px;
-        cursor:pointer;
-        font-weight:600;
-        transition:.25s;
+    #exportBtn{ background:#4f8cff; color:white; border:none; padding:12px 18px; border-radius:10px; cursor:pointer; font-weight:600; transition:.25s; }
+    #exportBtn:hover{ background:#6ca0ff; transform:translateY(-2px); }
+    .export-buttons{ display:flex; gap:12px; margin-top:20 }
+    .export-buttons button{ padding:12px 22px; border:none; border-radius:10px; background:#4f8cff; color:white; cursor:pointer; font-weight:600; transition:.25s; }
+    .export-buttons button:hover{ background:#3b74db; transform:translateY(-2px); }
+
+    /* =========================================
+    CHATBOT AVAILABILITY CARD
+    ========================================= */
+
+    .chatbot-control-card {
+        width: 100%;
+        box-sizing: border-box;
+
+        background: #171b35;
+        border: 1px solid #252b4a;
+        border-radius: 14px;
+
+        padding: 20px 24px;
+        margin: 18px 0 28px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    #exportBtn:hover{
-        background:#6ca0ff;
-        transform:translateY(-2px);
+    .chatbot-control-content {
+        min-width: 0;
     }
 
-    .export-buttons{
-        display:flex;
-        gap:12px;
-        margin-top:20px;
+    .chatbot-control-title {
+        margin: 0 0 6px;
+
+        font-size: 15px;
+        font-weight: 600;
+
+        color: #e8ecff;
     }
 
-    .export-buttons button{
+    .chatbot-control-description {
+        margin: 0 0 8px;
 
-        padding:12px 22px;
+        font-size: 13px;
+        line-height: 1.5;
 
-        border:none;
-
-        border-radius:10px;
-
-        background:#4f8cff;
-
-        color:white;
-
-        cursor:pointer;
-
-        font-weight:600;
-
-        transition:.25s;
+        color: #8993b8;
     }
 
-    .export-buttons button:hover{
+    .chatbot-status {
+        margin: 0;
 
-        background:#3b74db;
+        font-size: 13px;
+        font-weight: 500;
 
-        transform:translateY(-2px);
+        color: #8993b8;
+    }
 
+    .chatbot-status span {
+        font-weight: 600;
+        margin-left: 4px;
+    }
+
+    .chatbot-status.active span {
+        color: #35d399;
+    }
+
+    .chatbot-status.disabled span {
+        color: #ff647c;
+    }
+
+
+    /* =========================================
+    TOGGLE
+    ========================================= */
+
+    .chatbot-toggle {
+        position: relative;
+
+        width: 48px;
+        height: 26px;
+
+        flex-shrink: 0;
+    }
+
+    .chatbot-toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .chatbot-slider {
+        position: absolute;
+        inset: 0;
+
+        cursor: pointer;
+
+        background: #343a5a;
+        border-radius: 999px;
+
+        transition: all 0.25s ease;
+    }
+
+    .chatbot-slider::before {
+        content: "";
+
+        position: absolute;
+
+        width: 20px;
+        height: 20px;
+
+        left: 3px;
+        top: 3px;
+
+        background: #ffffff;
+        border-radius: 50%;
+
+        transition: transform 0.25s ease;
+
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    }
+
+    .chatbot-toggle input:checked + .chatbot-slider {
+        background: #4f8cff;
+    }
+
+    .chatbot-toggle input:checked + .chatbot-slider::before {
+        transform: translateX(22px);
+    }
+
+    .chatbot-toggle input:focus-visible + .chatbot-slider {
+        outline: 2px solid #4f8cff;
+        outline-offset: 3px;
+    }
+
+
+    /* =========================================
+    MOBILE
+    ========================================= */
+
+    @media (max-width: 600px) {
+
+        .chatbot-control-card {
+            padding: 16px 18px;
+            gap: 16px;
+        }
+
+        .chatbot-control-title {
+            font-size: 14px;
+        }
+
+        .chatbot-control-description {
+            font-size: 12px;
+        }
+
+    }
+
+    .view-answer-btn{ background:#4f8cff; color:white; border:none; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
+    .view-answer-btn:hover{ background:#2f73ff; }
+    .answer-modal{ position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; justify-content:center; align-items:center; z-index:9999; }
+    .answer-modal-content{ width:850px; max-width:90%; background:#232744; border-radius:16px; padding:25px; color:white; }
+    .answer-modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .close-modal{ border:none; background:none; color:white; font-size:24px; cursor:pointer; }
+    .modal-section{ margin-bottom:28px; }
+    .modal-section h4{ margin-bottom:8px; color:#4f8cff; }
+    .answer-box{ background:#1b1f34; padding:20px; border-radius:10px; max-height:300px; overflow:auto; white-space:pre-wrap; line-height:1.8; font-size:15px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .upload-btn,
+    .review-btn,
+    .copy-btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .upload-btn{ background:#4f8cff; color:white; }
+    .review-btn{ background:#22c55e; color:white; }
+    .copy-btn{ background:#374151; color:white; }
+    .feedback-status{ display:inline-block; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .feedback-status.pending{ background:#FEF3C7; color:#92400E; }
+    .feedback-status.reviewed{ background:#DBEAFE; color:#1D4ED8; }
+    .highlight-section { animation: highlightGlow 2s ease; }
+    @keyframes highlightGlow {
+        0% {
+            box-shadow: 0 0 0 rgba(79,140,255,0);
+        }
+        25% {
+            box-shadow: 0 0 30px rgba(79,140,255,.9);
+        }
+        100% {
+            box-shadow: 0 0 0 rgba(79,140,255,0);
+        }
     }
   </style>
 </head>
@@ -303,11 +592,43 @@
 
 </div>
 
+<div class="chatbot-control-card">
 
-<div
-id="analytics-cards"
-class="deal-cards"
-></div>
+    <div class="chatbot-control-content">
+
+        <h3 class="chatbot-control-title">
+            Chatbot Availability
+        </h3>
+
+        <p class="chatbot-control-description">
+            Control whether the MediaShippers chatbot is available to users.
+        </p>
+
+        <p class="chatbot-status active" id="chatbot-status">
+            Status:
+            <span id="chatbot-status-text">Active</span>
+        </p>
+
+    </div>
+
+
+    <label class="chatbot-toggle">
+
+        <input
+            type="checkbox"
+            id="chatbot-toggle"
+            checked
+            onchange="toggleChatbotAvailability(this)"
+        >
+
+        <span class="chatbot-slider"></span>
+
+    </label>
+
+</div>
+
+
+<div id="analytics-cards" class="deal-cards" ></div>
 
 
   <div class="analytics-chart">
@@ -374,35 +695,186 @@ class="deal-cards"
 
   <br><br>
 
-  <details class="analytics-dropdown">
+    <details class="analytics-dropdown">
+        <summary id="top-summary">
+            Top Unanswered Questions
+        </summary>
 
-      <summary id="top-summary">
-          Top Unanswered Questions
-      </summary>
+        <div id="top-unanswered" class="deal-card"></div>
+    </details>
 
-      <div
-          id="top-unanswered"
-          class="deal-card"
-      ></div>
+    <details class="analytics-dropdown">
+        <summary id="recent-summary">
+            Recent Unanswered Questions
+        </summary>
 
-  </details>
+        <div id="recent-unanswered" class="deal-card"></div>
+    </details>
 
+    <div class="analytics-chart" id="knowledgeBaseSection">
 
-  <br>
+        <div class="chart-header">
 
-  <details class="analytics-dropdown">
+            <h2>📚 Knowledge Base Management</h2>
 
-      <summary id="recent-summary">
-          Recent Unanswered Questions
-      </summary>
+        </div>
 
-      <div
-          id="recent-unanswered"
-          class="deal-card"
-      ></div>
+        <div class="knowledge-layout">
 
-  </details>
+            <!-- Left Card -->
+            <div class="knowledge-upload">
 
+                <label class="upload-box" for="knowledgeFile">
+
+                    <div class="upload-icon">📄</div>
+
+                    <div class="upload-title">
+                        Select a knowledge document
+                    </div>
+
+                    <div class="upload-subtitle">
+                        PDF, DOC, DOCX or TXT
+                    </div>
+
+                </label>
+
+                <input
+                    type="file"
+                    id="knowledgeFile"
+                    accept=".pdf,.doc,.docx,.txt"
+                    hidden
+                >
+
+                <div class="selected-file-card">
+
+                    <div class="selected-label">
+                        Selected Document
+                    </div>
+
+                    <div
+                        id="selectedFile"
+                        class="selected-file"
+                    >
+                        No file selected
+                    </div>
+
+                </div>
+
+                <button
+                    id="uploadKnowledgeBtn"
+                    class="feedback-submit"
+                >
+                    Upload & Index
+                </button>
+
+            </div>
+
+            <!-- Right Card -->
+            <div class="upload-summary-card">
+                <h3>Upload Summary</h3>
+                <div id="uploadSummaryContent">
+                    <div class="summary-empty">
+                        No uploads yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <div id="uploadStatus"></div>
+
+        <br>
+
+        <div id="knowledgeResolutionSummary"></div>
+
+    </div>
+
+    <details class="analytics-dropdown">
+
+        <summary>
+
+            Recent Uploads
+
+        </summary>
+
+        <div class="deal-card">
+
+            <div id="recentUploads"></div>
+
+        </div>
+
+    </details>
+
+    <!-- NEW -->
+    <!-- User Feedback -->
+    <details class="analytics-dropdown">
+        <summary
+            id="feedback-summary"
+            class="feedback-summary"
+        >
+            <div class="feedback-left">
+                <span class="feedback-title">
+                     User Feedback
+                </span>
+            </div>
+            <div
+                class="feedback-filter"
+                onclick="event.stopPropagation()"
+            >
+                <label for="feedbackFilter">
+                    Filter:
+                </label>
+                <select
+                    id="feedbackFilter"
+                    onchange="loadUserFeedback()"
+                >
+                    <option value="all">All</option>
+                    <option value="helpful">Helpful</option>
+                    <option value="not_helpful">Not Helpful</option>
+                </select>
+            </div>
+        </summary>
+        <div class="deal-card">
+            <div id="user-feedback"></div>
+        </div>
+    </details>
+
+    <details class="analytics-dropdown">
+
+        <summary>
+
+            Irrelevant Questions
+
+        </summary>
+
+        <div class="deal-card">
+
+            <div id="irrelevant-questions"></div>
+
+        </div>
+
+    </details>
+
+    <details class="analytics-dropdown">
+
+        <summary>
+            Most Frequently Asked Questions
+        </summary>
+
+        <div class="deal-card">
+
+            <div id="most-frequent-questions">
+
+                <div class="empty-state">
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+    </details>
 </div>
 
 <!-- Launcher -->
@@ -426,40 +898,39 @@ class="deal-cards"
   </div>
 
   <div class="widget-messages" id="widget-messages">
-    <div class="greeting">
-      <div class="g-avatar">🤖</div>
-      <div class="g-bubble">
-          👋 Hey! How can I help you?
+    <div class="greeting" id="role-question">
+        <div class="g-avatar">🤖</div>
+        <div class="g-bubble">
+            👋 Welcome to MediaShippers Assistant.
+            <br><br>
+            Are you a <strong>Buyer</strong> or a <strong>Seller</strong>?
 
-          I can answer questions about:
+            <div class="role-buttons">
+                <button type="button" onclick="selectAudience('buyer')">
+                    Buyer
+                </button>
 
-          • Start
-          • Metadata
-          • Credits
-          • Assets
-          • Rights
-          • Review
-
-          for the MediaShippers Title Creation workflow.
-      </div>
+                <button type="button" onclick="selectAudience('seller')">
+                    Seller
+                </button>
+            </div>
+        </div>
     </div>
-    <div class="suggestions">
-        <div class="sug-chip" onclick="insertQ('What metadata is required?')"> Metadata</div>
+    <div class="suggestions-wrapper">
 
-        <div class="sug-chip" onclick="insertQ('How do I add credits?')"> Credits</div>
+        <div class="suggestions-title">
+            Suggested questions
+        </div>
 
-        <div class="sug-chip" onclick="insertQ('What assets are required?')"> Assets</div>
+        <div class="suggestions" id="suggestions"></div>
 
-        <div class="sug-chip" onclick="insertQ('How do rights work?')"> Rights</div>
-
-        <div class="sug-chip" onclick="insertQ('How do I submit for review?')"> Review</div>
     </div>
   </div>
 
   <div class="widget-input">
     <div class="input-row">
       <textarea id="chat-input" rows="1" placeholder="Ask about MediaShippers…"></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+      <button type="button" class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
     </div>
     <div class="input-hint">MediaShippers Help · Powered by Gemini</div>
   </div>
@@ -467,27 +938,507 @@ class="deal-cards"
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
     let analyticsData = null;
     let topQuestions = [];
+    let knowledgeAnalytics = null;
     let recentQuestions = [];
-  let weeklyChartInstance = null;
-  const API   = "http://localhost:8000";
-  let history = [], busy = false, isOpen = false;
+    let feedbackData = [];
+    let dailyReport = [];
+    let weeklyReport = [];
+    let selectedFeedbackId = null;
+    let currentUploadsPage = 1;
+    const uploadsPageSize = 5;
+    let currentFeedbackPage = 1;
+    const feedbackPageSize = 5;
+    let currentIrrelevantPage = 1;
+    const irrelevantPageSize = 5;
+    let currentFrequentPage = 1;
+    const frequentPageSize = 5;
+    let weeklyChartInstance = null;
+    const API   = "http://localhost:8000";
 
-  const OFF_TOPIC = /\b(weather|recipe|cook|food|sport|cricket|football|netflix|instagram|facebook|twitter|whatsapp|joke|poem|story|python|javascript|sql|hospital|doctor|medicine|news|politics|election|stock|crypto|bitcoin|bank|loan|tax|exam|college|university|school|game|music|song|celebrity|actress|actor)\b/i;
-  
-  function isOffTopic(msg) { return OFF_TOPIC.test(msg); }
-  
-  function toggleChat() {
-    isOpen = !isOpen;
-    document.getElementById("chat-widget").classList.toggle("open", isOpen);
-    document.getElementById("launcher").classList.toggle("open", isOpen);
-    document.getElementById("notif-dot").style.display = isOpen ? "none" : "block";
-    if (isOpen) { checkHealth(); setTimeout(() => document.getElementById("chat-input").focus(), 300); }
-  }
+    let chatbotOpen = false;
+    let chatbotEnabled = true;
+    let selectedAudience = sessionStorage.getItem("chatbotAudience");
+
+    function selectAudience(audience) {
+        selectedAudience = audience;
+
+        sessionStorage.setItem("chatbotAudience", audience);
+
+        const roleQuestion = document.getElementById("role-question");
+
+        if (roleQuestion) {
+            roleQuestion.remove();
+        }
+
+        const messages = document.getElementById("widget-messages");
+
+        const greeting = document.createElement("div");
+        greeting.className = "greeting";
+
+        greeting.innerHTML = `
+            <div class="g-avatar">🤖</div>
+            <div class="g-bubble">
+                👋 Great! You're using the chatbot as a
+                <strong>${audience === "buyer" ? "Buyer" : "Seller"}</strong>.
+                <br><br>
+                How can I help you?
+            </div>
+        `;
+
+        messages.prepend(greeting);
+
+        loadSuggestions();
+    }
+
+    let currentStep = "credits";
+
+    const suggestionsByAudience = {
+        buyer: {
+            start: [
+                "How do I create a title?",
+                "What metadata can I add to a title?",
+                "How can I review a title before publishing?"
+            ],
+
+            metadata: [
+                "What metadata can a buyer view?",
+                "Which metadata fields are important for buyers?",
+                "How do I complete the title metadata?"
+            ],
+
+            credits: [
+                "Which team members can be added to a title?",
+                "What credit information is available?",
+                "Can I view producers, writers, and cast members?"
+            ],
+
+            assets: [
+                "What assets are available for a title?",
+                "Can I view trailers and screeners?",
+                "What subtitle files are available?"
+            ],
+
+            rights: [
+                "What rights are available for a title?",
+                "What are Exclusive Rights?",
+                "What are Non-Exclusive Rights?"
+            ],
+
+            review: [
+                "What happens after a title is submitted?",
+                "What does the Published status mean?",
+                "What happens when content is shortlisted?"
+            ]
+        },
+
+        seller: {
+            start: [
+                "How do I create a title?",
+                "What metadata is required?",
+                "What assets do I need to upload?"
+            ],
+
+            metadata: [
+                "What metadata is required?",
+                "Which metadata fields are mandatory?",
+                "How do I complete the metadata?"
+            ],
+
+            credits: [
+                "Which team members can be added?",
+                "Are directors required when adding credits?",
+                "Can I add producers, writers, and cast members?"
+            ],
+
+            assets: [
+                "Is a trailer or screener required?",
+                "How many videos can I upload?",
+                "What subtitle file formats can I upload?"
+            ],
+
+            rights: [
+                "How do I add rights information?",
+                "What are Exclusive Rights?",
+                "How do I add territories?"
+            ],
+
+            review: [
+                "How do I submit a title for review?",
+                "What happens after submission?",
+                "Can I edit a title before review?"
+            ]
+        }
+    };
+
+    function loadSuggestions() {
+        const container = document.getElementById("suggestions");
+
+        if (!container) {
+            console.error("Suggestions container not found");
+            return;
+        }
+
+        if (!selectedAudience) {
+            container.innerHTML = "";
+            return;
+        }
+
+        const audienceSuggestions =
+            suggestionsByAudience[selectedAudience];
+
+        if (!audienceSuggestions) {
+            container.innerHTML = "";
+            return;
+        }
+
+        const questions =
+            audienceSuggestions[currentStep] ||
+            audienceSuggestions.start;
+
+        container.innerHTML = "";
+
+        questions.forEach(question => {
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "sug-chip";
+            button.textContent = question;
+
+            button.addEventListener("click", () => {
+                insertQ(question);
+            });
+
+            container.appendChild(button);
+        });
+    }
+
+    function toggleChat() {
+
+        chatbotOpen = !chatbotOpen;
+
+        const chatWidget = document.getElementById("chat-widget");
+        const launcher = document.getElementById("launcher");
+
+        if (!chatWidget) {
+            console.error("Chat widget not found");
+            return;
+        }
+
+        if (chatbotOpen) {
+            chatWidget.classList.add("open");
+            launcher.classList.add("open");
+        } else {
+            chatWidget.classList.remove("open");
+            launcher.classList.remove("open");
+        }
+    }
+
+    async function checkChatbotStatus() {
+        try {
+            const response = await fetch(`${API}/admin/chatbot/status`);
+
+            if (!response.ok) {
+                throw new Error(`Status API returned ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            chatbotEnabled = data.enabled === true;
+
+            const launcher = document.getElementById("launcher");
+            const widget = document.getElementById("chat-widget");
+
+            console.log("Chatbot enabled:", chatbotEnabled);
+
+            if (!chatbotEnabled) {
+
+                // Close chatbot
+                isOpen = false;
+
+                if (widget) {
+                    widget.classList.remove("open");
+                }
+
+                // Hide launcher
+                if (launcher) {
+                    launcher.style.display = "none";
+                }
+
+            } else {
+
+                // Show launcher
+                if (launcher) {
+                    launcher.style.display = "";
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Could not check chatbot status:",
+                error
+            );
+
+            // Fail closed
+            chatbotEnabled = false;
+
+            const launcher = document.getElementById("launcher");
+            const widget = document.getElementById("chat-widget");
+
+            if (widget) {
+                widget.classList.remove("open");
+            }
+
+            if (launcher) {
+                launcher.style.display = "none";
+            }
+        }
+    }
+
+setInterval(checkChatbotStatus, 500);
+
+const API_BASE_URL = "http://127.0.0.1:8000";
+
+
+async function loadChatbotStatus() {
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/chatbot/status`
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to load chatbot status");
+        }
+
+        const data = await response.json();
+
+        const toggle =
+            document.getElementById("chatbot-toggle");
+
+        const statusText =
+            document.getElementById("chatbot-status-text");
+
+        const status =
+            document.getElementById("chatbot-status");
+
+        if (!toggle || !statusText || !status) {
+            return;
+        }
+
+        toggle.checked = data.enabled;
+
+        updateChatbotStatusUI(data.enabled);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load chatbot status:",
+            error
+        );
+
+    }
+}
+
+
+async function toggleChatbotAvailability(toggle) {
+
+    const newStatus = toggle.checked;
+
+    // Temporarily disable while request is running
+    toggle.disabled = true;
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/chatbot/status?enabled=${newStatus}`,
+            {
+                method: "PUT"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to update chatbot status"
+            );
+        }
+
+        const data = await response.json();
+
+        updateChatbotStatusUI(data.enabled);
+
+        /*
+         * IMPORTANT:
+         * Also update the chatbot widget itself.
+         */
+        if (typeof updateChatbotVisibility === "function") {
+            updateChatbotVisibility(data.enabled);
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Failed to update chatbot status:",
+            error
+        );
+
+        // Revert toggle if backend update failed
+        toggle.checked = !newStatus;
+
+        updateChatbotStatusUI(!newStatus);
+
+    } finally {
+
+        toggle.disabled = false;
+    }
+}
+
+
+function updateChatbotStatusUI(enabled) {
+
+    const status =
+        document.getElementById("chatbot-status");
+
+    const statusText =
+        document.getElementById("chatbot-status-text");
+
+    if (!status || !statusText) {
+        return;
+    }
+
+    if (enabled) {
+
+        status.classList.remove("disabled");
+        status.classList.add("active");
+
+        statusText.textContent = "Active";
+
+    } else {
+
+        status.classList.remove("active");
+        status.classList.add("disabled");
+
+        statusText.textContent = "Disabled";
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadChatbotStatus();
+
+    if (selectedAudience) {
+        const roleQuestion = document.getElementById("role-question");
+
+        if (roleQuestion) {
+            roleQuestion.remove();
+        }
+    }
+
+    loadSuggestions();
+});
+setInterval(checkChatbotStatus, 1000);
+
+    function showAnswer(index){
+
+        const item = feedbackData[index];
+        selectedFeedbackId = item.id;
+
+        document.getElementById("modalQuestion").innerText =
+            item.question;
+
+        document.getElementById("modalAnswer").innerText =
+            item.chatbot_answer || "No answer available.";
+
+        document.getElementById("modalFeedback").innerHTML = `
+            <strong>Category:</strong> ${item.category || "-"}<br><br>
+            <strong>Comment:</strong> ${item.feedback || "-"}
+        `;
+
+        document.getElementById("answerModal").style.display = "flex";
+
+    }
+    function closeAnswerModal(){
+
+        document.getElementById("answerModal").style.display = "none";
+
+    }
+
+    function copyAnswer(){
+
+        const answer =
+            document.getElementById("modalAnswer").innerText;
+
+        navigator.clipboard.writeText(answer);
+
+        alert("Answer copied to clipboard!");
+
+    }
+
+    async function markFeedbackReviewed() {
+
+        if (!selectedFeedbackId) {
+            alert("No feedback selected.");
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `http://127.0.0.1:8000/feedback/${selectedFeedbackId}/review`,
+                {
+                    method: "POST"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Failed to mark feedback.");
+            }
+
+            alert(data.message);
+
+            closeAnswerModal();
+
+            loadUserFeedback();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(error.message);
+
+        }
+
+    }
+
+    function goToKnowledgeBase() {
+
+        closeAnswerModal();
+
+        const section = document.getElementById("knowledgeBaseSection");
+
+        if (!section) return;
+
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        section.classList.add("highlight-section");
+
+        setTimeout(() => {
+            section.classList.remove("highlight-section");
+        }, 2000);
+    }
 
   async function checkHealth() {
     try {
@@ -503,7 +1454,7 @@ class="deal-cards"
     }
   }
 
-  function insertQ(t) { const i = document.getElementById("chat-input"); i.value = t; autoResize(); i.focus(); }
+  function insertQ(t) { const i = document.getElementById("chat-input"); i.value = t; autoResize(); sendMessage(); }
 
   function autoResize() { const i = document.getElementById("chat-input"); i.style.height = "auto"; i.style.height = Math.min(i.scrollHeight, 80) + "px"; }
   document.getElementById("chat-input").addEventListener("input", autoResize);
@@ -522,7 +1473,13 @@ class="deal-cards"
     return html;
   }
 
-  function appendMsg(role, content, sources = [], oos = false) {
+    function appendMsg(
+        role,
+        content,
+        sources = [],
+        oos = false,
+        followups = []
+    ){
     const c = document.getElementById("widget-messages");
     const row = document.createElement("div"); row.className = `msg-row ${role}`;
     const av = document.createElement("div"); av.className = `msg-avatar ${role === "user" ? "user" : "bot"}`; av.textContent = role === "user" ? "S" : "🤖";
@@ -533,12 +1490,441 @@ class="deal-cards"
       if (role === "user") { bub.textContent = content; }
       else {
         bub.innerHTML = renderMd(content);
-        if (sources.length) { const s = document.createElement("div"); s.className = "msg-sources"; s.innerHTML = "📄 " + sources.map(x => `<span class="src-tag">${x}</span>`).join(" "); bub.appendChild(s); }
+        if (sources.length) {
+            const s = document.createElement("div");
+            s.className = "msg-sources";
+
+            s.innerHTML =
+                "📄 " +
+                sources
+                    .map(x => `
+                        <span
+                            class="src-tag"
+                            title="${x}">
+                            ${x}
+                        </span>
+                    `)
+                    .join(" ");
+
+            bub.appendChild(s);
+        }
+        if (followups.length) {
+
+            const container = document.createElement("div");
+            container.className = "followup-container";
+
+            if (role === "bot") {
+
+                const feedbackDiv = document.createElement("div");
+                feedbackDiv.className = "feedback-container";
+
+                const label = document.createElement("span");
+                label.innerText = "Was this answer helpful? ";
+
+                const yesBtn = document.createElement("button");
+                yesBtn.className = "feedback-btn";
+                yesBtn.innerText = "Yes";
+
+                yesBtn.onclick = () => {
+                    submitFeedback(
+                        true,
+                        content
+                    );
+
+                    feedbackDiv.innerHTML =
+                        "<span style='color:green'>✓ Thank you for your feedback!</span>";
+                };
+
+                const noBtn = document.createElement("button");
+                noBtn.className = "feedback-btn";
+                noBtn.innerText = "No";
+
+                noBtn.onclick = () => {
+
+                    showFeedbackInput(
+                        feedbackDiv,
+                        content
+                    );
+
+                };
+
+                const buttonRow = document.createElement("div");
+                buttonRow.className = "feedback-buttons";
+
+                buttonRow.appendChild(yesBtn);
+                buttonRow.appendChild(noBtn);
+
+                label.className = "feedback-label";
+
+                feedbackDiv.appendChild(label);
+                feedbackDiv.appendChild(buttonRow);
+
+                bub.appendChild(feedbackDiv);
+            }
+
+            const title = document.createElement("div");
+            title.className = "followup-title";
+            title.innerText = "Suggested Questions";
+
+            container.appendChild(title);
+
+            followups.forEach(question => {
+
+                const btn = document.createElement("button");
+
+                btn.className = "followup-chip";
+
+                btn.innerText = question;
+
+                btn.onclick = () => {
+
+                    sendFollowup(question);
+
+                };
+
+                container.appendChild(btn);
+
+            });
+
+            bub.appendChild(container);
+
+        }
       }
     }
     row.appendChild(av); row.appendChild(bub); c.appendChild(row); c.scrollTop = c.scrollHeight;
   }
 
+    async function submitFeedback(
+        helpful,
+        chatbotAnswer,
+        category="",
+        feedback = ""
+    ){
+        try{
+            await fetch(`${API}/feedback`,{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    question:
+                        history[history.length-2]?.content || "",
+                    chatbot_answer: chatbotAnswer,
+                    helpful: helpful,
+                    feedback_category: category,
+                    feedback: feedback
+                })
+            });
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
+
+    function showFeedbackInput(container, chatbotAnswer){
+        container.classList.add("feedback-expanded");
+        container.innerHTML="";
+        const title = document.createElement("div");
+        title.className = "feedback-title";
+        title.innerText = "Help us improve this answer";
+        container.appendChild(title);
+        const options = [
+            "Incorrect Answer",
+            "Missing Information",
+            "Too Generic",
+            "Not Relevant"
+        ];
+        const radioContainer =
+            document.createElement("div");
+        radioContainer.className =
+            "feedback-options";
+        options.forEach(option => {
+            const label =
+                document.createElement("label");
+            label.className =
+                "feedback-option";
+            const radio =
+                document.createElement("input");
+            radio.type = "radio";
+            radio.name = "feedbackReason";
+            radio.value = option;
+            label.appendChild(radio);
+            label.append(" " + option);
+            radioContainer.appendChild(label);
+        });
+        container.appendChild(radioContainer);
+        const textarea =
+            document.createElement("textarea");
+        textarea.className =
+            "feedback-textarea";
+        textarea.placeholder =
+            "Other comments (optional)";
+        container.appendChild(textarea);
+        const submit =
+            document.createElement("button");
+        submit.className =
+            "feedback-submit";
+        submit.innerText =
+            "Submit Feedback";
+        submit.onclick = async () => {
+            const selected =
+                document.querySelector(
+                    'input[name="feedbackReason"]:checked'
+                );
+
+            const category =
+                selected ? selected.value : "";
+
+            const comment =
+                textarea.value.trim();
+
+            await submitFeedback(
+                false,
+                chatbotAnswer,
+                category,
+                comment
+            );
+            container.innerHTML =
+                "<span class='feedback-success'>✓ Thank you for helping us improve!</span>";
+            container.classList.remove("feedback-expanded");
+        };
+        container.appendChild(submit);
+    }
+
+    async function changeFeedbackPage(direction) {
+
+        currentFeedbackPage += direction;
+
+        if (currentFeedbackPage < 1) {
+
+            currentFeedbackPage = 1;
+
+        }
+
+        await loadUserFeedback();
+
+    }
+
+    async function changeFrequentPage(direction) {
+
+        currentFrequentPage += direction;
+
+        if (currentFrequentPage < 1) {
+            currentFrequentPage = 1;
+        }
+
+        await loadMostFrequentQuestions();
+
+    }
+
+    async function changeIrrelevantPage(direction) {
+
+        currentIrrelevantPage += direction;
+
+        if (currentIrrelevantPage < 1) {
+
+            currentIrrelevantPage = 1;
+
+        }
+
+        await loadIrrelevantQuestions();
+
+    }
+
+    async function loadUserFeedback(){
+
+        const data = await fetch(
+            `http://127.0.0.1:8000/recent-user-feedback?page=${currentFeedbackPage}&page_size=${feedbackPageSize}`
+        ).then(r => r.json());
+
+        const feedback = data.items;
+
+        feedbackData = feedback;
+
+        const filter =
+            document.getElementById(
+                "feedbackFilter"
+            ).value;
+
+        let filteredFeedback = feedback;
+
+        if (filter === "helpful") {
+
+            filteredFeedback = feedback.filter(
+                f => f.helpful
+            );
+
+        }
+        else if (filter === "not_helpful") {
+
+            filteredFeedback = feedback.filter(
+                f => !f.helpful
+            );
+
+        }
+        document.getElementById(
+            "user-feedback"
+        ).innerHTML = `
+        <table class="analytics-table">
+            <tr>
+                <th>Question</th>
+                <th>Helpful</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Comment</th>
+                <th>Answer</th>
+                <th>Time</th>
+            </tr>
+            ${
+                filteredFeedback.map(f => {
+
+                    const statusBadge = f.reviewed
+                        ? `<span class="feedback-status reviewed">
+                                Reviewed
+                        </span>`
+                        : `<span class="feedback-status pending">
+                                Pending
+                        </span>`;
+
+                    return `
+                    <tr>
+                        <td>${f.question}</td>
+
+                        <td>${f.helpful ? "Yes" : "No"}</td>
+
+                        <td>${f.category || "-"}</td>
+
+                        <td>${statusBadge}</td>
+
+                        <td>${f.feedback || "-"}</td>
+
+                        <td>
+                            ${
+                                !f.helpful
+                                ? `<button class="view-answer-btn"
+                                    onclick="showAnswer(${feedback.indexOf(f)})">
+                                    👁 View
+                                </button>`
+                                : "-"
+                            }
+                        </td>
+
+                        <td>${f.created_at}</td>
+                    </tr>
+                    `;
+
+                }).join("")
+            }
+        </table>
+
+        <div class="table-pagination">
+
+            <button
+                ${data.page === 1 ? "disabled" : ""}
+                onclick="changeFeedbackPage(-1)">
+
+                ◀ Previous
+
+            </button>
+
+            <span>
+
+                Showing
+                ${(data.page - 1) * data.page_size + 1}
+                -
+                ${Math.min(data.page * data.page_size, data.total)}
+                of
+                ${data.total}
+
+            </span>
+
+            <button
+                ${data.page === data.total_pages ? "disabled" : ""}
+                onclick="changeFeedbackPage(1)">
+
+                Next ▶
+
+            </button>
+
+        </div>
+        `;
+    }
+
+    async function loadIrrelevantQuestions(){
+
+        const data = await fetch(
+            `http://127.0.0.1:8000/recent-irrelevant-questions?page=${currentIrrelevantPage}&page_size=${irrelevantPageSize}`
+        ).then(r => r.json());
+
+        const questions = data.items;
+
+        document.getElementById(
+            "irrelevant-questions"
+        ).innerHTML = `
+
+        <table class="analytics-table">
+
+            <tr>
+
+                <th>Question</th>
+
+                <th>Reason</th>
+
+                <th>Time</th>
+
+            </tr>
+
+            ${
+                questions.map(q => `
+
+                <tr>
+
+                    <td>${q.question}</td>
+
+                    <td>${q.reason}</td>
+
+                    <td>${q.created_at}</td>
+
+                </tr>
+
+                `).join("")
+            }
+
+        </table>
+
+        <div class="table-pagination">
+
+            <button
+                ${data.page === 1 ? "disabled" : ""}
+                onclick="changeIrrelevantPage(-1)">
+
+                ◀ Previous
+
+            </button>
+
+            <span>
+
+                Showing
+                ${(data.page - 1) * data.page_size + 1}
+                -
+                ${Math.min(data.page * data.page_size, data.total)}
+                of
+                ${data.total}
+
+            </span>
+
+            <button
+                ${data.page === data.total_pages ? "disabled" : ""}
+                onclick="changeIrrelevantPage(1)">
+
+                Next ▶
+
+            </button>
+
+        </div>
+    `;
+
+    }
   function showTyping() {
     const c = document.getElementById("widget-messages");
     const row = document.createElement("div"); row.id = "typing-row"; row.className = "msg-row bot";
@@ -549,31 +1935,444 @@ class="deal-cards"
 
   function hideTyping() { document.getElementById("typing-row")?.remove(); }
 
-  async function sendMessage() {
-    if (busy) return;
-    const inp = document.getElementById("chat-input");
-    const msg = inp.value.trim();
-    if (!msg) return;
-    inp.value = ""; autoResize();
-    busy = true; document.getElementById("send-btn").disabled = true;
-    appendMsg("user", msg);
-    if (isOffTopic(msg)) {
-      appendMsg("bot", "I'm only able to help with MediaShippers-related questions — like deals, rights, payments, content submissions, and buyer/seller rules. Please ask me something about the MediaShippers platform!", [], true);
-      busy = false; document.getElementById("send-btn").disabled = false; return;
+  async function sendFollowup(question){
+
+    document.getElementById("chat-input").value = question;
+
+    await sendMessage();
+
     }
-    showTyping();
-    try {
-      const res = await fetch(`${API}/chat`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({message: msg, history}) });
-      const data = await res.json(); hideTyping();
-      if (data.error) { appendMsg("bot", `⚠️ ${data.error}`); }
-      else {
-        appendMsg("bot", data.answer, data.sources || []);
-        history.push({role:"user", content:msg}); history.push({role:"assistant", content:data.answer});
-        if (history.length > 12) history = history.slice(-12);
-      }
-    } catch { hideTyping(); appendMsg("bot", "⚠️ Cannot reach backend. Make sure server.py is running."); }
-    busy = false; document.getElementById("send-btn").disabled = false; inp.focus();
-  }
+
+    let busy = false;
+    let history = [];
+    async function sendMessage() {
+        console.log("1. sendMessage called");
+
+        if (busy) return;
+
+        const inp = document.getElementById("chat-input");
+        const msg = inp.value.trim();
+
+        console.log("2. Message:", msg);
+
+        if (!msg) return;
+
+        if (!selectedAudience) {
+            alert("Please select Buyer or Seller first.");
+            return;
+        }
+
+        inp.value = "";
+        autoResize();
+
+        busy = true;
+        document.getElementById("send-btn").disabled = true;
+
+        appendMsg("user", msg);
+
+        // Let the backend decide whether the question is relevant.
+
+        console.log("3. Before showTyping()");
+        showTyping();
+
+        try {
+
+            console.log("4. API:", API);
+            console.log("5. Sending:", `${API}/chat`);
+
+            const res = await fetch(`${API}/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: msg,
+                    history,
+                    audience: selectedAudience
+                })
+            });
+
+            console.log("6. Status:", res.status);
+
+            const text = await res.text();
+            console.log("7. Raw Response:", text);
+
+            const data = JSON.parse(text);
+
+            console.log("8. Parsed JSON:", data);
+
+            hideTyping();
+
+            if (!res.ok) {
+                throw new Error(
+                    data.detail ||
+                    data.error ||
+                    "Something went wrong while processing your question."
+                );
+            }
+
+            if (data.error) {
+
+                appendMsg("bot", `⚠️ ${data.error}`);
+
+            } else {
+
+                appendMsg(
+                    "bot",
+                    data.answer,
+                    data.sources || [],
+                    false,
+                    data.followups || []
+                );
+
+                history.push({
+                    role: "user",
+                    content: msg
+                });
+
+                history.push({
+                    role: "assistant",
+                    content: data.answer
+                });
+
+                if (history.length > 12) {
+                    history = history.slice(-12);
+                }
+            }
+
+        } catch (err) {
+
+            console.error("❌ Chat Error:", err);
+
+            hideTyping();
+
+            appendMsg(
+                "bot",
+                `⚠️ ${err.message}`
+            );
+
+        } finally {
+
+            busy = false;
+            document.getElementById("send-btn").disabled = false;
+            inp.focus();
+
+        }
+    }
+
+    async function loadRecentUploads(page = 1) {
+
+        currentUploadsPage = page;
+
+        try {
+
+            const response = await fetch(
+                `${API}/admin/recent-uploads?page=${page}&page_size=${uploadsPageSize}`
+            );
+
+            const data = await response.json();
+
+            renderRecentUploads(data);
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            document.getElementById("recentUploads").innerHTML =
+                `<div class="empty-state">
+                    Failed to load recent uploads.
+                </div>`;
+        }
+
+    }
+
+    async function loadMostFrequentQuestions() {
+
+        try {
+
+            const data = await fetch(
+                `http://127.0.0.1:8000/admin/most-frequent-questions?page=${currentFrequentPage}&page_size=${frequentPageSize}`
+            ).then(r => r.json());
+
+            const questions = data.items;
+
+            const container =
+                document.getElementById(
+                    "most-frequent-questions"
+                );
+
+            if (!questions.length) {
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        No questions available.
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="analytics-table">
+
+                    <tr>
+                        <th>Question</th>
+                        <th>Asked</th>
+                    </tr>
+
+                    ${
+                        questions.map(q => `
+                            <tr>
+
+                                <td>
+                                    ${q.question}
+                                </td>
+
+                                <td>
+                                    ${q.count}
+                                </td>
+
+                            </tr>
+                        `).join("")
+                    }
+
+                </table>
+
+                <div class="table-pagination">
+
+                    <button
+                        ${data.page === 1 ? "disabled" : ""}
+                        onclick="changeFrequentPage(-1)"
+                    >
+                        ◀ Previous
+                    </button>
+
+                    <span>
+                        Showing
+                        ${(data.page - 1) * data.page_size + 1}
+                        -
+                        ${Math.min(data.page * data.page_size, data.total)}
+                        of
+                        ${data.total}
+                    </span>
+
+                    <button
+                        ${data.page === data.total_pages ? "disabled" : ""}
+                        onclick="changeFrequentPage(1)"
+                    >
+                        Next ▶
+                    </button>
+
+                </div>
+                `;
+
+        }
+        catch (error) {
+
+            console.error(
+                "Most Frequent Questions Error:",
+                error
+            );
+
+            document.getElementById(
+                "most-frequent-questions"
+            ).innerHTML = `
+                <div class="empty-state">
+                    Failed to load questions.
+                </div>
+            `;
+        }
+    }
+    loadMostFrequentQuestions();
+
+    function renderRecentUploads(data) {
+        const uploads = data.items;
+        const container = document.getElementById("recentUploads");
+        if (!uploads.length) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    No documents uploaded yet.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="upload-table">
+
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Workflow</th>
+                        <th>Page</th>
+                        <th>Uploaded</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${uploads.map(upload => `
+                        <tr>
+
+                            <td>${upload.document_name}</td>
+
+                            <td>${upload.workflow}</td>
+
+                            <td>${upload.page_name}</td>
+
+                            <td>${upload.uploaded_at}</td>
+
+                            <td>
+                                <span class="status-badge">
+                                    ${upload.status}
+                                </span>
+                            </td>
+
+                        </tr>
+                    `).join("")}
+
+                </tbody>
+
+            </table>
+            <div class="table-pagination">
+
+                <button
+                    ${data.page === 1 ? "disabled" : ""}
+                    onclick="loadRecentUploads(${data.page - 1})">
+
+                    ◀ Previous
+
+                </button>
+
+                <span>
+
+                    Showing
+                    ${(data.page - 1) * data.page_size + 1}
+                    -
+                    ${Math.min(data.page * data.page_size, data.total)}
+                    of
+                    ${data.total}
+
+                </span>
+
+                <button
+                    ${data.page === data.total_pages ? "disabled" : ""}
+                    onclick="loadRecentUploads(${data.page + 1})">
+
+                    Next ▶
+
+                </button>
+
+            </div>
+        `;
+
+    }
+
+    function createPDFChart(
+        labels,
+        questions,
+        answered,
+        unanswered,
+        title
+    ) {
+
+        const canvas = document.createElement("canvas");
+
+        canvas.width = 1200;
+        canvas.height = 500;
+
+        const ctx = canvas.getContext("2d");
+
+        new Chart(ctx, {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: "Questions",
+                        data: questions,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    },
+
+                    {
+                        label: "Answered",
+                        data: answered,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    },
+
+                    {
+                        label: "Unanswered",
+                        data: unanswered,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: false,
+
+                animation: false,
+
+                plugins: {
+
+                    legend: {
+                        position: "top"
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: title,
+
+                        font: {
+                            size: 20
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Questions"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+        return canvas;
+    }
 
   async function loadAnalytics() {
 
@@ -600,31 +2399,36 @@ class="deal-cards"
         "http://127.0.0.1:8000/recent-unanswered-questions"
       ).then(r => r.json());
 
+    knowledgeAnalytics =
+        await fetch(
+            `${API}/admin/unanswered-analytics`
+        ).then(r => r.json());
+    await loadRecentUploads();
     const fromDate =
       document.getElementById("fromDate").value;
 
     const toDate =
       document.getElementById("toDate").value;
 
-    const daily =
+    dailyReport =
     await fetch(
         `http://127.0.0.1:8000/daily-report?from_date=${fromDate}&to_date=${toDate}`
     ).then(r => r.json());
 
     console.log("Selected From:", fromDate);
     console.log("Selected To:", toDate);
-    console.log("Filtered Daily:", daily);
+    console.log("Filtered Daily:", dailyReport);
 
-    const weekly = await fetch(
+    weeklyReport = await fetch(
         `http://127.0.0.1:8000/weekly-report?from_date=${fromDate}&to_date=${toDate}`
     ).then(r => r.json());
         
-    console.log("Weekly data:", weekly);
+    console.log("Weekly data:", weeklyReport);
     console.log(
         document.getElementById("weeklyChart")
     );
 
-    console.log("Daily data:", daily);
+    console.log("Daily data:", dailyReport);
 
     console.log(
         document.getElementById("dailyChart")
@@ -722,7 +2526,7 @@ class="deal-cards"
         </div>
 
         <div class="kpi-value">
-            ${analyticsData.unanswered_relevant_questions}
+            ${knowledgeAnalytics.pending_questions}
         </div>
 
         <div class="kpi-footer">
@@ -744,6 +2548,57 @@ class="deal-cards"
 
         <div class="kpi-footer">
             Overall response quality
+        </div>
+
+    </div>
+
+    <div class="kpi-card green">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">🟢</span>
+            <span class="kpi-title">Resolved Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.resolved_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Automatically resolved after uploads
+        </div>
+
+    </div>
+
+    <div class="kpi-card pink">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📄</span>
+            <span class="kpi-title">Knowledge Documents</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.knowledge_documents}
+        </div>
+
+        <div class="kpi-footer">
+            Indexed knowledge documents
+        </div>
+
+    </div>
+
+    <div class="kpi-card orange">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📚</span>
+            <span class="kpi-title">Resolution Rate</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.resolution_percentage}%
+        </div>
+
+        <div class="kpi-footer">
+            Knowledge gaps resolved
         </div>
 
     </div>
@@ -776,6 +2631,9 @@ class="deal-cards"
         <tr>
             <th>Question</th>
             <th>Count</th>
+            <th>Status</th>
+            <th>Resolved By</th>
+            <th>Resolved At</th>
             <th>Created</th>
         </tr>
         ${
@@ -783,12 +2641,23 @@ class="deal-cards"
             <tr>
                 <td>${q.question}</td>
                 <td>${q.count}</td>
+                <td>
+                    ${
+                        q.status === "Resolved"
+                        ? "🟢 Resolved"
+                        : "🟡 Pending"
+                    }
+                </td>
+                <td>${q.resolved_document ?? "-"}</td>
+                <td>${q.resolved_at ?? "-"}</td>
                 <td>${q.created_at}</td>
             </tr>
             `).join("")
         }
     </table>
     `;
+    await loadUserFeedback();
+    await loadIrrelevantQuestions();
 
     const ctx = document.getElementById("dailyChart");
 
@@ -808,13 +2677,13 @@ class="deal-cards"
     window.dailyChart = new Chart(ctx,{
         type:"line",
         data:{
-            labels:daily.map(
+            labels:dailyReport.map(
                 d => d.date
             ),
             datasets:[
                 {
                     label:"Questions",
-                    data:daily.map(d => d.questions),
+                    data:dailyReport.map(d => d.questions),
 
                     borderColor:"#4f8cff",
                     backgroundColor:"rgba(79,140,255,0.15)",
@@ -831,7 +2700,7 @@ class="deal-cards"
                 },
                 {
                     label:"Answered",
-                    data:daily.map(d => d.answered),
+                    data:dailyReport.map(d => d.answered),
 
                     borderColor:"#33cc66",
                     backgroundColor:"rgba(51,204,102,0.12)",
@@ -848,7 +2717,7 @@ class="deal-cards"
                 },
                 {
                     label:"Unanswered",
-                    data:daily.map(d => d.unanswered),
+                    data:dailyReport.map(d => d.unanswered),
 
                     borderColor:"#ff6666",
                     backgroundColor:"rgba(255,102,102,0.12)",
@@ -953,13 +2822,13 @@ class="deal-cards"
             {
                 type:"bar",
                 data:{
-                    labels:weekly.map(
+                    labels:weeklyReport.map(
                         w => w.week
                     ),
                     datasets:[
                         {
                             label:"Questions",
-                            data:weekly.map(
+                            data:weeklyReport.map(
                                 w => w.questions
                             ),
                             backgroundColor:"#4f8cff",
@@ -974,7 +2843,7 @@ class="deal-cards"
                         },
                         {
                             label:"Answered",
-                            data:weekly.map(
+                            data:weeklyReport.map(
                                 w => w.answered
                             ),
                             backgroundColor:"#4f8cff",
@@ -989,7 +2858,7 @@ class="deal-cards"
                         },
                         {
                             label:"Unanswered",
-                            data:weekly.map(
+                            data:weeklyReport.map(
                                 w => w.unanswered
                             ),
                             backgroundColor:"#4f8cff",
@@ -1094,7 +2963,7 @@ class="deal-cards"
         csv += `Relevant Questions,${analyticsData.relevant_questions}\n`;
         csv += `Irrelevant Questions,${analyticsData.irrelevant_questions}\n`;
         csv += `Answered Relevant,${analyticsData.answered_relevant_questions}\n`;
-        csv += `Knowledge Gaps,${analyticsData.unanswered_relevant_questions}\n`;
+        csv += `Knowledge Gaps,${knowledgeAnalytics.pending_questions}\n`;
         csv += `Answer Rate,${analyticsData.answer_rate}%\n\n`;
 
         csv += "Top Unanswered Questions\n";
@@ -1131,13 +3000,136 @@ class="deal-cards"
 
     };
   }
+
+    document
+        .getElementById("uploadKnowledgeBtn")
+        .onclick = uploadKnowledge;
+
+    window.addEventListener("load", () => {
+        checkChatbotStatus();
+    });
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            loadChatbotAdminStatus();
+
+        }
+    );
+
     document.addEventListener("DOMContentLoaded", () => {
+
 
         document
             .getElementById("exportPdfBtn")
             .addEventListener("click", exportPDF);
 
+        document
+            .getElementById("knowledgeFile")
+            .addEventListener("change", function () {
+
+                const fileName =
+                    this.files.length
+                        ? this.files[0].name
+                        : "No file selected";
+
+                document.getElementById("selectedFile").innerText =
+                    fileName;
+
+            });
+
     });
+
+    function showKnowledgeSummary(summary) {
+
+        const fileName =
+            document.getElementById("knowledgeFile").files[0]?.name || "-";
+
+        document.getElementById("uploadSummaryContent").innerHTML = `
+
+            <div class="summary-item">
+                📄 <strong>${fileName}</strong>
+            </div>
+
+            <div class="summary-item">
+                ✅ Upload Successful
+            </div>
+
+            <div class="summary-item">
+                🕒 Just now
+            </div>
+
+            <div class="summary-stats">
+
+                <div class="summary-stat">
+                    <span>Questions Resolved</span>
+                    <span>${summary.resolved_count}</span>
+                </div>
+
+                <div class="summary-stat">
+                    <span>Pending Questions</span>
+                    <span>${summary.pending_count}</span>
+                </div>
+
+                <div class="summary-stat">
+                    <span>Indexed Chunks</span>
+                    <span>2</span>
+                </div>
+
+            </div>
+
+        `;
+
+    }
+    async function uploadKnowledge() {
+
+        const fileInput = document.getElementById("knowledgeFile");
+        const status = document.getElementById("uploadStatus");
+
+        if (fileInput.files.length === 0) {
+            status.innerHTML = "⚠️ Please choose a document.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        status.innerHTML = "Uploading document...";
+
+        try {
+
+            const response = await fetch(`${API}/upload-knowledge`, {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            console.log("Upload Response:", result);
+
+            if (!response.ok) {
+                throw new Error(result.message || "Upload failed.");
+            }
+
+            status.innerHTML = `✅ ${result.message}`;
+
+            if (result.resolution_summary) {
+                showKnowledgeSummary(result.resolution_summary);
+            }
+
+            await loadAnalytics();
+
+        }
+        catch (error) {
+
+            console.error("Upload Error:", error);
+
+            status.innerHTML = `❌ ${error.message}`;
+
+        }
+
+    }
 
     async function exportPDF() {
 
@@ -1145,86 +3137,623 @@ class="deal-cards"
 
         const pdf = new jsPDF("p", "mm", "a4");
 
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(24);
-    pdf.text("Knowledge Gap Analytics Report", 20, 22);
+        // ===============================
+        // COVER / EXECUTIVE OVERVIEW
+        // ===============================
 
-    pdf.setFontSize(11);
-    pdf.setFont("helvetica", "normal");
+        pdf.setFillColor(26, 115, 232);
+        pdf.rect(0, 0, 210, 35, "F");
 
-    pdf.text(
-        "Generated: " + new Date().toLocaleString(),
-        20,
-        32
-    );
+        pdf.setTextColor(255, 255, 255);
 
-    pdf.setDrawColor(210);
-    pdf.line(20, 38, 190, 38);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(25);
+        pdf.text("MediaShippers", 20, 18);
 
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(16);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(12);
+        pdf.text(
+            "Knowledge Intelligence & Analytics",
+            20,
+            27
+        );
 
-    pdf.text("Executive Summary",20,50);
+        pdf.setTextColor(0, 0, 0);
 
-    pdf.setFont("helvetica","normal");
-    pdf.setFontSize(13);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(22);
+        pdf.text(
+            "Knowledge Dashboard Report",
+            20,
+            52
+        );
 
-    let y = 65;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
 
-    pdf.text(
-        `Total Questions : ${analyticsData.total_questions}`,
-        25,
-        y
-    );
+        pdf.text(
+            `Generated: ${new Date().toLocaleString()}`,
+            20,
+            61
+        );
 
-    y += 10;
+        pdf.text(
+            "Generated by: MediaShippers Admin Portal",
+            20,
+            67
+        );
 
-    pdf.text(
-        `Relevant Questions : ${analyticsData.relevant_questions}`,
-        25,
-        y
-    );
-
-    y += 10;
-
-    pdf.text(
-        `Knowledge Gaps : ${analyticsData.unanswered_relevant_questions}`,
-        25,
-        y
-    );
-
-    y += 10;
-
-    pdf.text(
-        `Answer Rate : ${analyticsData.answer_rate}%`,
-        25,
-        y
-    );
-
-    pdf.line(20,110,190,110);
+        pdf.setDrawColor(210);
+        pdf.line(20, 74, 190, 74);
 
 
-        // Capture Daily Chart
-        const dailyCanvas =
-            await html2canvas(
-                document.querySelector(".chart-row")
+        // ===============================
+        // EXECUTIVE SUMMARY
+        // ===============================
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(16);
+
+        pdf.text(
+            "Executive Overview",
+            20,
+            88
+        );
+
+
+        // ===============================
+        // KPI SECTION
+        // ===============================
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.text(
+            "Dashboard performance indicators",
+            20,
+            96
+        );
+
+
+        // ===============================
+        // KPI DATA
+        // ===============================
+
+        const kpis = [
+
+            {
+                title: "Total Questions",
+                value: analyticsData.total_questions,
+                description: "Total chatbot interactions"
+            },
+
+            {
+                title: "Relevant Questions",
+                value: analyticsData.relevant_questions,
+                description: "Successfully classified"
+            },
+
+            {
+                title: "Irrelevant Questions",
+                value: analyticsData.irrelevant_questions,
+                description: "Outside documentation scope"
+            },
+
+            {
+                title: "Answered Relevant",
+                value: analyticsData.answered_relevant_questions,
+                description: "Documentation answered"
+            },
+
+            {
+                title: "Knowledge Gaps",
+                value: knowledgeAnalytics.pending_questions,
+                description: "Needs documentation"
+            },
+
+            {
+                title: "Answer Rate",
+                value: `${analyticsData.answer_rate}%`,
+                description: "Overall response quality"
+            },
+
+            {
+                title: "Resolved Questions",
+                value: knowledgeAnalytics.resolved_questions,
+                description: "Automatically resolved"
+            },
+
+            {
+                title: "Knowledge Documents",
+                value: knowledgeAnalytics.knowledge_documents,
+                description: "Indexed documents"
+            },
+
+            {
+                title: "Resolution Rate",
+                value: `${knowledgeAnalytics.resolution_percentage}%`,
+                description: "Knowledge gaps resolved"
+            }
+
+        ];
+
+        // ===============================
+        // KPI CARD LAYOUT
+        // ===============================
+
+        const cardWidth = 55;
+        const cardHeight = 30;
+
+        const gapX = 7;
+        const gapY = 8;
+
+        const startX = 20;
+        const startY = 105;
+
+        kpis.forEach((kpi, index) => {
+
+            const column = index % 3;
+            const row = Math.floor(index / 3);
+
+            const x = startX + column * (cardWidth + gapX);
+            const y = startY + row * (cardHeight + gapY);
+
+            // Card background
+            pdf.setFillColor(248, 250, 252);
+
+            pdf.roundedRect(
+                x,
+                y,
+                cardWidth,
+                cardHeight,
+                3,
+                3,
+                "F"
             );
 
-        const dailyImg =
+            // Border
+            pdf.setDrawColor(220, 225, 230);
+
+            pdf.roundedRect(
+                x,
+                y,
+                cardWidth,
+                cardHeight,
+                3,
+                3,
+                "S"
+            );
+
+            // KPI title
+            pdf.setTextColor(70, 80, 90);
+
+            pdf.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            pdf.setFontSize(9);
+
+            pdf.text(
+                kpi.title,
+                x + 5,
+                y + 8
+            );
+
+            // KPI value
+            pdf.setTextColor(26, 115, 232);
+
+            pdf.setFontSize(17);
+
+            pdf.text(
+                String(kpi.value),
+                x + 5,
+                y + 19
+            );
+
+            // Description
+            pdf.setTextColor(120, 125, 130);
+
+            pdf.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            pdf.setFontSize(6.5);
+
+            pdf.text(
+                kpi.description,
+                x + 5,
+                y + 26
+            );
+
+        });
+
+        // ===============================
+        // ACTIVITY & TRENDS PAGE
+        // ===============================
+
+        pdf.addPage();
+
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(20);
+
+        pdf.text(
+            "Activity & Trends",
+            20,
+            22
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.setTextColor(100);
+
+        pdf.text(
+            "Chatbot activity and response performance over the selected period.",
+            20,
+            30
+        );
+
+        pdf.setTextColor(0);
+
+
+        // ===============================
+        // DAILY ACTIVITY
+        // ===============================
+
+        const dailyCanvas = createPDFChart(
+
+            dailyReport.map(x => x.date),
+
+            dailyReport.map(x => x.questions),
+
+            dailyReport.map(x => x.answered),
+
+            dailyReport.map(x => x.unanswered),
+
+            "Daily Chatbot Activity"
+
+        );
+
+        const dailyImage =
             dailyCanvas.toDataURL("image/png");
 
         pdf.addImage(
-            dailyImg,
+            dailyImage,
             "PNG",
-            10,
+            15,
             40,
-            190,
-            90
+            180,
+            75
         );
 
-        pdf.save("Knowledge_Gap_Report.pdf");
+        // ===============================
+        // WEEKLY ACTIVITY
+        // ===============================
+
+        const weeklyCanvas = createPDFChart(
+
+            weeklyReport.map(x => x.week),
+
+            weeklyReport.map(x => x.questions),
+
+            weeklyReport.map(x => x.answered),
+
+            weeklyReport.map(x => x.unanswered),
+
+            "Weekly Chatbot Activity"
+
+        );
+
+        const weeklyImage =
+            weeklyCanvas.toDataURL("image/png");
+
+        pdf.addImage(
+            weeklyImage,
+            "PNG",
+            15,
+            130,
+            180,
+            75
+        );
+
+        // ===============================
+        // KNOWLEDGE INTELLIGENCE
+        // ===============================
+
+        pdf.addPage();
+
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(20);
+
+        pdf.text(
+            "Knowledge Intelligence",
+            20,
+            22
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.setTextColor(100);
+
+        pdf.text(
+            "Summary of knowledge coverage, gaps, feedback and resolution activity.",
+            20,
+            30
+        );
+
+        pdf.setTextColor(0);
+
+        const knowledgeSummary = [
+
+            [
+                "Knowledge Documents",
+                knowledgeAnalytics.knowledge_documents
+            ],
+
+            [
+                "Pending Knowledge Gaps",
+                knowledgeAnalytics.pending_questions
+            ],
+
+            [
+                "Resolved Knowledge Gaps",
+                knowledgeAnalytics.resolved_questions
+            ],
+
+            [
+                "Knowledge Resolution Rate",
+                `${knowledgeAnalytics.resolution_percentage}%`
+            ],
+
+            [
+                "Relevant Questions",
+                analyticsData.relevant_questions
+            ],
+
+            [
+                "Answered Relevant",
+                analyticsData.answered_relevant_questions
+            ],
+
+            [
+                "Overall Answer Rate",
+                `${analyticsData.answer_rate}%`
+            ]
+
+        ];
+
+        let summaryY = 45;
+
+        knowledgeSummary.forEach((item, index) => {
+
+            const column = index % 2;
+            const row = Math.floor(index / 2);
+
+            const x = column === 0 ? 20 : 110;
+
+            const y = summaryY + row * 25;
+
+            pdf.setFillColor(248, 250, 252);
+
+            pdf.roundedRect(
+                x,
+                y,
+                80,
+                18,
+                2,
+                2,
+                "F"
+            );
+
+            pdf.setDrawColor(225);
+
+            pdf.roundedRect(
+                x,
+                y,
+                80,
+                18,
+                2,
+                2,
+                "S"
+            );
+
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(8);
+
+            pdf.setTextColor(100);
+
+            pdf.text(
+                item[0],
+                x + 5,
+                y + 7
+            );
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(13);
+
+            pdf.setTextColor(26, 115, 232);
+
+            pdf.text(
+                String(item[1]),
+                x + 5,
+                y + 14
+            );
+
+        });
+
+        // ===============================
+        // MOST FREQUENT QUESTION
+        // ===============================
+
+        const frequentResponse = await fetch(
+            "http://127.0.0.1:8000/most-frequent-questions?page=1&page_size=1"
+        );
+
+        const frequentData = await frequentResponse.json();
+
+        const mostFrequent =
+            frequentData.items &&
+            frequentData.items.length
+                ? frequentData.items[0]
+                : null;
+
+        const insightY = 145;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+
+        pdf.setTextColor(0);
+
+        pdf.text(
+            "Most Frequently Asked Question",
+            20,
+            insightY
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        if (mostFrequent) {
+
+            const questionLines =
+                pdf.splitTextToSize(
+                    mostFrequent.question,
+                    150
+                );
+
+            pdf.text(
+                questionLines,
+                20,
+                insightY + 12
+            );
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(11);
+
+            pdf.text(
+                `Asked ${mostFrequent.count} times`,
+                20,
+                insightY + 12 +
+                questionLines.length * 5
+            );
+
+        }
+        else {
+
+            pdf.setFont("helvetica", "normal");
+
+            pdf.text(
+                "No frequently repeated questions were identified.",
+                20,
+                insightY + 12
+            );
+
+        }
+        
+
+
+        // ===============================
+        // FOOTER
+        // ===============================
+
+        pdf.setFontSize(8);
+        pdf.setTextColor(120);
+
+        pdf.text(
+            "MediaShippers Confidential",
+            20,
+            290
+        );
+
+        pdf.text(
+            `Page 1`,
+            175,
+            290
+        );
+
+        pdf.save("MediaShippers_Knowledge_Dashboard_Report.pdf");
     }
 </script>
+<div id="answerModal" class="answer-modal">
+
+    <div class="answer-modal-content">
+
+        <div class="answer-modal-header">
+
+            <h2>🤖 Chatbot Response</h2>
+
+            <button
+                class="close-modal"
+                onclick="closeAnswerModal()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="modal-section">
+
+            <h4>Question</h4>
+
+            <p id="modalQuestion"></p>
+
+        </div>
+
+        <div class="modal-section">
+
+            <h4>Chatbot Answer</h4>
+
+            <div id="modalAnswer" class="answer-box"></div>
+
+        </div>
+
+        <div class="modal-section">
+
+            <h4>Feedback</h4>
+
+            <p id="modalFeedback"></p>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="upload-btn"
+                onclick="goToKnowledgeBase()">
+
+                📄 Upload Supporting Document
+
+            </button>
+
+            <button
+                class="review-btn"
+                onclick="markFeedbackReviewed()">
+
+                ✓ Mark Reviewed
+
+            </button>
+
+            <button
+                class="copy-btn"
+                onclick="copyAnswer()">
+
+                📋 Copy Answer
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>

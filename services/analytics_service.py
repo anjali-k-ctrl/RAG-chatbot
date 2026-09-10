@@ -99,6 +99,9 @@ def get_top_unanswered_questions():
 
         questions = (
             db.query(UnansweredQuestion)
+            .filter(
+                UnansweredQuestion.status == "Pending"
+            )
             .order_by(
                 UnansweredQuestion.count.desc()
             )
@@ -137,6 +140,14 @@ def get_recent_unanswered_questions():
             {
                 "question": q.question,
                 "count": q.count,
+                "status": q.status,
+                "source_document": q.source_document,
+                "resolved_document": q.resolved_document,
+                "resolved_at": (
+                    q.resolved_at.strftime("%Y-%m-%d %H:%M:%S")
+                    if q.resolved_at
+                    else None
+                ),
                 "created_at": q.created_at.strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )

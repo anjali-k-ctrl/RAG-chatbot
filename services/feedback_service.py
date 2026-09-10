@@ -20,6 +20,7 @@ def normalize_question(
 
 def save_unanswered_question(
     question: str,
+    audience: str,
     page_name: str = None,
     source_document: str = None
 ):
@@ -36,7 +37,8 @@ def save_unanswered_question(
         existing = (
             db.query(UnansweredQuestion)
             .filter(
-                UnansweredQuestion.question == normalized_question
+                UnansweredQuestion.question == normalized_question,
+                UnansweredQuestion.audience == audience
             )
             .first()
         )
@@ -49,6 +51,7 @@ def save_unanswered_question(
 
             entry = UnansweredQuestion(
                 question=normalized_question,
+                audience=audience,
                 page_name=page_name,
                 source_document=source_document,
                 count=1

@@ -1,11 +1,26 @@
 from fastapi import FastAPI
-from routes.chatbot import router
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+
+import csv
+
+from database.postgres import SessionLocal
+from database.models import Document, UnansweredQuestion
+
+from routes.chatbot import router as chatbot_router
 from routes.admin import router as admin_router
 from routes.analytics import router as analytics_router
+from routes.health import router as health_router
+from routes.feedback import router as feedback_router
+from routes.upload import router as upload_router
+
+
 app = FastAPI()
-from database.postgres import SessionLocal
-from database.models import Document
-from fastapi.middleware.cors import CORSMiddleware
+
+
+# ============================================================
+# CORS
+# ============================================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,29 +29,70 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.get("/health")
-def health():
-    return {
-        "status": "ok"
-    }
+
+
+# ============================================================
+# ROUTERS
+# ============================================================
+
+# Chatbot routes
+app.include_router(chatbot_router)
+
+# Admin routes
+app.include_router(
+    admin_router,
+    prefix="/admin"
+)
+
+# Analytics routes
+app.include_router(
+    analytics_router
+)
+
+# Health routes
+app.include_router(
+    health_router
+)
+
+# Feedback routes
+app.include_router(
+    feedback_router
+)
+
+# Upload routes
+app.include_router(
+    upload_router
+)
+
+
+# ============================================================
+# DOCUMENT COUNT
+# ============================================================
 
 @app.get("/count")
 def count_docs():
+
     db = SessionLocal()
 
-    count = db.query(Document).count()
+    try:
 
-    return {
-        "documents": count
-    }
+        count = (
+            db.query(Document)
+            .count()
+        )
 
-app.include_router(router)
-app.include_router(admin_router)
-app.include_router(analytics_router)
+        return {
+            "documents": count
+        }
 
-from database.postgres import SessionLocal
-from database.models import UnansweredQuestion
+    finally:
 
+        db.close()
+
+
+# ============================================================
+# KNOWLEDGE GAP SUMMARY
+# ============================================================
 
 @app.get("/knowledge-gap-summary")
 def knowledge_gap_summary():
@@ -63,7 +119,13 @@ def knowledge_gap_summary():
         ]
 
     finally:
+
         db.close()
+
+
+# ============================================================
+# KNOWLEDGE GAP BY PAGE
+# ============================================================
 
 @app.get("/knowledge-gap-by-page")
 def knowledge_gap_by_page():
@@ -72,15 +134,19 @@ def knowledge_gap_by_page():
 
     try:
 
-        questions = db.query(
-            UnansweredQuestion
-        ).all()
+        questions = (
+            db.query(UnansweredQuestion)
+            .all()
+        )
 
         summary = {}
 
         for q in questions:
 
-            page = q.page_name or "unknown"
+            page = (
+                q.page_name
+                or "unknown"
+            )
 
             summary[page] = (
                 summary.get(page, 0)
@@ -90,11 +156,13 @@ def knowledge_gap_by_page():
         return summary
 
     finally:
+
         db.close()
 
-from fastapi.responses import FileResponse
-import csv
 
+# ============================================================
+# EXPORT KNOWLEDGE GAPS
+# ============================================================
 
 @app.get("/export-knowledge-gaps")
 def export_knowledge_gaps():
@@ -135,7 +203,9 @@ def export_knowledge_gaps():
                     q.question,
                     q.page_name,
                     q.count,
-                    q.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                    q.created_at.strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
                 ])
 
         return FileResponse(
@@ -145,4 +215,5 @@ def export_knowledge_gaps():
         )
 
     finally:
+
         db.close()
