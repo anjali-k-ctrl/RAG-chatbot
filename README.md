@@ -4,6 +4,9 @@ A Retrieval-Augmented Generation (RAG) chatbot for answering questions about the
 
 ## Architecture
 
+### Chat Flow
+
+```text
 Frontend
    ↓
 FastAPI
@@ -17,15 +20,19 @@ Relevant Document Chunks
 Google Gemini
    ↓
 Answer
-Document Ingestion
+# Document Ingestion
 Document Upload
-   ↓
-AWS S3
-   ↓
+      ↓
+    AWS S3
+      ↓
 PostgreSQL (Metadata)
-   ↓
-Text Extraction → Chunking → Embeddings
-   ↓
+      ↓
+Text Extraction
+      ↓
+   Chunking
+      ↓
+  Embeddings
+      ↓
 Amazon OpenSearch
 Key Features
 RAG-based question answering
@@ -40,21 +47,22 @@ Unanswered-question and knowledge-gap tracking
 Health and retrieval monitoring
 Admin and analytics endpoints
 Tech Stack
-Backend: Python, FastAPI
-Database: PostgreSQL
-Storage: AWS S3
-Vector Search: Amazon OpenSearch
-LLM: Google Gemini
-Frontend: HTML, CSS, JavaScript
+Component	Technology
+Backend	Python, FastAPI
+Database	PostgreSQL
+Storage	AWS S3
+Vector Search	Amazon OpenSearch
+LLM	Google Gemini
+Frontend	HTML, CSS, JavaScript
 Setup
-1. Clone
+1. Clone the Repository
 git clone https://github.com/anjali-k-ctrl/RAG-chatbot.git
 cd RAG-chatbot
-2. Install dependencies
+2. Install Dependencies
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-3. Configure environment variables
+3. Configure Environment Variables
 
 Create a .env file with the required PostgreSQL, AWS, OpenSearch, and Gemini configuration.
 
@@ -74,8 +82,9 @@ GEMINI_API_KEY=
 
 FRONTEND_URL=http://localhost:5500
 
+Never commit .env or real credentials to GitHub.
 
-4. Run
+4. Run the Backend
 uvicorn app:app --reload
 
 API: http://localhost:8000
@@ -84,6 +93,9 @@ Swagger: http://localhost:8000/docs
 
 Buyer / Seller Isolation
 
-Documents are assigned an audience (buyer or seller) during upload.
+Documents are assigned an audience during upload:
+
+buyer
+seller
 
 The selected audience is applied as a filter during OpenSearch retrieval, ensuring that responses are generated from the relevant documentation.
