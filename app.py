@@ -4,6 +4,8 @@ from fastapi.responses import FileResponse
 
 import csv
 
+import os
+
 from database.postgres import SessionLocal
 from database.models import Document, UnansweredQuestion
 
@@ -24,7 +26,12 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        os.getenv(
+            "FRONTEND_URL",
+            "http://localhost:5500"
+        )
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
