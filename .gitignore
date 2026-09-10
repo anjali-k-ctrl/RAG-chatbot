@@ -38,3 +38,7 @@ __pycache__/
 # Local env
 .env
 venv/
+
+# Internal/runtime artifacts
+knowledge_gaps.csv
+settings_diff.txt
