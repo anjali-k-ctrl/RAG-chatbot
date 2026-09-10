@@ -20,7 +20,11 @@ Relevant Document Chunks
 Google Gemini
    ↓
 Answer
-# Document Ingestion
+```
+
+### Document Ingestion
+
+```text
 Document Upload
       ↓
     AWS S3
@@ -34,38 +38,55 @@ Text Extraction
   Embeddings
       ↓
 Amazon OpenSearch
-Key Features
-RAG-based question answering
-Buyer/Seller documentation separation
-AWS S3 document storage
-PostgreSQL metadata management
-Amazon OpenSearch vector search
-Gemini-powered responses
-Document upload and deletion
-User feedback
-Unanswered-question and knowledge-gap tracking
-Health and retrieval monitoring
-Admin and analytics endpoints
-Tech Stack
-Component	Technology
-Backend	Python, FastAPI
-Database	PostgreSQL
-Storage	AWS S3
-Vector Search	Amazon OpenSearch
-LLM	Google Gemini
-Frontend	HTML, CSS, JavaScript
-Setup
-1. Clone the Repository
+```
+
+## Key Features
+
+- RAG-based question answering
+- Buyer/Seller documentation separation
+- AWS S3 document storage
+- PostgreSQL metadata management
+- Amazon OpenSearch vector search
+- Gemini-powered responses
+- Document upload and deletion
+- User feedback
+- Knowledge-gap tracking
+- Health and retrieval monitoring
+- Admin and analytics endpoints
+
+## Tech Stack
+
+| Component | Technology |
+|---|---|
+| Backend | Python, FastAPI |
+| Database | PostgreSQL |
+| Storage | AWS S3 |
+| Vector Search | Amazon OpenSearch |
+| LLM | Google Gemini |
+| Frontend | HTML, CSS, JavaScript |
+
+## Setup
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/anjali-k-ctrl/RAG-chatbot.git
 cd RAG-chatbot
-2. Install Dependencies
+```
+
+### 2. Install Dependencies
+
+```bash
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-3. Configure Environment Variables
+```
 
-Create a .env file with the required PostgreSQL, AWS, OpenSearch, and Gemini configuration.
+### 3. Configure Environment Variables
 
+Create a `.env` file with the required PostgreSQL, AWS, OpenSearch, and Gemini configuration.
+
+```env
 DB_USER=
 DB_PASSWORD=
 DB_HOST=
@@ -81,21 +102,26 @@ OPENSEARCH_HOST=
 GEMINI_API_KEY=
 
 FRONTEND_URL=http://localhost:5500
+```
 
-Never commit .env or real credentials to GitHub.
+> **Never commit `.env` or real credentials to GitHub.**
 
-4. Run the Backend
+### 4. Run the Backend
+
+```bash
 uvicorn app:app --reload
+```
 
-API: http://localhost:8000
+API: `http://localhost:8000`
 
-Swagger: http://localhost:8000/docs
+Swagger: `http://localhost:8000/docs`
 
-Buyer / Seller Isolation
+## Buyer / Seller Isolation
 
 Documents are assigned an audience during upload:
 
-buyer
-seller
+- `buyer`
+- `seller`
 
-The selected audience is applied as a filter during OpenSearch retrieval, ensuring that responses are generated from the relevant documentation.
+The selected audience is used as a filter during OpenSearch retrieval, ensuring that responses are generated from the relevant documentation.
+
