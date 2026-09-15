@@ -1,52 +1,89 @@
-from fastapi import APIRouter
-from services.analytics_service import ( get_analytics )
-from services.analytics_service import ( get_top_unanswered_questions )
-from services.analytics_service import ( get_recent_unanswered_questions )
-from services.analytics_service import ( get_daily_report )
-from services.analytics_service import ( get_weekly_report )
-from database.models import IrrelevantQuestion
-from database.postgres import SessionLocal
-from database.models import UserFeedback
+from datetime import datetime, UTC
+from bson import ObjectId
+from fastapi import APIRouter, Query, HTTPException
+
+from services.analytics_service import (
+    get_analytics,
+    get_top_unanswered_questions,
+    get_recent_unanswered_questions,
+    get_daily_report,
+    get_weekly_report
+)
+
+from database.mongo_helpers import (
+    get_user_feedback_collection,
+    get_irrelevant_questions_collection
+)
+
 
 router = APIRouter()
 
+
+# --------------------------------------------------
+# General Analytics
+# --------------------------------------------------
+
 @router.get("/analytics")
 def analytics():
+
     return get_analytics()
+
+
+# --------------------------------------------------
+# Top Unanswered Questions
+# --------------------------------------------------
 
 @router.get("/top-unanswered-questions")
 def top_unanswered_questions():
+
     return get_top_unanswered_questions()
+
+
+# --------------------------------------------------
+# Recent Unanswered Questions
+# --------------------------------------------------
 
 @router.get("/recent-unanswered-questions")
 def recent_unanswered_questions():
+
     return get_recent_unanswered_questions()
 
-from fastapi import Query
 
+# --------------------------------------------------
+# Daily Report
+# --------------------------------------------------
 
 @router.get("/daily-report")
 def daily_report(
     from_date: str | None = Query(None),
     to_date: str | None = Query(None)
 ):
+
     return get_daily_report(
         from_date,
         to_date
     )
 
 
+# --------------------------------------------------
+# Weekly Report
+# --------------------------------------------------
+
 @router.get("/weekly-report")
 def weekly_report(
     from_date: str | None = Query(None),
     to_date: str | None = Query(None)
 ):
+
     return get_weekly_report(
         from_date,
         to_date
     )
 
-from fastapi import Query
+
+# --------------------------------------------------
+# Recent User Feedback
+# --------------------------------------------------
 
 @router.get("/recent-user-feedback")
 def recent_user_feedback(
@@ -54,115 +91,175 @@ def recent_user_feedback(
     page_size: int = Query(5, ge=1, le=50)
 ):
 
-    db = SessionLocal()
+    collection = get_user_feedback_collection()
 
-    try:
+    total = collection.count_documents({})
 
-        total = db.query(UserFeedback).count()
+    feedback = (
+        collection
+        .find({})
+        .sort(
+            "created_at",
+            -1
+        )
+        .skip(
+            (page - 1) * page_size
+        )
+        .limit(
+            page_size
+        )
+    )
 
-        feedback = (
-            db.query(UserFeedback)
-            .order_by(
-                UserFeedback.created_at.desc()
-            )
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-            .all()
+    items = []
+
+    for f in feedback:
+
+        created_at = f.get(
+            "created_at"
         )
 
-        return {
-            "items": [
-                {
-                    "id": f.id,
-                    "question": f.question,
-                    "chatbot_answer": f.chatbot_answer,
-                    "helpful": f.helpful,
-                    "category": f.feedback_category,
-                    "feedback": f.feedback,
-                    "reviewed": f.reviewed,
-                    "created_at": f.created_at.strftime("%Y-%m-%d %H:%M")
-                }
-                for f in feedback
-            ],
-            "page": page,
-            "page_size": page_size,
-            "total": total,
-            "total_pages": (total + page_size - 1) // page_size
+        items.append({
+            "id": str(
+                f["_id"]
+            ),
+            "question": f.get(
+                "question"
+            ),
+            "chatbot_answer": f.get(
+                "chatbot_answer"
+            ),
+            "helpful": f.get(
+                "helpful"
+            ),
+            "category": f.get(
+                "feedback_category"
+            ),
+            "feedback": f.get(
+                "feedback"
+            ),
+            "reviewed": f.get(
+                "reviewed"
+            ),
+            "created_at": (
+                created_at.strftime(
+                    "%Y-%m-%d %H:%M"
+                )
+                if created_at
+                else None
+            )
+        })
+
+    return {
+        "items": items,
+        "page": page,
+        "page_size": page_size,
+        "total": total,
+        "total_pages": (
+            (total + page_size - 1)
+            // page_size
+        )
+    }
+
+
+# --------------------------------------------------
+# Mark Feedback as Reviewed
+# --------------------------------------------------
+
+@router.post(
+    "/feedback/{feedback_id}/review"
+)
+def mark_feedback_reviewed(
+    feedback_id: str
+):
+
+    collection = get_user_feedback_collection()
+
+    result = collection.update_one(
+        {
+            "_id": ObjectId(feedback_id)
+        },
+        {
+            "$set": {
+                "reviewed": True,
+                "reviewed_at": datetime.now(UTC)
+            }
         }
+    )
 
-    finally:
-        db.close()
+    if result.matched_count == 0:
 
-from datetime import datetime
-from fastapi import HTTPException
-@router.post("/feedback/{feedback_id}/review")
-def mark_feedback_reviewed(feedback_id: int):
-
-    db = SessionLocal()
-
-    try:
-
-        feedback = (
-            db.query(UserFeedback)
-            .filter(UserFeedback.id == feedback_id)
-            .first()
+        raise HTTPException(
+            status_code=404,
+            detail="Feedback not found"
         )
 
-        if not feedback:
-            raise HTTPException(
-                status_code=404,
-                detail="Feedback not found"
-            )
+    return {
+        "message": "Feedback marked as reviewed."
+    }
 
-        feedback.reviewed = True
-        feedback.reviewed_at = datetime.utcnow()
 
-        db.commit()
+# --------------------------------------------------
+# Recent Irrelevant Questions
+# --------------------------------------------------
 
-        return {
-            "message": "Feedback marked as reviewed."
-        }
-
-    finally:
-
-        db.close()
-
-from fastapi import Query
 @router.get("/recent-irrelevant-questions")
-
 def recent_irrelevant_questions(
     page: int = Query(1, ge=1),
     page_size: int = Query(5, ge=1, le=50)
 ):
 
-    db = SessionLocal()
+    collection = (
+        get_irrelevant_questions_collection()
+    )
 
-    try:
+    total = collection.count_documents({})
 
-        total = db.query(IrrelevantQuestion).count()
+    questions = (
+        collection
+        .find({})
+        .sort(
+            "created_at",
+            -1
+        )
+        .skip(
+            (page - 1) * page_size
+        )
+        .limit(
+            page_size
+        )
+    )
 
-        questions = (
-            db.query(IrrelevantQuestion)
-            .order_by(IrrelevantQuestion.created_at.desc())
-            .offset((page - 1) * page_size)
-            .limit(page_size)
-            .all()
+    items = []
+
+    for q in questions:
+
+        created_at = q.get(
+            "created_at"
         )
 
-        return {
-            "items": [
-                {
-                    "question": q.question,
-                    "reason": q.reason,
-                    "created_at": q.created_at.strftime("%Y-%m-%d %H:%M")
-                }
-                for q in questions
-            ],
-            "page": page,
-            "page_size": page_size,
-            "total": total,
-            "total_pages": (total + page_size - 1) // page_size
-        }
+        items.append({
+            "question": q.get(
+                "question"
+            ),
+            "reason": q.get(
+                "reason"
+            ),
+            "created_at": (
+                created_at.strftime(
+                    "%Y-%m-%d %H:%M"
+                )
+                if created_at
+                else None
+            )
+        })
 
-    finally:
-        db.close()
+    return {
+        "items": items,
+        "page": page,
+        "page_size": page_size,
+        "total": total,
+        "total_pages": (
+            (total + page_size - 1)
+            // page_size
+        )
+    }

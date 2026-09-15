@@ -1,59 +1,40 @@
-from database.models import ChatbotSettings
-from database.postgres import SessionLocal
+from datetime import datetime, UTC
+
+from database.mongo_helpers import get_chatbot_settings_collection
 
 
 def get_chatbot_status() -> bool:
-    db = SessionLocal()
+    collection = get_chatbot_settings_collection()
 
-    try:
-        setting = (
-            db.query(ChatbotSettings)
-            .filter(ChatbotSettings.id == 1)
-            .first()
-        )
+    setting = collection.find_one({"_id": "chatbot_settings"})
 
-        # First run: create the setting with chatbot enabled
-        if setting is None:
-            setting = ChatbotSettings(
-                id=1,
-                enabled=True
-            )
+    # First run: create the setting with chatbot enabled
+    if setting is None:
+        setting = {
+            "_id": "chatbot_settings",
+            "enabled": True,
+            "updated_at": datetime.now(UTC)
+        }
 
-            db.add(setting)
-            db.commit()
-            db.refresh(setting)
+        collection.insert_one(setting)
 
-        return setting.enabled
+        return True
 
-    finally:
-        db.close()
+    return setting["enabled"]
 
 
 def set_chatbot_status(enabled: bool) -> bool:
-    db = SessionLocal()
+    collection = get_chatbot_settings_collection()
 
-    try:
-        setting = (
-            db.query(ChatbotSettings)
-            .filter(ChatbotSettings.id == 1)
-            .first()
-        )
+    result = collection.update_one(
+        {"_id": "chatbot_settings"},
+        {
+            "$set": {
+                "enabled": enabled,
+                "updated_at": datetime.now(UTC)
+            }
+        },
+        upsert=True
+    )
 
-        if setting is None:
-            setting = ChatbotSettings(
-                id=1,
-                enabled=enabled
-            )
-
-            db.add(setting)
-
-        else:
-            setting.enabled = enabled
-
-        db.commit()
-        db.refresh(setting)
-
-        return setting.enabled
-
-    finally:
-        db.close()
+    return enabled

@@ -5,11 +5,8 @@ class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ""
 
-    DB_HOST: str
-    DB_PORT: int
-    DB_NAME: str
-    DB_USER: str
-    DB_PASSWORD: str
+    MONGODB_URI: str
+    MONGODB_DATABASE: str
 
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str

@@ -1,9 +1,16 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
-from database.models import UnansweredQuestion
-from database.postgres import SessionLocal
-from services.question_resolution_service import QuestionResolutionService
-from services.retrieval_manager import retrieve
+from database.mongo_helpers import (
+    get_unanswered_questions_collection
+)
+
+from services.question_resolution_service import (
+    QuestionResolutionService
+)
+
+from services.retrieval_manager import (
+    retrieve
+)
 
 
 class UnansweredResolutionService:
@@ -14,98 +21,137 @@ class UnansweredResolutionService:
         audience: str
     ):
 
-        db = SessionLocal()
+        collection = (
+            get_unanswered_questions_collection()
+        )
 
-        unanswered_questions = (
-            db.query(UnansweredQuestion)
-            .filter(
-                UnansweredQuestion.status == "Pending",
-                UnansweredQuestion.audience == audience
-            )
-            .all()
+        # ----------------------------------------
+        # FIND PENDING QUESTIONS
+        # FOR THE SAME AUDIENCE
+        # ----------------------------------------
+
+        unanswered_questions = list(
+            collection.find({
+                "status": "Pending",
+                "audience": audience
+            })
         )
 
         print(
-            f"Found {len(unanswered_questions)} pending unanswered questions."
+            f"Found {len(unanswered_questions)} "
+            f"pending unanswered questions."
         )
 
-        db.close()
+        resolution_checker = (
+            QuestionResolutionService()
+        )
 
-        resolution_checker = QuestionResolutionService()
         resolved_questions = []
 
         RELEVANCE_THRESHOLD = 0.40
 
+        # ----------------------------------------
+        # CHECK EACH QUESTION
+        # ----------------------------------------
+
         for unanswered in unanswered_questions:
 
-            print(f"\nChecking: {unanswered.question}")
+            question = unanswered.get(
+                "question"
+            )
+
+            question_audience = unanswered.get(
+                "audience"
+            )
+
+            print(
+                f"\nChecking: {question}"
+            )
 
             try:
 
                 retrieval_result = retrieve(
-                    unanswered.question,
-                    unanswered.audience
+                    question,
+                    question_audience
                 )
 
-                context = retrieval_result["context"]
-                score = retrieval_result["score"]
-                chunks = retrieval_result["chunks"]
+                context = retrieval_result[
+                    "context"
+                ]
+
+                score = retrieval_result[
+                    "score"
+                ]
+
+                chunks = retrieval_result[
+                    "chunks"
+                ]
+
+                # ----------------------------------------
+                # RELEVANCE CHECK
+                # ----------------------------------------
 
                 if score >= RELEVANCE_THRESHOLD:
 
-                    print("Passed Relevance Threshold")
-
-                    is_resolved = resolution_checker.is_question_resolved(
-                        question=unanswered.question,
-                        context=context
+                    print(
+                        "Passed Relevance Threshold"
                     )
+
+                    is_resolved = (
+                        resolution_checker
+                        .is_question_resolved(
+                            question=question,
+                            context=context
+                        )
+                    )
+
+                    # ----------------------------------------
+                    # RESOLVE QUESTION
+                    # ----------------------------------------
 
                     if is_resolved:
 
-                        print("Gemini: YES")
+                        print(
+                            "Gemini: YES"
+                        )
 
-                        db = SessionLocal()
-
-                        try:
-
-                            db_question = (
-                                db.query(UnansweredQuestion)
-                                .filter(
-                                    UnansweredQuestion.id == unanswered.id
-                                )
-                                .first()
-                            )
-
-                            if db_question:
-
-                                db_question.status = "Resolved"
-                                db_question.resolved_document = document_name
-                                db_question.resolved_at = datetime.utcnow()
-
-                                db.commit()
-
-                        finally:
-
-                            db.close()
-
-                        resolved_questions.append(
+                        collection.update_one(
                             {
-                                "question": unanswered.question,
-                                "document": document_name,
-                                "score": score
+                                "_id": unanswered["_id"]
+                            },
+                            {
+                                "$set": {
+                                    "status": "Resolved",
+                                    "resolved_document":
+                                        document_name,
+                                    "resolved_at":
+                                        datetime.now(UTC)
+                                }
                             }
                         )
 
+                        resolved_questions.append({
+                            "question": question,
+                            "document": document_name,
+                            "score": score
+                        })
+
                     else:
 
-                        print("Gemini: NO")
+                        print(
+                            "Gemini: NO"
+                        )
 
                 else:
 
-                    print("Below Relevance Threshold")
+                    print(
+                        "Below Relevance Threshold"
+                    )
 
             except Exception as e:
 
-                print(f"Retrieval Failed: {e}")
+                print(
+                    f"Retrieval Failed: {e}"
+                )
 
         return resolved_questions

@@ -53,7 +53,7 @@ def create_index():
                     "type": "text"
                 },
                 "document_id": {
-                    "type": "long"
+                    "type": "keyword"
                 },
                 "document_name": {
                     "type": "keyword"
@@ -91,7 +91,7 @@ def create_index():
 
 def index_chunk(
     text: str,
-    document_id: int,
+    document_id: str,
     document_name: str,
     page_name: str,
     uploaded_at,
@@ -263,7 +263,7 @@ def search_similar_chunks(
 
     return final_results
 
-def delete_document_chunks(document_id: int):
+def delete_document_chunks(document_id: str):
 
     client = get_opensearch_client()
 

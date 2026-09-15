@@ -1,12 +1,22 @@
-from fastapi import UploadFile
 from io import BytesIO
+
 from docx import Document as DocxDocument
 
-from database.models import Document
-from database.postgres import SessionLocal
-from services.document_loader import extract_pdf_text
-from services.chunking_service import chunk_text
-from services.opensearch_service import index_chunk
+from database.document_repository import (
+    create_document
+)
+
+from services.document_loader import (
+    extract_pdf_text
+)
+
+from services.chunking_service import (
+    chunk_text
+)
+
+from services.opensearch_service import (
+    index_chunk
+)
 
 
 class DocumentIngestionService:
@@ -17,21 +27,33 @@ class DocumentIngestionService:
         filename: str
     ):
 
-        extension = filename.split(".")[-1].lower()
+        extension = (
+            filename
+            .split(".")[-1]
+            .lower()
+        )
 
         # PDF
         if extension == "pdf":
 
-            pdf_stream = BytesIO(file_bytes)
+            pdf_stream = BytesIO(
+                file_bytes
+            )
 
-            return extract_pdf_text(pdf_stream)
+            return extract_pdf_text(
+                pdf_stream
+            )
 
         # DOCX
         if extension == "docx":
 
-            doc_stream = BytesIO(file_bytes)
+            doc_stream = BytesIO(
+                file_bytes
+            )
 
-            doc = DocxDocument(doc_stream)
+            doc = DocxDocument(
+                doc_stream
+            )
 
             paragraphs = []
 
@@ -42,7 +64,9 @@ class DocumentIngestionService:
                 if text:
                     paragraphs.append(text)
 
-            return "\n".join(paragraphs)
+            return "\n".join(
+                paragraphs
+            )
 
         raise ValueError(
             f"Unsupported file type: {extension}"
@@ -59,47 +83,70 @@ class DocumentIngestionService:
         Complete ingestion pipeline.
 
         Steps:
-        1. Save metadata
+        1. Save metadata to MongoDB
         2. Extract text
         3. Chunk document
         4. Generate embeddings
         5. Index into OpenSearch
         """
-        db = SessionLocal()
 
-        try:
+        # ----------------------------------------
+        # STEP 1: SAVE METADATA TO MONGODB
+        # ----------------------------------------
 
-            document = Document(
-                document_name=original_filename,
-                audience=audience,
-                workflow="Unknown",
-                page_name="Unknown",
-                file_path="",
-                s3_key=s3_key
+        document = create_document(
+            document_name=original_filename,
+            workflow="Unknown",
+            page_name="Unknown",
+            file_path="",
+            s3_key=s3_key,
+            audience=audience
+        )
+
+        # ----------------------------------------
+        # STEP 2: EXTRACT TEXT
+        # ----------------------------------------
+
+        text = self.extract_text(
+            file_bytes=file_bytes,
+            filename=original_filename
+        )
+
+        # ----------------------------------------
+        # STEP 3: CHUNK DOCUMENT
+        # ----------------------------------------
+
+        chunks = chunk_text(
+            text
+        )
+
+        # ----------------------------------------
+        # STEP 4: INDEX CHUNKS INTO OPENSEARCH
+        # ----------------------------------------
+
+        for chunk in chunks:
+
+            index_chunk(
+                text=chunk,
+                document_id=str(
+                    document["_id"]
+                ),
+                document_name=document[
+                    "document_name"
+                ],
+                page_name=document[
+                    "page_name"
+                ],
+                uploaded_at=document[
+                    "uploaded_at"
+                ],
+                audience=document[
+                    "audience"
+                ]
             )
 
-            db.add(document)
-            db.commit()
-            db.refresh(document)
+        print(
+            f"Generated {len(chunks)} chunks"
+        )
 
-            text = self.extract_text(
-                file_bytes=file_bytes,
-                filename=original_filename
-            )
-            chunks = chunk_text(text)
-            for chunk in chunks:
-
-                index_chunk(
-                    text=chunk,
-                    document_id=document.id,
-                    document_name=document.document_name,
-                    page_name=document.page_name,
-                    uploaded_at=document.uploaded_at,
-                    audience=document.audience
-                )
-            print(f"Generated {len(chunks)} chunks")
-
-            return document
-
-        finally:
-            db.close()
+        return document

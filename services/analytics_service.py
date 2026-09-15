@@ -1,14 +1,22 @@
 import csv
+
 from collections import defaultdict
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
+
+from database.mongo_helpers import (
+    get_unanswered_questions_collection
+)
+
+
+# --------------------------------------------------
+# General Analytics
+# --------------------------------------------------
 
 def get_analytics():
 
     total_questions = 0
-
     relevant_questions = 0
     irrelevant_questions = 0
-
     answered_relevant_questions = 0
     unanswered_relevant_questions = 0
 
@@ -65,100 +73,131 @@ def get_analytics():
 
     return {
         "total_questions": total_questions,
-
         "relevant_questions": relevant_questions,
-
         "irrelevant_questions": irrelevant_questions,
-
         "answered_relevant_questions":
             answered_relevant_questions,
-
         "unanswered_relevant_questions":
             unanswered_relevant_questions,
-
         "average_score": round(
             average_score,
             2
         ),
-
         "answer_rate": round(
             answer_rate,
             2
         )
     }
 
-from database.postgres import SessionLocal
-from database.models import UnansweredQuestion
 
+# --------------------------------------------------
+# Top Unanswered Questions
+# --------------------------------------------------
 
 def get_top_unanswered_questions():
 
-    db = SessionLocal()
+    collection = get_unanswered_questions_collection()
 
-    try:
-
-        questions = (
-            db.query(UnansweredQuestion)
-            .filter(
-                UnansweredQuestion.status == "Pending"
-            )
-            .order_by(
-                UnansweredQuestion.count.desc()
-            )
-            .limit(10)
-            .all()
+    questions = (
+        collection
+        .find({
+            "status": "Pending"
+        })
+        .sort(
+            "count",
+            -1
         )
+        .limit(10)
+    )
 
-        return [
-            {
-                "question": q.question,
-                "count": q.count,
-                "page_name": q.page_name
-            }
-            for q in questions
-        ]
+    return [
+        {
+            "question": q.get("question"),
+            "count": q.get("count", 0),
+            "page_name": q.get("page_name")
+        }
+        for q in questions
+    ]
 
-    finally:
-        db.close()
+
+# --------------------------------------------------
+# Recent Unanswered Questions
+# --------------------------------------------------
 
 def get_recent_unanswered_questions():
 
-    db = SessionLocal()
+    collection = get_unanswered_questions_collection()
 
-    try:
+    questions = (
+        collection
+        .find({})
+        .sort(
+            "created_at",
+            -1
+        )
+        .limit(10)
+    )
 
-        questions = (
-            db.query(UnansweredQuestion)
-            .order_by(
-                UnansweredQuestion.created_at.desc()
-            )
-            .limit(10)
-            .all()
+    result = []
+
+    for q in questions:
+
+        resolved_at = q.get(
+            "resolved_at"
         )
 
-        return [
-            {
-                "question": q.question,
-                "count": q.count,
-                "status": q.status,
-                "source_document": q.source_document,
-                "resolved_document": q.resolved_document,
-                "resolved_at": (
-                    q.resolved_at.strftime("%Y-%m-%d %H:%M:%S")
-                    if q.resolved_at
-                    else None
-                ),
-                "created_at": q.created_at.strftime(
+        created_at = q.get(
+            "created_at"
+        )
+
+        result.append({
+            "question": q.get("question"),
+
+            "count": q.get(
+                "count",
+                0
+            ),
+
+            "status": q.get(
+                "status"
+            ),
+
+            "source_document": q.get(
+                "source_document"
+            ),
+
+            "resolved_document": q.get(
+                "resolved_document"
+            ),
+
+            "resolved_at": (
+                resolved_at.strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
-            }
-            for q in questions
-        ]
+                if resolved_at
+                else None
+            ),
 
-    finally:
-        db.close()
+            "created_at": (
+                created_at.strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+                if created_at
+                else None
+            )
+        })
 
-def get_daily_report( from_date=None, to_date=None):
+    return result
+
+
+# --------------------------------------------------
+# Daily Report
+# --------------------------------------------------
+
+def get_daily_report(
+    from_date=None,
+    to_date=None
+):
 
     daily = defaultdict(
         lambda: {
@@ -178,27 +217,35 @@ def get_daily_report( from_date=None, to_date=None):
 
         for row in reader:
 
-            date = datetime.fromisoformat(
+            record_date = datetime.fromisoformat(
                 row["timestamp"]
             )
 
             if from_date:
 
-                if date.date() < datetime.strptime(
-                    from_date,
-                    "%Y-%m-%d"
-                ).date():
+                if (
+                    record_date.date()
+                    < datetime.strptime(
+                        from_date,
+                        "%Y-%m-%d"
+                    ).date()
+                ):
                     continue
 
             if to_date:
 
-                if date.date() > datetime.strptime(
-                    to_date,
-                    "%Y-%m-%d"
-                ).date():
+                if (
+                    record_date.date()
+                    > datetime.strptime(
+                        to_date,
+                        "%Y-%m-%d"
+                    ).date()
+                ):
                     continue
 
-            label = date.strftime("%d %b")
+            label = record_date.strftime(
+                "%d %b"
+            )
 
             daily[label]["questions"] += 1
 
@@ -212,10 +259,10 @@ def get_daily_report( from_date=None, to_date=None):
 
     report = []
 
-    for date, values in daily.items():
+    for record_date, values in daily.items():
 
         report.append({
-            "date": date,
+            "date": record_date,
             "questions": values["questions"],
             "answered": values["answered"],
             "unanswered": values["unanswered"]
@@ -224,14 +271,14 @@ def get_daily_report( from_date=None, to_date=None):
     return report
 
 
-from collections import defaultdict
-from datetime import datetime, timedelta
-import csv
+# --------------------------------------------------
+# Weekly Report
+# --------------------------------------------------
 
-
-def get_weekly_report(from_date=None, to_date=None):
-    print("FROM =", from_date)
-    print("TO =", to_date)
+def get_weekly_report(
+    from_date=None,
+    to_date=None
+):
 
     weekly = defaultdict(
         lambda: {
@@ -242,16 +289,22 @@ def get_weekly_report(from_date=None, to_date=None):
     )
 
     from_dt = (
-        datetime.strptime(from_date, "%Y-%m-%d").date()
-        if from_date else None
+        datetime.strptime(
+            from_date,
+            "%Y-%m-%d"
+        ).date()
+        if from_date
+        else None
     )
 
     to_dt = (
-        datetime.strptime(to_date, "%Y-%m-%d").date()
-        if to_date else None
+        datetime.strptime(
+            to_date,
+            "%Y-%m-%d"
+        ).date()
+        if to_date
+        else None
     )
-    print("FROM_DT =", from_dt)
-    print("TO_DT =", to_dt)
 
     with open(
         "logs/retrieval_logs.csv",
@@ -267,31 +320,27 @@ def get_weekly_report(from_date=None, to_date=None):
             if row["relevant"] != "YES":
                 continue
 
-            date = datetime.fromisoformat(
+            record_date = datetime.fromisoformat(
                 row["timestamp"]
             ).date()
 
             # Date filtering
-            if from_dt and date < from_dt:
+            if from_dt and record_date < from_dt:
                 continue
 
-            if to_dt and date > to_dt:
+            if to_dt and record_date > to_dt:
                 continue
 
-            start = date - timedelta(days=date.weekday())
-            end = start + timedelta(days=6)
+            start = (
+                record_date
+                - timedelta(
+                    days=record_date.weekday()
+                )
+            )
 
-            print("Checking:", date)
-
-            if from_dt and date < from_dt:
-                print("Skipped because before from_date")
-                continue
-
-            if to_dt and date > to_dt:
-                print("Skipped because after to_date")
-                continue
-
-            print("Included:", date)
+            end = start + timedelta(
+                days=6
+            )
 
             label = (
                 f"{start.strftime('%d %b')} - "
@@ -301,8 +350,11 @@ def get_weekly_report(from_date=None, to_date=None):
             weekly[label]["questions"] += 1
 
             if row["answered"] == "YES":
+
                 weekly[label]["answered"] += 1
+
             else:
+
                 weekly[label]["unanswered"] += 1
 
     report = []

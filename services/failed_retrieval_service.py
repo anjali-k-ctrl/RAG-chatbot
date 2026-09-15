@@ -1,5 +1,8 @@
-from database.postgres import SessionLocal
-from database.models import FailedRetrievalRequest
+from datetime import datetime, UTC
+
+from database.mongo_helpers import (
+    get_failed_retrieval_requests_collection
+)
 
 
 def save_failed_request(
@@ -8,21 +11,15 @@ def save_failed_request(
     error: str = None,
     service: str = "OpenSearch"
 ):
+    collection = get_failed_retrieval_requests_collection()
 
-    db = SessionLocal()
+    failed_request = {
+        "question": question,
+        "page_name": page_name,
+        "error": error,
+        "service": service,
+        "created_at": datetime.now(UTC),
+        "resolved": False
+    }
 
-    try:
-
-        failed_request = FailedRetrievalRequest(
-            question=question,
-            page_name=page_name,
-            error=error,
-            service=service
-        )
-
-        db.add(failed_request)
-        db.commit()
-
-    finally:
-
-        db.close()
+    collection.insert_one(failed_request)

@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+python-multipart
+python-dotenv
+pymongo
+boto3
+opensearch-py
+requests-aws4auth
+google-generativeai
+python-docx
+pypdf
+sentence-transformers
+numpy
+scikit-learn

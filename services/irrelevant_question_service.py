@@ -1,24 +1,15 @@
-from database.postgres import SessionLocal
-from database.models import IrrelevantQuestion
-
-
+from datetime import datetime, UTC
+from database.mongo_helpers import (
+    get_irrelevant_questions_collection
+)
 def save_irrelevant_question(
     question: str,
     reason: str = "Outside MediaShipper documentation scope"
 ):
-
-    db = SessionLocal()
-
-    try:
-
-        record = IrrelevantQuestion(
-            question=question,
-            reason=reason
-        )
-
-        db.add(record)
-        db.commit()
-
-    finally:
-
-        db.close()
+    collection = get_irrelevant_questions_collection()
+    record = {
+        "question": question,
+        "reason": reason,
+        "created_at": datetime.now(UTC)
+    }
+    collection.insert_one(record)

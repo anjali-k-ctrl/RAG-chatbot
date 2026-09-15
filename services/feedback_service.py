@@ -1,11 +1,10 @@
 import re
-from database.postgres import SessionLocal
-from database.models import UnansweredQuestion
+from datetime import datetime, UTC
 
-def normalize_question(
-    question: str
-):
+from database.mongo_helpers import get_unanswered_questions_collection
 
+
+def normalize_question(question: str):
     question = question.lower()
 
     question = re.sub(
@@ -17,7 +16,6 @@ def normalize_question(
     return question.strip()
 
 
-
 def save_unanswered_question(
     question: str,
     audience: str,
@@ -26,40 +24,29 @@ def save_unanswered_question(
 ):
     print("SAVING UNANSWERED QUESTION:", question)
 
-    db = SessionLocal()
+    collection = get_unanswered_questions_collection()
 
-    try:
+    normalized_question = normalize_question(question)
 
-        normalized_question = normalize_question(
-            question
-        )
-
-        existing = (
-            db.query(UnansweredQuestion)
-            .filter(
-                UnansweredQuestion.question == normalized_question,
-                UnansweredQuestion.audience == audience
-            )
-            .first()
-        )
-
-        if existing:
-
-            existing.count += 1
-
-        else:
-
-            entry = UnansweredQuestion(
-                question=normalized_question,
-                audience=audience,
-                page_name=page_name,
-                source_document=source_document,
-                count=1
-            )
-
-            db.add(entry)
-
-        db.commit()
-
-    finally:
-        db.close()
+    collection.update_one(
+        {
+            "question": normalized_question,
+            "audience": audience
+        },
+        {
+            "$inc": {
+                "count": 1
+            },
+            "$setOnInsert": {
+                "question": normalized_question,
+                "audience": audience,
+                "page_name": page_name,
+                "source_document": source_document,
+                "created_at": datetime.now(UTC),
+                "status": "Pending",
+                "resolved_at": None,
+                "resolved_document": None
+            }
+        },
+        upsert=True
+    )

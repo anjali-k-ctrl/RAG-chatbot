@@ -40,5 +40,6 @@ __pycache__/
 venv/
 
 # Internal/runtime artifacts
+logs/
 knowledge_gaps.csv
 settings_diff.txt

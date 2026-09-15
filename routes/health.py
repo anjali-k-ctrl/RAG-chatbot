@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from services.health_service import (
     check_application,
-    check_postgres,
+    check_mongodb,
     check_opensearch
 )
 
@@ -10,10 +10,10 @@ router = APIRouter()
 
 
 @router.get("/health")
-def health():
+def health_check():
 
     return {
         "application": check_application(),
-        "postgres": check_postgres(),
+        "mongodb": check_mongodb(),
         "opensearch": check_opensearch()
     }

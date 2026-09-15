@@ -3,11 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 import csv
-
 import os
 
-from database.postgres import SessionLocal
-from database.models import Document, UnansweredQuestion
+from database.mongo_helpers import (
+    get_documents_collection,
+    get_unanswered_questions_collection
+)
 
 from routes.chatbot import router as chatbot_router
 from routes.admin import router as admin_router
@@ -79,22 +80,13 @@ app.include_router(
 @app.get("/count")
 def count_docs():
 
-    db = SessionLocal()
+    collection = get_documents_collection()
 
-    try:
+    count = collection.count_documents({})
 
-        count = (
-            db.query(Document)
-            .count()
-        )
-
-        return {
-            "documents": count
-        }
-
-    finally:
-
-        db.close()
+    return {
+        "documents": count
+    }
 
 
 # ============================================================
@@ -104,30 +96,24 @@ def count_docs():
 @app.get("/knowledge-gap-summary")
 def knowledge_gap_summary():
 
-    db = SessionLocal()
+    collection = get_unanswered_questions_collection()
 
-    try:
-
-        questions = (
-            db.query(UnansweredQuestion)
-            .order_by(
-                UnansweredQuestion.count.desc()
-            )
-            .all()
-        )
-
-        return [
+    questions = list(
+        collection.find(
+            {},
             {
-                "question": q.question,
-                "page_name": q.page_name,
-                "count": q.count
+                "_id": 0,
+                "question": 1,
+                "page_name": 1,
+                "count": 1
             }
-            for q in questions
-        ]
+        ).sort(
+            "count",
+            -1
+        )
+    )
 
-    finally:
-
-        db.close()
+    return questions
 
 
 # ============================================================
@@ -137,34 +123,32 @@ def knowledge_gap_summary():
 @app.get("/knowledge-gap-by-page")
 def knowledge_gap_by_page():
 
-    db = SessionLocal()
+    collection = get_unanswered_questions_collection()
 
-    try:
+    questions = collection.find(
+        {},
+        {
+            "_id": 0,
+            "page_name": 1,
+            "count": 1
+        }
+    )
 
-        questions = (
-            db.query(UnansweredQuestion)
-            .all()
+    summary = {}
+
+    for question in questions:
+
+        page = (
+            question.get("page_name")
+            or "unknown"
         )
 
-        summary = {}
+        summary[page] = (
+            summary.get(page, 0)
+            + question.get("count", 0)
+        )
 
-        for q in questions:
-
-            page = (
-                q.page_name
-                or "unknown"
-            )
-
-            summary[page] = (
-                summary.get(page, 0)
-                + q.count
-            )
-
-        return summary
-
-    finally:
-
-        db.close()
+    return summary
 
 
 # ============================================================
@@ -174,53 +158,57 @@ def knowledge_gap_by_page():
 @app.get("/export-knowledge-gaps")
 def export_knowledge_gaps():
 
-    db = SessionLocal()
+    collection = get_unanswered_questions_collection()
 
-    try:
-
-        questions = (
-            db.query(UnansweredQuestion)
-            .order_by(
-                UnansweredQuestion.count.desc()
-            )
-            .all()
+    questions = list(
+        collection.find(
+            {}
+        ).sort(
+            "count",
+            -1
         )
+    )
 
-        filename = "knowledge_gaps.csv"
+    filename = "knowledge_gaps.csv"
 
-        with open(
-            filename,
-            "w",
-            newline="",
-            encoding="utf-8"
-        ) as csvfile:
+    with open(
+        filename,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as csvfile:
 
-            writer = csv.writer(csvfile)
+        writer = csv.writer(csvfile)
+
+        writer.writerow([
+            "Question",
+            "Workflow Step",
+            "Count",
+            "Created At"
+        ])
+
+        for question in questions:
+
+            created_at = question.get(
+                "created_at"
+            )
+
+            if created_at:
+                created_at = created_at.strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            else:
+                created_at = ""
 
             writer.writerow([
-                "Question",
-                "Workflow Step",
-                "Count",
-                "Created At"
+                question.get("question"),
+                question.get("page_name"),
+                question.get("count", 0),
+                created_at
             ])
 
-            for q in questions:
-
-                writer.writerow([
-                    q.question,
-                    q.page_name,
-                    q.count,
-                    q.created_at.strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
-                ])
-
-        return FileResponse(
-            filename,
-            media_type="text/csv",
-            filename=filename
-        )
-
-    finally:
-
-        db.close()
+    return FileResponse(
+        filename,
+        media_type="text/csv",
+        filename=filename
+    )

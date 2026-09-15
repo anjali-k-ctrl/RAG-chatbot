@@ -1,7 +1,6 @@
-import time
+from datetime import datetime, UTC
 
-from database.postgres import SessionLocal
-from database.models import SystemHealthLog
+from database.mongo_helpers import get_system_health_logs_collection
 
 
 def log_system_health(
@@ -15,26 +14,19 @@ def log_system_health(
     retrieval_source: str = None,
     response_time_ms: float = None
 ):
+    collection = get_system_health_logs_collection()
 
-    db = SessionLocal()
+    log = {
+        "timestamp": datetime.now(UTC),
+        "service": service,
+        "status": status,
+        "question": question,
+        "page_name": page_name,
+        "error": error,
+        "retry_count": retry_count,
+        "circuit_open": circuit_open,
+        "retrieval_source": retrieval_source,
+        "response_time_ms": response_time_ms
+    }
 
-    try:
-
-        log = SystemHealthLog(
-            service=service,
-            status=status,
-            question=question,
-            page_name=page_name,
-            error=error,
-            retry_count=retry_count,
-            circuit_open=circuit_open,
-            retrieval_source=retrieval_source,
-            response_time_ms=response_time_ms
-        )
-
-        db.add(log)
-        db.commit()
-
-    finally:
-
-        db.close()
+    collection.insert_one(log)
