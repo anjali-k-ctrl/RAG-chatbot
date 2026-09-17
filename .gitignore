@@ -27,6 +27,7 @@ test_*.py
 
 # Local indexing utilities
 index_pdf_chunks.py
+verify_deleted_chunks.py
 
 # Documentation files
 training_docs/*.pdf

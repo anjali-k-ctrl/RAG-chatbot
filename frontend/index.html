@@ -59,107 +59,30 @@
     SUGGESTED QUESTIONS
     ========================================= */
 
-    .suggestions {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-
-        width: 100%;
-        padding: 0;
-
-        overflow: hidden;
-    }
-
-    .suggestions-title {
-        margin: 10px 0 7px;
-
-        font-size: 10px;
-        font-weight: 600;
-
-        letter-spacing: 0.8px;
-        text-transform: uppercase;
-
-        color: #718096;
-    }
-
+    .suggestions { display: flex; flex-direction: column; gap: 5px; width: 100%; padding: 0; overflow: hidden; }
+    .suggestions-title { margin: 10px 0 7px; font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #718096; }
 
     /* Question */
-    .sug-chip {
-        width: 100%;
-        min-width: 0;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-
-        padding: 9px 10px 9px 12px;
-
-        background: rgba(255, 255, 255, 0.025);
-        border: 1px solid transparent;
-        border-radius: 8px;
-
-        color: #aebed3;
-
-        font-family: inherit;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 1.4;
-
-        text-align: left;
-        cursor: pointer;
-
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-
+    .sug-chip { width: 100%; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 10px 9px 12px; background: rgba(255, 255, 255, 0.025); border: 1px solid transparent; border-radius: 8px; color: #aebed3; font-family: inherit; font-size: 12px; font-weight: 400; line-height: 1.4; text-align: left; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word;
         transition:
             background 0.18s ease,
             border-color 0.18s ease;
     }
 
-
     /* Arrow on right */
-    .sug-chip::after {
-        content: "›";
-
-        flex-shrink: 0;
-
-        color: #5d7fae;
-
-        font-size: 20px;
-        font-weight: 300;
-
-        line-height: 1;
-    }
-
+    .sug-chip::after { content: "›"; flex-shrink: 0; color: #5d7fae; font-size: 20px; font-weight: 300; line-height: 1; }
 
     /* Remove old left arrow */
-    .sug-chip::before {
-        display: none;
-    }
-
+    .sug-chip::before { display: none; }
 
     /* Hover */
-    .sug-chip:hover {
-        background: rgba(59, 130, 246, 0.08);
-        border-color: rgba(59, 130, 246, 0.25);
-
-        color: #d6e5f7;
-    }
-
+    .sug-chip:hover { background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.25); color: #d6e5f7; }
 
     /* Keyboard accessibility */
-    .sug-chip:focus-visible {
-        outline: 2px solid #3b82f6;
-        outline-offset: 2px;
-    }
-
+    .sug-chip:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
 
     /* Prevent horizontal overflow */
-    .widget-messages {
-        overflow-x: hidden;
-    }
+    .widget-messages { overflow-x: hidden; }
 
     /* Message bubbles */
     .msg-row { display: flex; gap: 8px; align-items: flex-start; }
@@ -338,157 +261,44 @@
     .export-buttons button{ padding:12px 22px; border:none; border-radius:10px; background:#4f8cff; color:white; cursor:pointer; font-weight:600; transition:.25s; }
     .export-buttons button:hover{ background:#3b74db; transform:translateY(-2px); }
 
+    /* DELETION BUTTONN*/
+    .delete-btn { padding: 7px 14px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .delete-btn:hover { background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fca5a5; }
+    .delete-btn:active { transform: scale(0.97); }
+
     /* =========================================
     CHATBOT AVAILABILITY CARD
     ========================================= */
 
-    .chatbot-control-card {
-        width: 100%;
-        box-sizing: border-box;
-
-        background: #171b35;
-        border: 1px solid #252b4a;
-        border-radius: 14px;
-
-        padding: 20px 24px;
-        margin: 18px 0 28px;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .chatbot-control-content {
-        min-width: 0;
-    }
-
-    .chatbot-control-title {
-        margin: 0 0 6px;
-
-        font-size: 15px;
-        font-weight: 600;
-
-        color: #e8ecff;
-    }
-
-    .chatbot-control-description {
-        margin: 0 0 8px;
-
-        font-size: 13px;
-        line-height: 1.5;
-
-        color: #8993b8;
-    }
-
-    .chatbot-status {
-        margin: 0;
-
-        font-size: 13px;
-        font-weight: 500;
-
-        color: #8993b8;
-    }
-
-    .chatbot-status span {
-        font-weight: 600;
-        margin-left: 4px;
-    }
-
-    .chatbot-status.active span {
-        color: #35d399;
-    }
-
-    .chatbot-status.disabled span {
-        color: #ff647c;
-    }
-
+    .chatbot-control-card { width: 100%; box-sizing: border-box; background: #171b35; border: 1px solid #252b4a; border-radius: 14px; padding: 20px 24px; margin: 18px 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    .chatbot-control-content { min-width: 0; }
+    .chatbot-control-title { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: #e8ecff; }
+    .chatbot-control-description { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: #8993b8; }
+    .chatbot-status { margin: 0; font-size: 13px; font-weight: 500; color: #8993b8; }
+    .chatbot-status span { font-weight: 600; margin-left: 4px; }
+    .chatbot-status.active span { color: #35d399; }
+    .chatbot-status.disabled span { color: #ff647c; }
 
     /* =========================================
     TOGGLE
     ========================================= */
 
-    .chatbot-toggle {
-        position: relative;
-
-        width: 48px;
-        height: 26px;
-
-        flex-shrink: 0;
-    }
-
-    .chatbot-toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .chatbot-slider {
-        position: absolute;
-        inset: 0;
-
-        cursor: pointer;
-
-        background: #343a5a;
-        border-radius: 999px;
-
-        transition: all 0.25s ease;
-    }
-
-    .chatbot-slider::before {
-        content: "";
-
-        position: absolute;
-
-        width: 20px;
-        height: 20px;
-
-        left: 3px;
-        top: 3px;
-
-        background: #ffffff;
-        border-radius: 50%;
-
-        transition: transform 0.25s ease;
-
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
-    }
-
-    .chatbot-toggle input:checked + .chatbot-slider {
-        background: #4f8cff;
-    }
-
-    .chatbot-toggle input:checked + .chatbot-slider::before {
-        transform: translateX(22px);
-    }
-
-    .chatbot-toggle input:focus-visible + .chatbot-slider {
-        outline: 2px solid #4f8cff;
-        outline-offset: 3px;
-    }
-
+    .chatbot-toggle { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+    .chatbot-toggle input { opacity: 0; width: 0; height: 0; }
+    .chatbot-slider { position: absolute; inset: 0; cursor: pointer; background: #343a5a; border-radius: 999px; transition: all 0.25s ease; }
+    .chatbot-slider::before { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #ffffff; border-radius: 50%; transition: transform 0.25s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25); }
+    .chatbot-toggle input:checked + .chatbot-slider { background: #4f8cff; }
+    .chatbot-toggle input:checked + .chatbot-slider::before { transform: translateX(22px); }
+    .chatbot-toggle input:focus-visible + .chatbot-slider { outline: 2px solid #4f8cff; outline-offset: 3px; }
 
     /* =========================================
     MOBILE
     ========================================= */
 
     @media (max-width: 600px) {
-
-        .chatbot-control-card {
-            padding: 16px 18px;
-            gap: 16px;
-        }
-
-        .chatbot-control-title {
-            font-size: 14px;
-        }
-
-        .chatbot-control-description {
-            font-size: 12px;
-        }
-
+        .chatbot-control-card { padding: 16px 18px; gap: 16px; }
+        .chatbot-control-title { font-size: 14px; }
+        .chatbot-control-description { font-size: 12px; }
     }
 
     .view-answer-btn{ background:#4f8cff; color:white; border:none; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
@@ -512,15 +322,36 @@
     .feedback-status.reviewed{ background:#DBEAFE; color:#1D4ED8; }
     .highlight-section { animation: highlightGlow 2s ease; }
     @keyframes highlightGlow {
-        0% {
-            box-shadow: 0 0 0 rgba(79,140,255,0);
-        }
-        25% {
-            box-shadow: 0 0 30px rgba(79,140,255,.9);
-        }
-        100% {
-            box-shadow: 0 0 0 rgba(79,140,255,0);
-        }
+        0% { box-shadow: 0 0 0 rgba(79,140,255,0); }
+        25% { box-shadow: 0 0 30px rgba(79,140,255,.9); }
+        100% { box-shadow: 0 0 0 rgba(79,140,255,0); }
+    }
+
+    /* Custom Delete Modal */
+    .custom-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background: #1b2137; border: 1px solid #3b4268; border-radius: 16px; padding: 28px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
+    .modal-icon { font-size: 38px; margin-bottom: 12px; }
+    .modal-content h3 { color: #f1f5f9; font-size: 20px; margin-bottom: 10px; }
+    .modal-content p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 24px; overflow-wrap: anywhere; }
+    .modal-actions { display: flex; justify-content: center; gap: 12px; }
+    .modal-actions button { padding: 11px 24px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .modal-cancel-btn { background: transparent; color: #cbd5e1; border: 1px solid #475569; }
+    .modal-cancel-btn:hover { background: #293149; border-color: #64748b; }
+    .modal-delete-btn { background: #dc2626; color: #ffffff; border: 1px solid #dc2626; }
+    .modal-delete-btn:hover { background: #b91c1c; border-color: #b91c1c; }
+    .modal-actions button:active { transform: scale(0.97); }
+    /* Success Toast */
+    .success-toast { display: none; position: fixed; right: 24px; bottom: 24px; align-items: center; gap: 10px; background: #1b2137; color: #e2e8f0; border: 1px solid #22c55e; border-radius: 12px; padding: 14px 20px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); z-index: 10000; }
+    .success-toast span:first-child { color: #4ade80; font-size: 20px; font-weight: bold; }
+    @media (max-width: 480px) {
+        .modal-content {
+            padding: 24px 20px; }
+        .modal-actions button {
+            padding: 10px 20px; }
+        .success-toast {
+            right: 16px;
+            left: 16px;
+            bottom: 16px; }
     }
   </style>
 </head>
@@ -2187,8 +2018,9 @@ setInterval(checkChatbotStatus, 1000);
     loadMostFrequentQuestions();
 
     function renderRecentUploads(data) {
-        const uploads = data.items;
+        const uploads = data.items || [];
         const container = document.getElementById("recentUploads");
+
         if (!uploads.length) {
             container.innerHTML = `
                 <div class="empty-state">
@@ -2200,75 +2032,181 @@ setInterval(checkChatbotStatus, 1000);
 
         container.innerHTML = `
             <table class="upload-table">
-
                 <thead>
                     <tr>
                         <th>Document</th>
                         <th>Workflow</th>
                         <th>Page</th>
+                        <th>Audience</th>
                         <th>Uploaded</th>
                         <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
+                    ${uploads.map(upload => {
+                        const documentName = String(
+                            upload.document_name || ""
+                        ).replace(/'/g, "\\'");
 
-                    ${uploads.map(upload => `
-                        <tr>
+                        return `
+                            <tr>
+                                <td>
+                                    ${upload.document_name || "N/A"}
+                                </td>
 
-                            <td>${upload.document_name}</td>
+                                <td>
+                                    ${upload.workflow || "N/A"}
+                                </td>
 
-                            <td>${upload.workflow}</td>
+                                <td>
+                                    ${upload.page_name || "N/A"}
+                                </td>
 
-                            <td>${upload.page_name}</td>
+                                <td>
+                                    <span class="audience-badge ${upload.audience || ""}">
+                                        ${upload.audience || "N/A"}
+                                    </span>
+                                </td>
 
-                            <td>${upload.uploaded_at}</td>
+                                <td>
+                                    ${upload.uploaded_at || "N/A"}
+                                </td>
 
-                            <td>
-                                <span class="status-badge">
-                                    ${upload.status}
-                                </span>
-                            </td>
+                                <td>
+                                    <span class="status-badge">
+                                        ${upload.status || "Indexed"}
+                                    </span>
+                                </td>
 
-                        </tr>
-                    `).join("")}
-
+                                <td>
+                                    <button
+                                        class="delete-btn"
+                                        onclick="deleteDocument(
+                                            '${upload.document_id}',
+                                            '${documentName}'
+                                        )">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join("")}
                 </tbody>
-
             </table>
-            <div class="table-pagination">
 
+            <div class="table-pagination">
                 <button
                     ${data.page === 1 ? "disabled" : ""}
                     onclick="loadRecentUploads(${data.page - 1})">
-
                     ◀ Previous
-
                 </button>
 
                 <span>
-
                     Showing
                     ${(data.page - 1) * data.page_size + 1}
                     -
-                    ${Math.min(data.page * data.page_size, data.total)}
+                    ${Math.min(
+                        data.page * data.page_size,
+                        data.total
+                    )}
                     of
                     ${data.total}
-
                 </span>
 
                 <button
                     ${data.page === data.total_pages ? "disabled" : ""}
                     onclick="loadRecentUploads(${data.page + 1})">
-
                     Next ▶
-
                 </button>
-
             </div>
         `;
-
     }
+
+    let pendingDelete = null;
+
+    // Open custom delete modal
+    function deleteDocument(documentId, documentName) {
+        pendingDelete = {
+            documentId: documentId,
+            documentName: documentName
+        };
+
+        document.getElementById("deleteModalMessage").textContent =
+            `Are you sure you want to delete "${documentName}"?`;
+
+        document.getElementById("deleteModal").style.display = "flex";
+    }
+
+    // Close custom modal
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+        pendingDelete = null;
+    }
+
+    // Confirm deletion
+    async function confirmDeleteDocument() {
+        if (!pendingDelete) {
+            return;
+        }
+
+        const { documentId, documentName } = pendingDelete;
+
+        closeDeleteModal();
+
+        try {
+            const response = await fetch(
+                `${API}/documents/${documentId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to delete document"
+                );
+            }
+
+            // Show custom success toast
+            document.getElementById("successToastMessage").textContent =
+                "Document deleted successfully.";
+
+            document.getElementById("successToast").style.display = "flex";
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                document.getElementById("successToast").style.display = "none";
+            }, 3000);
+
+            // Reload recent uploads
+            loadRecentUploads(currentUploadsPage);
+
+        } catch (error) {
+            console.error("Delete document error:", error);
+
+            document.getElementById("successToastMessage").textContent =
+                error.message || "Failed to delete document.";
+
+            document.getElementById("successToast").style.display = "flex";
+
+            setTimeout(() => {
+                document.getElementById("successToast").style.display = "none";
+            }, 3000);
+        }
+    }
+
+    // Modal button events
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("cancelDeleteBtn")
+            .addEventListener("click", closeDeleteModal);
+
+        document.getElementById("confirmDeleteBtn")
+            .addEventListener("click", confirmDeleteDocument);
+    });
 
     function createPDFChart(
         labels,
@@ -3009,15 +2947,6 @@ setInterval(checkChatbotStatus, 1000);
         checkChatbotStatus();
     });
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        () => {
-
-            loadChatbotAdminStatus();
-
-        }
-    );
-
     document.addEventListener("DOMContentLoaded", () => {
 
 
@@ -3756,4 +3685,34 @@ setInterval(checkChatbotStatus, 1000);
 </div>
 
 </body>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="custom-modal">
+    <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+
+        <h3>Delete Document?</h3>
+
+        <p id="deleteModalMessage">
+            Are you sure you want to delete this document?
+        </p>
+
+        <div class="modal-actions">
+            <button id="cancelDeleteBtn" class="modal-cancel-btn">
+                Cancel
+            </button>
+
+            <button id="confirmDeleteBtn" class="modal-delete-btn">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message -->
+<div id="successToast" class="success-toast">
+    <span>✓</span>
+    <span id="successToastMessage">
+        Document deleted successfully.
+    </span>
+</div>
 </html>
