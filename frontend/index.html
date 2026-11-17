@@ -49,6 +49,65 @@
     .role-buttons { display: flex; gap: 8px; margin-top: 12px; }
     .role-buttons button { flex: 1; padding: 8px 12px; border: 1px solid #3b82f6; border-radius: 8px; background: #1e3a5f; color: #e2e8f0; font-family: inherit; font-size: 12px; cursor: pointer; transition: background 0.2s, border-color 0.2s;}
     .role-buttons button:hover { background: #2563eb; border-color: #60a5fa;}
+    /* Assistant Selection Cards */
+    .assistant-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    .assistant-card {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 7px;
+        padding: 14px;
+        background: #1b2137;
+        border: 1px solid #3b4268;
+        border-radius: 12px;
+        color: #e2e8f0;
+        font-family: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .assistant-card:hover {
+        background: #252e4b;
+        border-color: #3b82f6;
+        transform: translateY(-2px);
+    }
+
+    .assistant-icon {
+        font-size: 22px;
+    }
+
+    .assistant-card-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #93c5fd;
+    }
+
+    .assistant-card-description {
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: #aebed3;
+    }
+
+    .assistant-card-action {
+        font-size: 11px;
+        font-weight: 600;
+        color: #60a5fa;
+        margin-top: 3px;
+    }
+
+    .assistant-card:focus-visible {
+        outline: 2px solid #3b82f6;
+        outline-offset: 3px;
+    }
     .widget-messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 14px; display: flex; flex-direction: column; gap: 14px;}
     .greeting { display: flex; gap: 8px; align-items: flex-start; }
     .g-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
@@ -344,15 +403,422 @@
     .success-toast { display: none; position: fixed; right: 24px; bottom: 24px; align-items: center; gap: 10px; background: #1b2137; color: #e2e8f0; border: 1px solid #22c55e; border-radius: 12px; padding: 14px 20px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); z-index: 10000; }
     .success-toast span:first-child { color: #4ade80; font-size: 20px; font-weight: bold; }
     @media (max-width: 480px) {
-        .modal-content {
-            padding: 24px 20px; }
-        .modal-actions button {
-            padding: 10px 20px; }
-        .success-toast {
-            right: 16px;
-            left: 16px;
-            bottom: 16px; }
+        .modal-content { padding: 24px 20px; }
+        .modal-actions button { padding: 10px 20px; }
+        .success-toast { right: 16px; left: 16px; bottom: 16px; } }
+
+    /* Improved Chat Input Layout */
+    .input-row { display: flex; align-items: flex-end; gap: 10px; }
+
+    /* Microphone Button */
+    .mic-btn { width: 42px; height: 42px; min-width: 42px; display: flex; align-items: center; justify-content: center; background: #252b45; color: #cbd5e1; border: 1px solid #475569; border-radius: 10px; font-size: 19px; cursor: pointer; transition: all 0.2s ease; }
+    .mic-btn:hover { background: #33416b; border-color: #60a5fa; color: #ffffff; transform: translateY(-1px); }
+    .mic-btn:active { transform: scale(0.95); }
+
+    /* Send Button */
+    .send-btn { width: 42px; height: 42px; min-width: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+
+    /* Textarea */
+    #chat-input { flex: 1; min-width: 0; resize: none; }
+
+
+    /* =====================================
+    DEAL ASSISTANT UI
+    ===================================== */
+
+    #deal-assistant-screen {
+        width: 100%;
+        align-items: stretch;
+        gap: 10px;
     }
+
+    #deal-assistant-screen .g-bubble {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 18px;
+        background: #252840;
+        border: 1px solid #303650;
+        border-radius: 14px;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    #deal-assistant-screen .g-bubble > p {
+        margin: 10px 0 18px;
+        color: #cbd5e1;
+    }
+
+    #deal-file {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 12px;
+        padding: 12px;
+        border: 1px dashed #53658a;
+        border-radius: 9px;
+        background: #1a1d2e;
+        color: #e2e8f0;
+        font-size: 12px;
+    }
+
+    #deal-file::file-selector-button {
+        padding: 8px 12px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 6px;
+        background: #334c7a;
+        color: white;
+        cursor: pointer;
+    }
+
+    #deal-upload-btn,
+    #deal-upload-status button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        background: #3b82f6;
+        color: white;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    #deal-upload-btn:hover,
+    #deal-upload-status button:hover {
+        background: #2563eb;
+    }
+
+    #deal-upload-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    #deal-upload-status {
+        margin-top: 15px;
+        overflow-wrap: anywhere;
+        color: #cbd5e1;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    /* Analysis layout */
+
+    #deal-upload-status > div {
+        margin-top: 18px;
+        padding-top: 15px;
+        border-top: 1px solid #3a4059;
+    }
+
+    #deal-upload-status > div > div {
+        margin-top: 18px;
+    }
+
+    #deal-upload-status strong {
+        color: #93c5fd;
+        font-size: 14px;
+    }
+
+    #deal-upload-status p {
+        margin: 7px 0 0;
+        color: #e2e8f0;
+        overflow-wrap: anywhere;
+    }
+
+
+    /* Extracted terms grid */
+
+    .deal-terms-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    .deal-term-card {
+        min-width: 0;
+        padding: 12px;
+        border: 1px solid #353d5a;
+        border-radius: 9px;
+        background: #1b2035;
+    }
+
+    .deal-term-card strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #93c5fd;
+        font-size: 12px;
+        text-transform: capitalize;
+    }
+
+    .deal-term-card p {
+        margin: 0;
+        color: #e2e8f0;
+        font-size: 13px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 420px) {
+        .deal-terms-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Missing and ambiguous information */
+
+    .deal-issue-section {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        background: #1b2035;
+    }
+
+    .deal-issue-section.missing {
+        border: 1px solid #765b32;
+    }
+
+    .deal-issue-section.ambiguous {
+        border: 1px solid #65528a;
+    }
+
+    .deal-issue-section.missing > strong {
+        color: #fbbf24;
+    }
+
+    .deal-issue-section.ambiguous > strong {
+        color: #c4b5fd;
+    }
+
+    .deal-issue-section ul {
+        padding-left: 20px;
+        margin: 12px 0 0;
+    }
+
+    .deal-issue-section li {
+        color: #e2e8f0;
+        font-size: 13px;
+        line-height: 1.6;
+        padding: 7px 0;
+        border-bottom: 1px solid #303650;
+    }
+
+    .deal-issue-section li:last-child {
+        border-bottom: none;
+    }
+
+
+    /* Deal Assistant Q&A */
+
+    .deal-chat-container {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 20px 0 10px;
+        padding: 16px;
+        background: #1b2035;
+        border: 1px solid #353d5a;
+        border-radius: 12px;
+    }
+
+    .deal-chat-heading strong {
+        color: #93c5fd;
+        font-size: 15px;
+    }
+
+    .deal-chat-heading p {
+        color: #94a3b8;
+        font-size: 12px;
+        margin: 5px 0 14px;
+    }
+
+    .deal-chat-messages {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-height: 250px;
+        overflow-y: auto;
+        padding: 5px 0 12px;
+    }
+
+    .deal-chat-welcome {
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .deal-chat-message {
+        max-width: 90%;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .deal-chat-message.user {
+        align-self: flex-end;
+        background: #1e3a5f;
+        color: #e2e8f0;
+    }
+
+    .deal-chat-message.assistant {
+        align-self: flex-start;
+        background: #252840;
+        border: 1px solid #353d5a;
+        color: #e2e8f0;
+    }
+
+    .deal-chat-input-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    #deal-question {
+        flex: 1;
+        min-width: 0;
+        resize: vertical;
+        min-height: 38px;
+        max-height: 90px;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #353d5a;
+        border-radius: 8px;
+        background: #151823;
+        color: #e2e8f0;
+        font: inherit;
+        font-size: 12px;
+    }
+
+    #deal-question:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+
+    #deal-send-btn {
+        padding: 10px 14px;
+        border: none;
+        border-radius: 8px;
+        background: #3b82f6;
+        color: white;
+        cursor: pointer;
+    }
+
+    #deal-send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Assistant navigation */
+
+    .assistant-navigation {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 12px;
+        background: #1a1d2e;
+        border-bottom: 1px solid #303650;
+    }
+
+    .assistant-nav-info {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+
+    .assistant-nav-info strong {
+        color: #93c5fd;
+    }
+
+    .assistant-nav-buttons {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .assistant-nav-buttons button {
+        padding: 8px 11px;
+        border: 1px solid #3a4563;
+        border-radius: 7px;
+        background: #252840;
+        color: #cbd5e1;
+        font-size: 11px;
+        cursor: pointer;
+    }
+
+    .assistant-nav-buttons button.active {
+        background: #2563eb;
+        border-color: #3b82f6;
+        color: white;
+    }
+
+    .assistant-nav-buttons button:hover {
+        border-color: #60a5fa;
+    }
+
+
+
+    /* Mobile responsiveness */
+
+    @media (max-width: 480px) {
+        #deal-assistant-screen .g-bubble {
+            padding: 14px;
+        }
+
+        #deal-file {
+            font-size: 11px;
+        }
+    }
+
+    /* Fix chatbot layout and assistant selection scrolling */
+
+    #chat-widget {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    #widget-messages {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-bottom: 20px;
+        box-sizing: border-box;
+    }
+
+    .widget-messages {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .assistant-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .assistant-card {
+        width: 100%;
+        flex-shrink: 0;
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+    }
+
+    .widget-input {
+        flex-shrink: 0;
+        position: relative;
+        z-index: 5;
+    }
+
+
   </style>
 </head>
 <body>
@@ -758,13 +1224,60 @@
     </div>
   </div>
 
-  <div class="widget-input">
-    <div class="input-row">
-      <textarea id="chat-input" rows="1" placeholder="Ask about MediaShippers…"></textarea>
-      <button type="button" class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+    <div class="widget-input">
+
+        <div class="input-row">
+
+            <textarea
+                id="chat-input"
+                rows="1"
+                placeholder="Ask about MediaShippers…">
+            </textarea>
+
+            <!-- Microphone Button -->
+            <button
+                type="button"
+                class="mic-btn"
+                id="mic-btn"
+                onclick="startSpeechRecognition()"
+                title="Speak your question"
+                aria-label="Start voice input">
+
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+                    <path d="M5 10a7 7 0 0 0 14 0"></path>
+                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                    <line x1="8" y1="22" x2="16" y2="22"></line>
+
+                </svg>
+
+            </button>
+
+            <!-- Send Button -->
+            <button
+                type="button"
+                class="send-btn"
+                id="send-btn"
+                onclick="sendMessage()">
+                ➤
+            </button>
+
+        </div>
+
+        <div class="input-hint">
+            MediaShippers Help · Powered by Gemini
+        </div>
+
     </div>
-    <div class="input-hint">MediaShippers Help · Powered by Gemini</div>
-  </div>
 </div>
 
 
@@ -794,7 +1307,13 @@
 
     let chatbotOpen = false;
     let chatbotEnabled = true;
-    let selectedAudience = sessionStorage.getItem("chatbotAudience");
+    // Start a fresh chatbot session whenever the page loads.
+    sessionStorage.removeItem("chatbotAudience");
+    sessionStorage.removeItem("selectedAssistant");
+    sessionStorage.removeItem("currentProposalId");
+
+    selectedAudience = null;
+    let selectedAssistant = null;
 
     function selectAudience(audience) {
         selectedAudience = audience;
@@ -807,27 +1326,557 @@
             roleQuestion.remove();
         }
 
+        showAssistantSelection();
+    }
+
+    function showAssistantSelection() {
         const messages = document.getElementById("widget-messages");
 
-        const greeting = document.createElement("div");
-        greeting.className = "greeting";
+        const selection = document.createElement("div");
+        selection.id = "assistant-selection";
+        selection.className = "greeting";
 
-        greeting.innerHTML = `
+        selection.innerHTML = `
             <div class="g-avatar">🤖</div>
+
             <div class="g-bubble">
-                👋 Great! You're using the chatbot as a
-                <strong>${audience === "buyer" ? "Buyer" : "Seller"}</strong>.
+                <strong>Welcome to MediaShippers!</strong>
                 <br><br>
-                How can I help you?
+                You're continuing as
+                <strong>${selectedAudience === "buyer" ? "Buyer" : "Seller"}</strong>.
+
+                <br><br>
+                Which assistant would you like to use?
+
+                <div class="assistant-options">
+
+                    <button type="button"
+                            class="assistant-card"
+                            onclick="selectAssistant('knowledge')">
+
+                        <span class="assistant-icon">📚</span>
+                        <span class="assistant-card-title">Knowledge Assistant</span>
+
+                        <span class="assistant-card-description">
+                            Get help with MediaShippers workflows,
+                            title creation, metadata, credits, assets
+                            and rights.
+                        </span>
+
+                        <span class="assistant-card-action">
+                            Explore platform →
+                        </span>
+                    </button>
+
+                    <button type="button"
+                            class="assistant-card"
+                            onclick="selectAssistant('deal')">
+
+                        <span class="assistant-icon">📄</span>
+                        <span class="assistant-card-title">Deal Assistant</span>
+
+                        <span class="assistant-card-description">
+                            Upload licensing proposals, extract
+                            important terms, identify missing
+                            information and compare versions.
+                        </span>
+
+                        <span class="assistant-card-action">
+                            Analyse proposals →
+                        </span>
+                    </button>
+
+                </div>
             </div>
         `;
 
-        messages.prepend(greeting);
+        messages.prepend(selection);
+    }
 
-        loadSuggestions();
+    //let selectedAssistant = sessionStorage.getItem("selectedAssistant");
+
+
+    function showAssistantNavigation() {
+        const messages = document.getElementById("widget-messages");
+
+        document.getElementById("assistant-navigation")?.remove();
+
+        const nav = document.createElement("div");
+        nav.id = "assistant-navigation";
+        nav.className = "assistant-navigation";
+
+        nav.innerHTML = `
+            <div class="assistant-nav-info">
+                <span>Viewing as: <strong>${selectedAudience === "buyer" ? "Buyer" : "Seller"}</strong></span>
+            </div>
+
+            <div class="assistant-nav-buttons">
+                <button onclick="selectAssistant('knowledge')"
+                    class="${selectedAssistant === "knowledge" ? "active" : ""}">
+                    Knowledge
+                </button>
+
+                <button onclick="selectAssistant('deal')"
+                    class="${selectedAssistant === "deal" ? "active" : ""}">
+                    Deal
+                </button>
+
+                <button onclick="changeChatRole()">
+                    Change Role
+                </button>
+            </div>
+        `;
+
+        messages.prepend(nav);
+    }
+
+    function changeChatRole() {
+        sessionStorage.removeItem("chatbotAudience");
+        sessionStorage.removeItem("selectedAssistant");
+        sessionStorage.removeItem("currentProposalId");
+
+        location.reload();
+    }
+
+    function selectAssistant(assistant) {
+        if (assistant !== "knowledge" && assistant !== "deal") return;
+        if (!selectedAudience) return;
+
+        selectedAssistant = assistant;
+        sessionStorage.setItem("selectedAssistant", assistant);
+
+        const messages = document.getElementById("widget-messages");
+
+        // Preserve the suggestions container before clearing old messages.
+        const suggestionsWrapper =
+            messages.querySelector(".suggestions-wrapper");
+
+        // Reset the previous assistant's conversation.
+        messages.innerHTML = "";
+
+        // Add the suggestions container back.
+        if (suggestionsWrapper) {
+            messages.appendChild(suggestionsWrapper);
+        }
+
+        history = [];
+        dealChatHistory = [];
+        currentProposalId = null;
+
+        sessionStorage.removeItem("currentProposalId");
+
+        const suggestions = document.querySelector(".suggestions-wrapper");
+        const inputArea = document.querySelector(".widget-input");
+
+        if (suggestions) {
+            suggestions.style.display =
+                assistant === "knowledge" ? "block" : "none";
+        }
+
+        if (inputArea) {
+            inputArea.style.display =
+                assistant === "knowledge" ? "block" : "none";
+        }
+
+        // Add navigation.
+        showAssistantNavigation();
+
+        if (assistant === "knowledge") {
+            const suggestionsTitle =
+                document.querySelector(".suggestions-title");
+
+            if (suggestionsTitle) {
+                suggestionsTitle.textContent =
+                    `Suggested Questions · Viewing as ${selectedAudience === "buyer" ? "Buyer" : "Seller"}`;
+            }
+
+            loadSuggestions();
+
+            const welcome = document.createElement("div");
+            welcome.id = "knowledge-welcome";
+            welcome.className = "greeting";
+
+            const avatar = document.createElement("div");
+            avatar.className = "g-avatar";
+            avatar.textContent = "🤖";
+
+            const bubble = document.createElement("div");
+            bubble.className = "g-bubble";
+
+            const heading = document.createElement("strong");
+            heading.textContent =
+                "Welcome to MediaShippers Knowledge Assistant!";
+
+            const description = document.createElement("p");
+            description.style.marginTop = "8px";
+
+            description.textContent =
+                selectedAudience === "buyer"
+                    ? "You're viewing MediaShippers as a Buyer. I can help you understand title information, metadata, credits, assets and rights."
+                    : "You're viewing MediaShippers as a Seller. I can help you with title creation, required metadata, credits, assets and rights.";
+
+            bubble.appendChild(heading);
+            bubble.appendChild(description);
+            welcome.appendChild(avatar);
+            welcome.appendChild(bubble);
+
+            messages.appendChild(welcome);
+        } else {
+            showDealAssistant();
+        }
+    }
+
+
+    function showDealAssistant() {
+        const messages = document.getElementById("widget-messages");
+
+        const container = document.createElement("div");
+        container.id = "deal-assistant-screen";
+        container.className = "greeting";
+
+        container.innerHTML = `
+            <div class="g-avatar">📄</div>
+
+            <div class="g-bubble">
+                <strong>Welcome to Deal Assistant!</strong>
+
+                <p>
+                    Upload a licensing proposal to extract key terms,
+                    identify missing information and review ambiguous clauses.
+                </p>
+
+                <div style="margin-top: 15px;">
+                    <label for="deal-file">
+                        <strong>Upload your proposal (PDF or DOCX)</strong>
+                    </label>
+
+                    <input
+                        type="file"
+                        id="deal-file"
+                        accept=".pdf,.docx"
+                        style="display: block; margin-top: 10px;"
+                    />
+                </div>
+
+                <button
+                    type="button"
+                    id="deal-upload-btn"
+                    onclick="uploadDealProposal()"
+                    style="margin-top: 15px;"
+                >
+                    Upload Proposal
+                </button>
+
+                <div id="deal-upload-status" style="margin-top: 12px;"></div>
+            </div>
+        `;
+
+        messages.appendChild(container);
+    }
+
+    let currentProposalId = null;
+
+    async function uploadDealProposal() {
+        const fileInput = document.getElementById("deal-file");
+        const status = document.getElementById("deal-upload-status");
+        const uploadButton = document.getElementById("deal-upload-btn");
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+            status.textContent = "Please select a PDF or DOCX file.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("audience", selectedAudience);
+
+        uploadButton.disabled = true;
+        status.textContent = "Uploading your proposal...";
+
+        try {
+            const response = await fetch(`${API}/deal/upload`, {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Upload failed.");
+            }
+
+            currentProposalId = data.proposal_id;
+
+            sessionStorage.setItem("currentProposalId", currentProposalId);
+
+            status.textContent =
+                `Upload successful! ${data.filename} (${data.extracted_characters} characters extracted).`;
+
+            const analyzeButton = document.createElement("button");
+            analyzeButton.type = "button";
+            analyzeButton.textContent = "Analyze Proposal";
+            analyzeButton.style.display = "block";
+            analyzeButton.style.marginTop = "12px";
+            analyzeButton.onclick = analyzeDealProposal;
+
+            status.appendChild(document.createElement("br"));
+            status.appendChild(analyzeButton);
+
+        } catch (error) {
+            console.error("Deal upload error:", error);
+            status.textContent = error.message;
+        } finally {
+            uploadButton.disabled = false;
+        }
+    }
+
+    async function analyzeDealProposal() {
+        const status = document.getElementById("deal-upload-status");
+
+        if (!currentProposalId) {
+            status.textContent = "Please upload a proposal first.";
+            return;
+        }
+
+        status.textContent = "Analyzing proposal...";
+
+        try {
+            const response = await fetch(
+                `${API}/deal/analyze/${encodeURIComponent(currentProposalId)}`,
+                { method: "POST" }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Analysis failed.");
+            }
+
+            const analysis = data.analysis;
+
+            const result = document.createElement("div");
+            result.style.marginTop = "15px";
+
+            const heading = document.createElement("strong");
+            heading.textContent = "Proposal Analysis";
+            result.appendChild(heading);
+
+            function addSection(title, content) {
+                const section = document.createElement("div");
+                section.style.marginTop = "12px";
+
+                const label = document.createElement("strong");
+                label.textContent = title;
+                section.appendChild(label);
+
+                const text = document.createElement("p");
+                text.style.whiteSpace = "pre-wrap";
+                text.textContent = content;
+                section.appendChild(text);
+
+                result.appendChild(section);
+            }
+
+            addSection("Summary", analysis.summary || "Not available");
+
+
+            const termsGrid = document.createElement("div");
+            termsGrid.className = "deal-terms-grid";
+
+            Object.entries(analysis.extracted_terms || {}).forEach(([key, value]) => {
+                const card = document.createElement("div");
+                card.className = "deal-term-card";
+
+                const label = document.createElement("strong");
+                label.textContent = key.replaceAll("_", " ");
+
+                const content = document.createElement("p");
+                content.textContent = value ?? "Not specified";
+
+                card.appendChild(label);
+                card.appendChild(content);
+                termsGrid.appendChild(card);
+            });
+
+            const termsSection = document.createElement("div");
+            termsSection.className = "deal-terms-section";
+
+            const termsHeading = document.createElement("strong");
+            termsHeading.textContent = "Extracted Terms";
+
+            termsSection.appendChild(termsHeading);
+            termsSection.appendChild(termsGrid);
+            result.appendChild(termsSection);
+
+
+            
+            function addIssueSection(title, items, type) {
+                const section = document.createElement("div");
+                section.className = `deal-issue-section ${type}`;
+
+                const heading = document.createElement("strong");
+                heading.textContent = title;
+                section.appendChild(heading);
+
+                if (!items || items.length === 0) {
+                    const empty = document.createElement("p");
+                    empty.textContent = "No issues identified.";
+                    section.appendChild(empty);
+                } else {
+                    const list = document.createElement("ul");
+
+                    items.forEach(item => {
+                        const li = document.createElement("li");
+                        li.textContent = item;
+                        list.appendChild(li);
+                    });
+
+                    section.appendChild(list);
+                }
+
+                result.appendChild(section);
+            }
+
+            addIssueSection(
+                "Missing Information",
+                analysis.missing_information,
+                "missing"
+            );
+
+            addIssueSection(
+                "Ambiguous Information",
+                analysis.ambiguous_information,
+                "ambiguous"
+            );
+
+
+            status.replaceChildren(result);
+            showDealChat();
+
+        } catch (error) {
+            console.error("Deal analysis error:", error);
+            status.textContent = error.message;
+        }
+
+    }
+
+    // Separate conversation history for Deal Assistant
+    let dealChatHistory = [];
+
+    function showDealChat() {
+        if (document.getElementById("deal-chat-container")) return;
+
+        const container = document.createElement("div");
+        container.id = "deal-chat-container";
+        container.className = "deal-chat-container";
+
+        container.innerHTML = `
+            <div class="deal-chat-heading">
+                <strong>Ask about your proposal</strong>
+                <p>Ask questions about the extracted licensing terms.</p>
+            </div>
+
+            <div id="deal-chat-messages" class="deal-chat-messages">
+                <div class="deal-chat-welcome">
+                    You can ask me about license fees, rights,
+                    payment terms, missing clauses and more.
+                </div>
+            </div>
+
+            <div class="deal-chat-input-row">
+                <textarea
+                    id="deal-question"
+                    rows="1"
+                    placeholder="Ask a question about this proposal..."
+                ></textarea>
+
+                <button
+                    type="button"
+                    id="deal-send-btn"
+                    onclick="sendDealQuestion()">
+                    Send
+                </button>
+            </div>
+        `;
+
+        document.getElementById("widget-messages").appendChild(container);
+    }
+
+    async function sendDealQuestion() {
+        const input = document.getElementById("deal-question");
+        const button = document.getElementById("deal-send-btn");
+        const messages = document.getElementById("deal-chat-messages");
+
+        const question = input.value.trim();
+
+        if (!question) return;
+
+        if (!currentProposalId) {
+            alert("Please upload a proposal first.");
+            return;
+        }
+
+        const welcome = messages.querySelector(".deal-chat-welcome");
+        if (welcome) welcome.remove();
+
+        const userMessage = document.createElement("div");
+        userMessage.className = "deal-chat-message user";
+        userMessage.textContent = question;
+        messages.appendChild(userMessage);
+
+        input.value = "";
+        button.disabled = true;
+
+        const loading = document.createElement("div");
+        loading.className = "deal-chat-message assistant";
+        loading.textContent = "Thinking...";
+        messages.appendChild(loading);
+
+        messages.scrollTop = messages.scrollHeight;
+
+        try {
+            const response = await fetch(`${API}/deal/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    proposal_id: currentProposalId,
+                    question: question,
+                    history: dealChatHistory
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Could not get an answer.");
+            }
+
+            loading.textContent = data.answer;
+
+            dealChatHistory.push(
+                { role: "user", content: question },
+                { role: "assistant", content: data.answer }
+            );
+
+            if (dealChatHistory.length > 20) {
+                dealChatHistory = dealChatHistory.slice(-20);
+            }
+
+        } catch (error) {
+            loading.textContent = `Error: ${error.message}`;
+        } finally {
+            button.disabled = false;
+            messages.scrollTop = messages.scrollHeight;
+            input.focus();
+        }
     }
 
     let currentStep = "credits";
+
 
     const suggestionsByAudience = {
         buyer: {
@@ -1889,6 +2938,58 @@ setInterval(checkChatbotStatus, 1000);
             inp.focus();
 
         }
+    }
+
+    // Speech Recognition
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    let recognition;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onresult = function (event) {
+            const transcript =
+                event.results[0][0].transcript;
+
+            const input =
+                document.getElementById("chat-input");
+
+            input.value = transcript;
+
+            autoResize();
+            input.focus();
+        };
+
+        recognition.onerror = function (event) {
+            console.error(
+                "Speech recognition error:",
+                event.error
+            );
+        };
+
+    } else {
+        console.warn(
+            "Speech recognition is not supported in this browser."
+        );
+    }
+
+    // Start speech recognition
+    function startSpeechRecognition() {
+        if (!recognition) {
+            alert(
+                "Speech recognition is not supported in this browser."
+            );
+            return;
+        }
+
+        recognition.start();
     }
 
     async function loadRecentUploads(page = 1) {

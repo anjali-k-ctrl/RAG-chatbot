@@ -14,9 +14,9 @@ model = genai.GenerativeModel(
 
 
 UNSUPPORTED_MESSAGE = (
-    "I'm only able to help with MediaShippers-related questions — "
-    "like deals, rights, payments, content submissions, and buyer/seller "
-    "rules. Please ask me something about the MediaShippers platform!"
+    "I couldn't find this information in the available "
+    "MediaShippers documentation. Your question has been "
+    "recorded for review."
 )
 
 
@@ -90,18 +90,18 @@ Content:
 
     4. If the documentation fully answers the question, provide a clear answer.
 
-    5. If the documentation answers ONLY PART of the question:
-    - Answer the part that is supported by the documentation.
-    - Clearly state that the remaining part is not covered in the
-        provided documentation.
-    - DO NOT reject the entire question.
+    5. If the documentation answers only part of the question:
+    - Answer only the supported part.
+    - Clearly identify which information is missing.
+    - Do not reject the entire question.
 
-    6. Do NOT say that a question is unrelated to MediaShippers if relevant
-    MediaShippers documentation has been provided.
+    6. If the documentation does not contain enough information
+    to answer the question, return the exact UNSUPPORTED_MESSAGE
+    provided below as the entire answer.
 
-    7. If NONE of the provided documentation contains information relevant
-    to the user's question, say that the information could not be found
-    in the available MediaShippers documentation.
+    7. Do not classify a question as unsupported merely because
+    the answer requires combining information from multiple
+    relevant passages. Use only evidence in the documentation.
 
     8. Never introduce facts that are not supported by the retrieved
     documentation.
@@ -194,6 +194,18 @@ Content:
         "answer",
         UNSUPPORTED_MESSAGE
     )
+
+    # Normalize unsupported answers to one exact statement.
+    if not isinstance(answer, str) or not answer.strip():
+        answer = UNSUPPORTED_MESSAGE
+    elif (
+        answer.strip() == UNSUPPORTED_MESSAGE
+        or "could not be found in the available MediaShippers documentation"
+        in answer.lower()
+        or "couldn't find this information in the available MediaShippers documentation"
+        in answer.lower()
+    ):
+        answer = UNSUPPORTED_MESSAGE
 
 
     # --------------------------------------------------

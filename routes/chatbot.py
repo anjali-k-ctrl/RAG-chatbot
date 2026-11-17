@@ -1,5 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from services.gemini_service import (
+    generate_answer,
+    UNSUPPORTED_MESSAGE,
+)
+from services.n8n_service import send_knowledge_gap_event
 
 from services.retrieval_manager import retrieve
 from services.outage_service import log_opensearch_outage
@@ -18,16 +23,19 @@ from database.mongo_helpers import (
     get_user_feedback_collection
 )
 
+from database.mongo_helpers import (
+    get_user_feedback_collection,
+    save_prompt_log,
+    update_prompt_log
+)
+
 
 RELEVANCE_THRESHOLD = 0.45
 
 router = APIRouter()
 
 
-# --------------------------------------------------
 # Chat Request
-# --------------------------------------------------
-
 class ChatRequest(BaseModel):
 
     message: str
@@ -36,11 +44,7 @@ class ChatRequest(BaseModel):
 
     audience: str
 
-
-# --------------------------------------------------
 # Chat
-# --------------------------------------------------
-
 @router.post("/chat")
 def chat(request: ChatRequest):
 
@@ -53,8 +57,14 @@ def chat(request: ChatRequest):
             detail="Chatbot is currently unavailable."
         )
 
-    try:
+    # Store Every User Prompt
+    prompt_id = save_prompt_log(
+        question=request.message,
+        audience=request.audience,
+        page_name=request.page_name
+    )
 
+    try:
         retrieval = retrieve(
             request.message,
             request.audience
@@ -102,10 +112,7 @@ def chat(request: ChatRequest):
     print("\n===== TOP SCORE =====")
     print(top_score)
 
-    # --------------------------------------------------
     # No Context Found
-    # --------------------------------------------------
-
     if not context.strip():
 
         save_unanswered_question(
@@ -114,6 +121,14 @@ def chat(request: ChatRequest):
             page_name=request.page_name,
             source_document=None
         )
+
+        update_prompt_log(
+            prompt_id=prompt_id,
+            relevant="NO",
+            answered="NO",
+            knowledge_gap=False
+        )
+
 
         return {
             "answer": (
@@ -127,10 +142,7 @@ def chat(request: ChatRequest):
     print("\n===== CONTEXT SENT TO GEMINI =====")
     print(context[:1000])
 
-    # --------------------------------------------------
     # Generate Answer
-    # --------------------------------------------------
-
     result = generate_answer(
         question=request.message,
         chunks=chunks
@@ -156,41 +168,41 @@ def chat(request: ChatRequest):
     print("\n===== SOURCE =====")
     print(source_document)
 
-    # --------------------------------------------------
+
     # Determine Answer / Relevance
-    # --------------------------------------------------
+    answer_lower = answer.lower()
 
-    answered = "YES"
+    unanswered_indicators = [
+        "does not contain information",
+        "could not find information",
+        "could not find this information",
+        "information is not available",
+        "not available in the documentation",
+        "not mentioned in the documentation",
+        "documentation does not contain",
+        "unable to find information"
+    ]
 
-    if (
-        "I'm only able to help with MediaShippers-related "
-        "questions — like deals, rights, payments, content "
-        "submissions, and buyer/seller rules. Please ask "
-        "me something about the MediaShippers platform!"
-        in answer
-    ):
-
-        answered = "NO"
+    answered = (
+        "NO"
+        if answer.strip() == UNSUPPORTED_MESSAGE
+        else "YES"
+    )
 
     relevant = "YES"
 
     if top_score < RELEVANCE_THRESHOLD:
-
         relevant = "NO"
-
         save_irrelevant_question(
             question=request.message,
             reason=(
                 f"Similarity score {top_score:.2f} "
-                f"below threshold "
-                f"{RELEVANCE_THRESHOLD}"
+                f"below threshold {RELEVANCE_THRESHOLD}"
             )
         )
 
-    # --------------------------------------------------
-    # Retrieval Logging
-    # --------------------------------------------------
 
+    # Retrieval Logging
     log_retrieval(
         request.message,
         top_score,
@@ -198,10 +210,42 @@ def chat(request: ChatRequest):
         answered
     )
 
-    # --------------------------------------------------
-    # Save Relevant Unanswered Question
-    # --------------------------------------------------
+    # Update Prompt Analytics
+    knowledge_gap = (
+        relevant == "YES"
+        and answered == "NO"
+    )
 
+    update_prompt_log(
+        prompt_id=prompt_id,
+        relevant=relevant,
+        answered=answered,
+        knowledge_gap=knowledge_gap,
+        score=top_score
+    )
+
+    # Trigger n8n only for relevant unanswered questions
+    print(f"KNOWLEDGE GAP DETECTED: {knowledge_gap}")
+
+    if knowledge_gap:
+        print("Sending knowledge gap event to n8n...")
+
+        try:
+            result = send_knowledge_gap_event({
+                "question": request.message,
+                "audience": request.audience,
+                "page_name": request.page_name,
+                "score": top_score,
+                "knowledge_gap": True,
+                "prompt_id": str(prompt_id),
+            })
+            print(f"N8N EVENT RESULT: {result}")
+
+        except Exception as e:
+            print(f"N8N EVENT ERROR: {type(e).__name__}: {e}")
+
+
+    # Save Relevant Unanswered Question
     if (
         "I'm only able to help with MediaShippers-related "
         "questions — like deals, rights, payments, content "

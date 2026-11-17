@@ -1,0 +1,3825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediaShippers</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+
+    /* Fake page */
+    .page-nav { background: #1a1d2e; border-bottom: 1px solid #252840; padding: 0 28px; height: 54px; display: flex; align-items: center; gap: 10px; }
+    .page-logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 15px; color: #fff; }
+    .logo-box { width: 30px; height: 30px; background: linear-gradient(135deg, #f59e0b, #ef4444); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .page-links { margin-left: 24px; display: flex; gap: 2px; }
+    .page-link { padding: 6px 13px; border-radius: 6px; font-size: 13px; color: #64748b; cursor: pointer; border: none; background: none; }
+    .page-body { padding: 48px 60px; max-width: 900px; }
+    .page-body h1 { font-size: 28px; margin-bottom: 12px; color: #f1f5f9; }
+    .page-body p  { font-size: 14px; color: #64748b; line-height: 1.7; margin-bottom: 16px; }
+    .deal-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+    .deal-card { background: #1a1d2e; border: 1px solid #252840; border-radius: 10px; padding: 18px; }
+    .deal-card h3 { font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+    .deal-card .val { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+    .deal-card .pub { font-size: 12px; color: #3b82f6; margin-top: 4px; }
+
+    /* Launcher */
+    .chat-launcher { position: fixed; bottom: 28px; right: 28px; width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #6366f1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 24px rgba(59,130,246,0.45); z-index: 1000; transition: transform 0.2s, box-shadow 0.2s; }
+    .chat-launcher:hover { transform: scale(1.08); box-shadow: 0 6px 30px rgba(59,130,246,0.55); }
+    .chat-launcher svg { width: 26px; height: 26px; fill: white; }
+    .chat-launcher .icon-close { display: none; }
+    .chat-launcher.open .icon-chat  { display: none; }
+    .chat-launcher.open .icon-close { display: block; }
+    .notif-dot { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; background: #ef4444; border-radius: 50%; border: 2px solid #0f1117; animation: pulse-dot 2s infinite; }
+    @keyframes pulse-dot { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+    /* Widget */
+    .chat-widget { position: fixed; bottom: 100px; right: 28px; width: 370px; height: 540px; background: #1a1d2e; border: 1px solid #252840; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); display: flex; flex-direction: column; overflow: hidden; z-index: 999; opacity: 0; transform: translateY(20px) scale(0.95); pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; }
+    .chat-widget.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+
+    /* Header */
+    .widget-header { background: linear-gradient(135deg, #1e3a5f 0%, #1e2a4a 100%); padding: 16px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; border-bottom: 1px solid #252840; }
+    .bot-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .bot-name  { font-weight: 600; font-size: 14px; color: #f1f5f9; }
+    .bot-status { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #64748b; margin-top: 2px; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; transition: background 0.3s; }
+    .status-dot.offline { background: #ef4444; }
+
+    /* Messages */
+    .role-buttons { display: flex; gap: 8px; margin-top: 12px; }
+    .role-buttons button { flex: 1; padding: 8px 12px; border: 1px solid #3b82f6; border-radius: 8px; background: #1e3a5f; color: #e2e8f0; font-family: inherit; font-size: 12px; cursor: pointer; transition: background 0.2s, border-color 0.2s;}
+    .role-buttons button:hover { background: #2563eb; border-color: #60a5fa;}
+    .widget-messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 14px; display: flex; flex-direction: column; gap: 14px;}
+    .greeting { display: flex; gap: 8px; align-items: flex-start; }
+    .g-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .g-bubble { background: #252840; border-radius: 12px; border-top-left-radius: 4px; padding: 10px 13px; font-size: 13px; line-height: 1.6; color: #e2e8f0; max-width: 270px; }
+    .g-bubble strong { color: #93c5fd; }
+
+    /* =========================================
+    SUGGESTED QUESTIONS
+    ========================================= */
+
+    .suggestions { display: flex; flex-direction: column; gap: 5px; width: 100%; padding: 0; overflow: hidden; }
+    .suggestions-title { margin: 10px 0 7px; font-size: 10px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #718096; }
+
+    /* Question */
+    .sug-chip { width: 100%; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 10px 9px 12px; background: rgba(255, 255, 255, 0.025); border: 1px solid transparent; border-radius: 8px; color: #aebed3; font-family: inherit; font-size: 12px; font-weight: 400; line-height: 1.4; text-align: left; cursor: pointer; white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+        transition:
+            background 0.18s ease,
+            border-color 0.18s ease;
+    }
+
+    /* Arrow on right */
+    .sug-chip::after { content: "›"; flex-shrink: 0; color: #5d7fae; font-size: 20px; font-weight: 300; line-height: 1; }
+
+    /* Remove old left arrow */
+    .sug-chip::before { display: none; }
+
+    /* Hover */
+    .sug-chip:hover { background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.25); color: #d6e5f7; }
+
+    /* Keyboard accessibility */
+    .sug-chip:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
+
+    /* Prevent horizontal overflow */
+    .widget-messages { overflow-x: hidden; }
+
+    /* Message bubbles */
+    .msg-row { display: flex; gap: 8px; align-items: flex-start; }
+    .msg-row.user { flex-direction: row-reverse; }
+    .msg-avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    .msg-avatar.bot  { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+    .msg-avatar.user { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .msg-bubble { max-width: 250px; padding: 10px 13px; border-radius: 12px; font-size: 13px; line-height: 1.6; }
+    .msg-bubble.bot  { background: #252840; border-top-left-radius: 4px; color: #e2e8f0; }
+    .msg-bubble.user { background: linear-gradient(135deg, #1e3a5f, #1e2a4a); border: 1px solid #2d5a8a; border-top-right-radius: 4px; color: #e2e8f0; }
+    .msg-bubble.bot ul { margin: 6px 0 4px 16px; }
+    .msg-bubble.bot li { margin-bottom: 3px; }
+    .msg-bubble.bot p  { margin-bottom: 5px; }
+    .msg-bubble.bot p:last-child { margin-bottom: 0; }
+    .msg-bubble.bot strong { color: #93c5fd; }
+    .msg-sources { margin-top: 7px; padding-top: 6px; border-top: 1px solid #1a1d2e; font-size: 10.5px; color: #475569; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+    .src-tag { background: #1a2744; border: 1px solid #2d4a7a; border-radius: 3px; padding: 1px 6px; font-size: 10px; color: #60a5fa; }
+    .out-of-scope { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 10px 13px; font-size: 12.5px; color: #fca5a5; line-height: 1.5; max-width: 260px; }
+
+    /* Typing */
+    .typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }
+    .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: #3b82f6; animation: tdot 1.3s infinite; opacity: 0.4; }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes tdot { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-5px);opacity:1} }
+
+    .source-chip { max-width: 220px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Input */
+    .widget-input { padding: 12px 14px; border-top: 1px solid #252840; flex-shrink: 0; background: #151823; }
+    .input-row { display: flex; align-items: flex-end; gap: 8px; background: #1a1d2e; border: 1.5px solid #252840; border-radius: 12px; padding: 8px 12px; transition: border-color 0.2s; }
+    .input-row:focus-within { border-color: #3b82f6; }
+    #chat-input { flex: 1; background: none; border: none; outline: none; color: #e2e8f0; font-size: 13px; font-family: inherit; resize: none; max-height: 80px; line-height: 1.5; }
+    #chat-input::placeholder { color: #334155; }
+    .send-btn { width: 32px; height: 32px; border-radius: 8px; border: none; background: #3b82f6; color: #fff; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 0.15s, transform 0.1s; }
+    .send-btn:hover  { background: #2563eb; }
+    .send-btn:active { transform: scale(0.92); }
+    .send-btn:disabled { background: #1e293b; cursor: not-allowed; }
+    .input-hint { text-align: center; font-size: 10.5px; color: #1e293b; margin-top: 7px; }
+
+    .widget-messages::-webkit-scrollbar { width: 3px; }
+    .widget-messages::-webkit-scrollbar-track { background: transparent; }
+    .widget-messages::-webkit-scrollbar-thumb { background: #252840; border-radius: 3px; }
+
+    /*something*/
+    .analytics-header{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; }
+    .analytics-title h1{ color:white; font-size:42px; margin-bottom:6px; }
+    .analytics-title p{ color:#9aa5c3; }
+    .last-updated{ text-align:right; color:#9aa5c3; font-size:14px; }
+    #lastUpdated{ display:block; margin-top:6px; color:white; font-weight:600; }
+
+    /* chart */
+    .analytics-chart{ margin-top:30px; background:#1f2235; padding:25px; border-radius:15px; }
+    .analytics-chart canvas{ width:100%; height:380px !important; }
+    .chart-title{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:20px; font-weight:700; }
+    .chart-badge{ background:#2d6cff22; color:#5b8cff; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .chart-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:25px; }
+
+    .knowledge-upload{ display:flex; flex-direction:column; gap:18px; }
+    .upload-box{ width:100%; min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .upload-box:hover{ background:#242c48; border-color:#6fa4ff; }
+    .upload-icon{ font-size:42px; margin-bottom:10px; }
+    .upload-title{ font-size:18px; color:white; font-weight:600; }
+    .upload-subtitle{ color:#94a3b8; margin-top:6px; }
+    .selected-file{ color:#cbd5e1; font-size:14px; }
+    #uploadKnowledgeBtn{ width:100%; margin-top:18px; border-radius:10px; padding:14px; font-size:15px; font-weight:600; }
+    .src-tag { display: inline-block; max-width: 220px; padding: 3px 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
+
+    /* dropdown */
+    .analytics-chart{ margin-top:30px; background:#1f2235; padding:25px; border-radius:15px; }
+    .analytics-chart h2{ margin-bottom:20px; color:white; }
+    .badge{ float:right; background:#4f8cff; color:white; padding:4px 12px; border-radius:20px; font-size:14px; font-weight:bold; min-width:26px; text-align:center; }
+    .analytics-dropdown { margin-top:20px; border-radius:12px; background:#1f2235; overflow:hidden; }
+    .analytics-dropdown summary{ padding:18px 22px; font-size:22px; font-weight:600; cursor:pointer; list-style:none; }
+    .analytics-dropdown summary::-webkit-details-marker{ display:none; }
+    .analytics-dropdown summary::before{ content:"▶ "; color:#4f8cff; }
+    .analytics-dropdown[open] summary::before{ content:"▼ "; }
+    .analytics-dropdown .deal-card{ margin:0; border:none; border-radius:0; }
+    .analytics-table{ width:100%; border-collapse:collapse; color:white; margin-top:10px; }
+    .analytics-table th{ background:#2c3150; padding:14px; text-align:left; font-size:15px; }
+    .analytics-table td{ padding:14px; border-top:1px solid #3b4266; font-size:14px; }
+    .analytics-table tr:hover{ background:#272c45; }
+
+    /* chart */
+    .chart-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; }
+    .chart-filter{ display:flex; align-items:center; gap:12px; }
+    .chart-filter input{ background:#1d2138; color:white; border:1px solid #3b4268; padding:8px 10px; border-radius:8px; }
+    .chart-filter button{ background:#4f8cff; color:white; border:none; padding:9px 16px; border-radius:8px; cursor:pointer; }
+    .chart-filter button:hover{ background:#3d78f5; }
+    .chart-card{ background:#232640; border-radius:18px; padding:22px; border:1px solid rgba(255,255,255,.05); min-height:470px; }
+    .chart-card:hover{ transform:translateY(-3px); box-shadow:0 12px 35px rgba(0,0,0,.35); }
+
+    /*cards*/
+    #analytics-cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin:28px 0; }
+    .kpi-card{ background:#1c2138; border-radius:18px; padding:22px; transition:.25s; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.05); }
+    .kpi-card:hover{ transform:translateY(-6px); box-shadow:0 18px 35px rgba(0,0,0,.35); }
+    .kpi-card::before{ content:""; position:absolute; left:0; top:0; width:5px; height:100%; }
+    .blue::before{ background:#4f8cff; }
+    .green::before{ background:#34d399; }
+    .red::before{ background:#ff6b6b; }
+    .orange::before{ background:#f59e0b; }
+    .teal::before{ background:#22d3ee; }
+    .purple::before{ background:#a855f7; }
+    .pink::before{ background:#da48e7; }
+    .kpi-header{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .kpi-icon{ font-size:24px; }
+    .kpi-title{ color:#aab3d2; font-size:15px; font-weight:600; }
+    .kpi-value{ color:white; font-size:40px; font-weight:700; margin-bottom:12px; }
+    .kpi-footer{ color:#7d88ab; font-size:13px; }
+
+    /*follow up question*/
+    .followup-container{ margin-top:12px; }
+    .followup-title{ font-size:13px; color:#999; margin-bottom:8px; }
+    .followup-chip{ display:block; width:100%; margin:6px 0; padding:8px 12px; border:none; border-radius:20px; background:#2d7ef7; color:white; cursor:pointer; transition:0.2s; }
+    .followup-chip:hover{ background:#1f63c5; }
+
+    /*feedback button*/
+    .feedback-container{ margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; gap:12px; }
+    .feedback-label{ font-size:13px; color:#cbd5e1; text-align:center; font-weight:500; }
+    .feedback-buttons{ display:flex; justify-content:center; gap:12px; }
+    .feedback-btn{ min-width:80px; padding:8px 18px; border:none; border-radius:20px; background:#2f6df6; color:#fff; cursor:pointer; font-size:13px; font-weight:600; transition:.2s; }
+    .feedback-btn:hover{ background:#255de0; transform:translateY(-1px); }
+    .feedback-title{ font-size:14px; font-weight:600; color:#fff; margin-bottom:4px; }
+    .feedback-options{ display:flex; flex-direction:column; gap:10px; }
+    .feedback-option{ display:flex; align-items:center; gap:8px; color:#d1d5db; font-size:13px; }
+    .feedback-textarea{ width:100%; min-height:80px; margin-top:8px; padding:10px; border-radius:10px; border:1px solid #475569; background:#1b2137; color:white; resize:vertical; box-sizing:border-box; font-family:inherit; }
+    .feedback-textarea:focus{ outline:none; border-color:#3b82f6; }
+    .feedback-submit{ width:100%; margin-top:12px; padding:10px; border:none; border-radius:10px; background:#2f6df6; color:white; font-weight:600; cursor:pointer; transition:.2s; }
+    .feedback-submit:hover{ background:#255de0; }
+    .feedback-success{ display:block; padding:10px; text-align:center; color:#22c55e; font-weight:600; }
+    .feedback-expanded{ display:block !important; width:100%; }
+    .feedback-summary{ display:flex; justify-content:space-between; align-items:center; width:100%; box-sizing:border-box; }
+    .feedback-filter{ display:flex; align-items:center; gap:8px; margin-right:15px; }
+    .feedback-filter label{ color:#cbd5e1; font-size:14px; font-weight:500; }
+    .feedback-filter select{ background:#1e2238; color:white; border:1px solid #475569; border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; outline:none; }
+    .feedback-filter select:hover{ border-color:#3b82f6; }
+    .feedback-filter select:focus{ border-color:#3b82f6; }
+    .feedback-summary{ display:flex; align-items:center; }
+    .feedback-left{ display:flex; align-items:center; gap:8px; margin-right:auto; padding-left:6px;}
+    .feedback-title{ all:unset; font:inherit; color:inherit; }
+    #feedback-count{ margin-left:6px; }
+    .feedback-filter{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+    .analytics-dropdown .feedback-filter{ display:none; }
+    .analytics-dropdown[open] .feedback-filter{ display:flex; }
+
+    /*knowledge base add*/
+    .knowledge-layout{ display:flex; gap:25px; align-items:flex-start; margin-top:20px; }
+    .knowledge-upload{ flex:1; }
+    .upload-summary-card{ flex:1; background:#252944; border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:22px; min-height:340px; }
+    .upload-summary-card h3{ margin-top:0; margin-bottom:18px; color:#fff; }
+    .summary-empty{ height:260px; display:flex; align-items:center; justify-content:center; color:#8c93b3; font-size:15px; }
+    .summary-item{ display:flex; align-items:center; gap:10px; margin-bottom:16px; color:#fff; font-size:15px; }
+    .summary-stats{ margin-top:30px; border-top:1px solid rgba(255,255,255,.08); padding-top:20px; }
+    .summary-stat{ display:flex; justify-content:space-between; margin-bottom:14px; font-size:15px; }
+    .summary-stat span:first-child{ color:#b8bfd8; }
+    .summary-stat span:last-child{ color:#fff; font-weight:600; }
+    .selected-file-card{ margin-top:22px; background:#252944; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:16px; }
+    .selected-label{ color:#9ca3af; font-size:13px; text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+    .selected-file{ color:#fff; font-size:15px; font-weight:600; word-break:break-word; }
+    .recent-uploads-section{ margin-top:30px; }
+    .upload-table{ width:100%; border-collapse:collapse; margin-top:15px; }
+    .upload-table th{ text-align:left; padding:14px; color:#b7bfd6; font-size:14px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .upload-table td{ padding:14px; color:white; border-bottom:1px solid rgba(255,255,255,.05); }
+    .upload-table tr:hover{ background:rgba(255,255,255,.03); }
+    .status-badge{ display:inline-block; padding:5px 12px; border-radius:20px; background:#1e7d42; color:white; font-size:12px; font-weight:600; }
+    .empty-state{ padding:30px; text-align:center; color:#9ca3af; }
+
+    .table-pagination{ display:flex; justify-content:space-between; align-items:center; margin-top:20px; }
+    .table-pagination button{ background:#3b82f6; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .table-pagination button:disabled{ opacity:.4; cursor:not-allowed; }
+    .table-pagination span{ color:#b7bfd6; font-size:14px; }
+    /*export button*/
+    #exportBtn{ background:#4f8cff; color:white; border:none; padding:12px 18px; border-radius:10px; cursor:pointer; font-weight:600; transition:.25s; }
+    #exportBtn:hover{ background:#6ca0ff; transform:translateY(-2px); }
+    .export-buttons{ display:flex; gap:12px; margin-top:20 }
+    .export-buttons button{ padding:12px 22px; border:none; border-radius:10px; background:#4f8cff; color:white; cursor:pointer; font-weight:600; transition:.25s; }
+    .export-buttons button:hover{ background:#3b74db; transform:translateY(-2px); }
+
+    /* DELETION BUTTONN*/
+    .delete-btn { padding: 7px 14px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .delete-btn:hover { background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #fca5a5; }
+    .delete-btn:active { transform: scale(0.97); }
+
+    /* =========================================
+    CHATBOT AVAILABILITY CARD
+    ========================================= */
+
+    .chatbot-control-card { width: 100%; box-sizing: border-box; background: #171b35; border: 1px solid #252b4a; border-radius: 14px; padding: 20px 24px; margin: 18px 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    .chatbot-control-content { min-width: 0; }
+    .chatbot-control-title { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: #e8ecff; }
+    .chatbot-control-description { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: #8993b8; }
+    .chatbot-status { margin: 0; font-size: 13px; font-weight: 500; color: #8993b8; }
+    .chatbot-status span { font-weight: 600; margin-left: 4px; }
+    .chatbot-status.active span { color: #35d399; }
+    .chatbot-status.disabled span { color: #ff647c; }
+
+    /* =========================================
+    TOGGLE
+    ========================================= */
+
+    .chatbot-toggle { position: relative; width: 48px; height: 26px; flex-shrink: 0; }
+    .chatbot-toggle input { opacity: 0; width: 0; height: 0; }
+    .chatbot-slider { position: absolute; inset: 0; cursor: pointer; background: #343a5a; border-radius: 999px; transition: all 0.25s ease; }
+    .chatbot-slider::before { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #ffffff; border-radius: 50%; transition: transform 0.25s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25); }
+    .chatbot-toggle input:checked + .chatbot-slider { background: #4f8cff; }
+    .chatbot-toggle input:checked + .chatbot-slider::before { transform: translateX(22px); }
+    .chatbot-toggle input:focus-visible + .chatbot-slider { outline: 2px solid #4f8cff; outline-offset: 3px; }
+
+    /* =========================================
+    MOBILE
+    ========================================= */
+
+    @media (max-width: 600px) {
+        .chatbot-control-card { padding: 16px 18px; gap: 16px; }
+        .chatbot-control-title { font-size: 14px; }
+        .chatbot-control-description { font-size: 12px; }
+    }
+
+    .view-answer-btn{ background:#4f8cff; color:white; border:none; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
+    .view-answer-btn:hover{ background:#2f73ff; }
+    .answer-modal{ position:fixed; inset:0; background:rgba(0,0,0,.65); display:none; justify-content:center; align-items:center; z-index:9999; }
+    .answer-modal-content{ width:850px; max-width:90%; background:#232744; border-radius:16px; padding:25px; color:white; }
+    .answer-modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .close-modal{ border:none; background:none; color:white; font-size:24px; cursor:pointer; }
+    .modal-section{ margin-bottom:28px; }
+    .modal-section h4{ margin-bottom:8px; color:#4f8cff; }
+    .answer-box{ background:#1b1f34; padding:20px; border-radius:10px; max-height:300px; overflow:auto; white-space:pre-wrap; line-height:1.8; font-size:15px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .upload-btn,
+    .review-btn,
+    .copy-btn { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .upload-btn{ background:#4f8cff; color:white; }
+    .review-btn{ background:#22c55e; color:white; }
+    .copy-btn{ background:#374151; color:white; }
+    .feedback-status{ display:inline-block; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .feedback-status.pending{ background:#FEF3C7; color:#92400E; }
+    .feedback-status.reviewed{ background:#DBEAFE; color:#1D4ED8; }
+    .highlight-section { animation: highlightGlow 2s ease; }
+    @keyframes highlightGlow {
+        0% { box-shadow: 0 0 0 rgba(79,140,255,0); }
+        25% { box-shadow: 0 0 30px rgba(79,140,255,.9); }
+        100% { box-shadow: 0 0 0 rgba(79,140,255,0); }
+    }
+
+    /* Custom Delete Modal */
+    .custom-modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(5px); align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background: #1b2137; border: 1px solid #3b4268; border-radius: 16px; padding: 28px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4); }
+    .modal-icon { font-size: 38px; margin-bottom: 12px; }
+    .modal-content h3 { color: #f1f5f9; font-size: 20px; margin-bottom: 10px; }
+    .modal-content p { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 24px; overflow-wrap: anywhere; }
+    .modal-actions { display: flex; justify-content: center; gap: 12px; }
+    .modal-actions button { padding: 11px 24px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .modal-cancel-btn { background: transparent; color: #cbd5e1; border: 1px solid #475569; }
+    .modal-cancel-btn:hover { background: #293149; border-color: #64748b; }
+    .modal-delete-btn { background: #dc2626; color: #ffffff; border: 1px solid #dc2626; }
+    .modal-delete-btn:hover { background: #b91c1c; border-color: #b91c1c; }
+    .modal-actions button:active { transform: scale(0.97); }
+    /* Success Toast */
+    .success-toast { display: none; position: fixed; right: 24px; bottom: 24px; align-items: center; gap: 10px; background: #1b2137; color: #e2e8f0; border: 1px solid #22c55e; border-radius: 12px; padding: 14px 20px; font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); z-index: 10000; }
+    .success-toast span:first-child { color: #4ade80; font-size: 20px; font-weight: bold; }
+    @media (max-width: 480px) {
+        .modal-content { padding: 24px 20px; }
+        .modal-actions button { padding: 10px 20px; }
+        .success-toast { right: 16px; left: 16px; bottom: 16px; } }
+
+    /* Improved Chat Input Layout */
+    .input-row { display: flex; align-items: flex-end; gap: 10px; }
+
+    /* Microphone Button */
+    .mic-btn { width: 42px; height: 42px; min-width: 42px; display: flex; align-items: center; justify-content: center; background: #252b45; color: #cbd5e1; border: 1px solid #475569; border-radius: 10px; font-size: 19px; cursor: pointer; transition: all 0.2s ease; }
+    .mic-btn:hover { background: #33416b; border-color: #60a5fa; color: #ffffff; transform: translateY(-1px); }
+    .mic-btn:active { transform: scale(0.95); }
+
+    /* Send Button */
+    .send-btn { width: 42px; height: 42px; min-width: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+
+    /* Textarea */
+    #chat-input { flex: 1; min-width: 0; resize: none; }
+  </style>
+</head>
+<body>
+
+
+<!-- Fake page -->
+<nav class="page-nav">
+  <div class="page-logo"><div class="logo-box">🎬</div> MediaShippers</div>
+  <div class="page-links">
+    <button class="page-link">Dashboard</button>
+    <button class="page-link">Title Search</button>
+    <button class="page-link">Titles</button>
+    <button class="page-link">Deals</button>
+    <button class="page-link">Rights Ledger</button>
+    <button class="page-link" onclick="loadAnalytics()">
+      Analytics
+    </button>
+  </div>
+</nav>
+<div class="page-body">
+  <h1>Title Creation Workflow</h1>
+  <p>Create and manage title metadata, credits, assets, rights and review information.</p>  
+  <div class="deal-cards">
+    <div class="deal-card"><h3>Total Deals</h3><div class="val">55</div></div>
+    <div class="deal-card"><h3>Published Deals</h3><div class="val">10</div><div class="pub">● Active</div></div>
+    <div class="deal-card"><h3>Expired Deals</h3><div class="val">0</div></div>
+  </div>
+</div>
+
+<div
+  id="analytics-dashboard"
+  style="display:none;padding:40px 60px;"
+>
+
+  <div class="analytics-header">
+
+    <div class="analytics-title">
+
+        <h1>Knowledge Gap Analytics Dashboard</h1>
+
+        <p>
+            Monitor chatbot performance, unanswered documentation queries,
+            and knowledge gaps in real time.
+        </p>
+
+    </div>
+
+
+    <div class="last-updated">
+
+        Last Updated
+
+        <span id="lastUpdated"></span>
+
+    </div>
+
+</div>
+
+<div class="export-buttons">
+
+    <button id="exportCsvBtn">
+        📄 Export CSV
+    </button>
+
+    <button id="exportPdfBtn">
+        📑 Export PDF
+    </button>
+
+</div>
+
+<div class="chatbot-control-card">
+
+    <div class="chatbot-control-content">
+
+        <h3 class="chatbot-control-title">
+            Chatbot Availability
+        </h3>
+
+        <p class="chatbot-control-description">
+            Control whether the MediaShippers chatbot is available to users.
+        </p>
+
+        <p class="chatbot-status active" id="chatbot-status">
+            Status:
+            <span id="chatbot-status-text">Active</span>
+        </p>
+
+    </div>
+
+
+    <label class="chatbot-toggle">
+
+        <input
+            type="checkbox"
+            id="chatbot-toggle"
+            checked
+            onchange="toggleChatbotAvailability(this)"
+        >
+
+        <span class="chatbot-slider"></span>
+
+    </label>
+
+</div>
+
+
+<div id="analytics-cards" class="deal-cards" ></div>
+
+
+  <div class="analytics-chart">
+
+      <div class="chart-header">
+
+          <h2>📈 Activity Trends</h2>
+
+          <div class="chart-filter">
+
+              <label>From</label>
+
+              <input
+                  type="date"
+                  id="fromDate"
+              >
+
+              <label>To</label>
+
+              <input
+                  type="date"
+                  id="toDate"
+              >
+
+              <button
+                  class="btn-primary"
+                  onclick="loadAnalytics()"
+              >
+                  Apply
+              </button>
+
+          </div>
+
+      </div>
+
+
+      <div class="chart-row">
+
+          <div class="chart-card">
+
+            <div class="chart-title">
+                <span>📅 Daily Activity</span>
+                <span class="chart-badge">Live</span>
+            </div>
+
+            <canvas id="dailyChart" height="380"></canvas>
+
+          </div>
+
+          <div class="chart-card">
+
+            <div class="chart-title">
+                <span>📊 Weekly Activity</span>
+                <span class="chart-badge">Weekly</span>
+            </div>
+
+            <canvas id="weeklyChart" height="380"></canvas>
+
+          </div>
+
+      </div>
+
+  </div>
+
+  <br><br>
+
+    <details class="analytics-dropdown">
+        <summary id="top-summary">
+            Top Unanswered Questions
+        </summary>
+
+        <div id="top-unanswered" class="deal-card"></div>
+    </details>
+
+    <details class="analytics-dropdown">
+        <summary id="recent-summary">
+            Recent Unanswered Questions
+        </summary>
+
+        <div id="recent-unanswered" class="deal-card"></div>
+    </details>
+
+    <div class="analytics-chart" id="knowledgeBaseSection">
+
+        <div class="chart-header">
+
+            <h2>📚 Knowledge Base Management</h2>
+
+        </div>
+
+        <div class="knowledge-layout">
+
+            <!-- Left Card -->
+            <div class="knowledge-upload">
+
+                <label class="upload-box" for="knowledgeFile">
+
+                    <div class="upload-icon">📄</div>
+
+                    <div class="upload-title">
+                        Select a knowledge document
+                    </div>
+
+                    <div class="upload-subtitle">
+                        PDF, DOC, DOCX or TXT
+                    </div>
+
+                </label>
+
+                <input
+                    type="file"
+                    id="knowledgeFile"
+                    accept=".pdf,.doc,.docx,.txt"
+                    hidden
+                >
+
+                <div class="selected-file-card">
+
+                    <div class="selected-label">
+                        Selected Document
+                    </div>
+
+                    <div
+                        id="selectedFile"
+                        class="selected-file"
+                    >
+                        No file selected
+                    </div>
+
+                </div>
+
+                <button
+                    id="uploadKnowledgeBtn"
+                    class="feedback-submit"
+                >
+                    Upload & Index
+                </button>
+
+            </div>
+
+            <!-- Right Card -->
+            <div class="upload-summary-card">
+                <h3>Upload Summary</h3>
+                <div id="uploadSummaryContent">
+                    <div class="summary-empty">
+                        No uploads yet.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <div id="uploadStatus"></div>
+
+        <br>
+
+        <div id="knowledgeResolutionSummary"></div>
+
+    </div>
+
+    <details class="analytics-dropdown">
+
+        <summary>
+
+            Recent Uploads
+
+        </summary>
+
+        <div class="deal-card">
+
+            <div id="recentUploads"></div>
+
+        </div>
+
+    </details>
+
+    <!-- NEW -->
+    <!-- User Feedback -->
+    <details class="analytics-dropdown">
+        <summary
+            id="feedback-summary"
+            class="feedback-summary"
+        >
+            <div class="feedback-left">
+                <span class="feedback-title">
+                     User Feedback
+                </span>
+            </div>
+            <div
+                class="feedback-filter"
+                onclick="event.stopPropagation()"
+            >
+                <label for="feedbackFilter">
+                    Filter:
+                </label>
+                <select
+                    id="feedbackFilter"
+                    onchange="loadUserFeedback()"
+                >
+                    <option value="all">All</option>
+                    <option value="helpful">Helpful</option>
+                    <option value="not_helpful">Not Helpful</option>
+                </select>
+            </div>
+        </summary>
+        <div class="deal-card">
+            <div id="user-feedback"></div>
+        </div>
+    </details>
+
+    <details class="analytics-dropdown">
+
+        <summary>
+
+            Irrelevant Questions
+
+        </summary>
+
+        <div class="deal-card">
+
+            <div id="irrelevant-questions"></div>
+
+        </div>
+
+    </details>
+
+    <details class="analytics-dropdown">
+
+        <summary>
+            Most Frequently Asked Questions
+        </summary>
+
+        <div class="deal-card">
+
+            <div id="most-frequent-questions">
+
+                <div class="empty-state">
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+    </details>
+</div>
+
+<!-- Launcher -->
+<button class="chat-launcher" id="launcher" onclick="toggleChat()">
+  <div class="notif-dot" id="notif-dot"></div>
+  <svg class="icon-chat" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+  <svg class="icon-close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+</button>
+
+<!-- Widget -->
+<div class="chat-widget" id="chat-widget">
+  <div class="widget-header">
+    <div class="bot-avatar">🤖</div>
+    <div>
+      <div class="bot-name">MediaShippers Assistant</div>
+      <div class="bot-status">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Connecting…</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="widget-messages" id="widget-messages">
+    <div class="greeting" id="role-question">
+        <div class="g-avatar">🤖</div>
+        <div class="g-bubble">
+            👋 Welcome to MediaShippers Assistant.
+            <br><br>
+            Are you a <strong>Buyer</strong> or a <strong>Seller</strong>?
+
+            <div class="role-buttons">
+                <button type="button" onclick="selectAudience('buyer')">
+                    Buyer
+                </button>
+
+                <button type="button" onclick="selectAudience('seller')">
+                    Seller
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="suggestions-wrapper">
+
+        <div class="suggestions-title">
+            Suggested questions
+        </div>
+
+        <div class="suggestions" id="suggestions"></div>
+
+    </div>
+  </div>
+
+    <div class="widget-input">
+
+        <div class="input-row">
+
+            <textarea
+                id="chat-input"
+                rows="1"
+                placeholder="Ask about MediaShippers…">
+            </textarea>
+
+            <!-- Microphone Button -->
+            <button
+                type="button"
+                class="mic-btn"
+                id="mic-btn"
+                onclick="startSpeechRecognition()"
+                title="Speak your question"
+                aria-label="Start voice input">
+
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+                    <path d="M5 10a7 7 0 0 0 14 0"></path>
+                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                    <line x1="8" y1="22" x2="16" y2="22"></line>
+
+                </svg>
+
+            </button>
+
+            <!-- Send Button -->
+            <button
+                type="button"
+                class="send-btn"
+                id="send-btn"
+                onclick="sendMessage()">
+                ➤
+            </button>
+
+        </div>
+
+        <div class="input-hint">
+            MediaShippers Help · Powered by Gemini
+        </div>
+
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+    let analyticsData = null;
+    let topQuestions = [];
+    let knowledgeAnalytics = null;
+    let recentQuestions = [];
+    let feedbackData = [];
+    let dailyReport = [];
+    let weeklyReport = [];
+    let selectedFeedbackId = null;
+    let currentUploadsPage = 1;
+    const uploadsPageSize = 5;
+    let currentFeedbackPage = 1;
+    const feedbackPageSize = 5;
+    let currentIrrelevantPage = 1;
+    const irrelevantPageSize = 5;
+    let currentFrequentPage = 1;
+    const frequentPageSize = 5;
+    let weeklyChartInstance = null;
+    const API   = "http://localhost:8000";
+
+    let chatbotOpen = false;
+    let chatbotEnabled = true;
+    let selectedAudience = sessionStorage.getItem("chatbotAudience");
+
+    function selectAudience(audience) {
+        selectedAudience = audience;
+
+        sessionStorage.setItem("chatbotAudience", audience);
+
+        const roleQuestion = document.getElementById("role-question");
+
+        if (roleQuestion) {
+            roleQuestion.remove();
+        }
+
+        const messages = document.getElementById("widget-messages");
+
+        const greeting = document.createElement("div");
+        greeting.className = "greeting";
+
+        greeting.innerHTML = `
+            <div class="g-avatar">🤖</div>
+            <div class="g-bubble">
+                👋 Great! You're using the chatbot as a
+                <strong>${audience === "buyer" ? "Buyer" : "Seller"}</strong>.
+                <br><br>
+                How can I help you?
+            </div>
+        `;
+
+        messages.prepend(greeting);
+
+        loadSuggestions();
+    }
+
+    let currentStep = "credits";
+
+    const suggestionsByAudience = {
+        buyer: {
+            start: [
+                "How do I create a title?",
+                "What metadata can I add to a title?",
+                "How can I review a title before publishing?"
+            ],
+
+            metadata: [
+                "What metadata can a buyer view?",
+                "Which metadata fields are important for buyers?",
+                "How do I complete the title metadata?"
+            ],
+
+            credits: [
+                "Which team members can be added to a title?",
+                "What credit information is available?",
+                "Can I view producers, writers, and cast members?"
+            ],
+
+            assets: [
+                "What assets are available for a title?",
+                "Can I view trailers and screeners?",
+                "What subtitle files are available?"
+            ],
+
+            rights: [
+                "What rights are available for a title?",
+                "What are Exclusive Rights?",
+                "What are Non-Exclusive Rights?"
+            ],
+
+            review: [
+                "What happens after a title is submitted?",
+                "What does the Published status mean?",
+                "What happens when content is shortlisted?"
+            ]
+        },
+
+        seller: {
+            start: [
+                "How do I create a title?",
+                "What metadata is required?",
+                "What assets do I need to upload?"
+            ],
+
+            metadata: [
+                "What metadata is required?",
+                "Which metadata fields are mandatory?",
+                "How do I complete the metadata?"
+            ],
+
+            credits: [
+                "Which team members can be added?",
+                "Are directors required when adding credits?",
+                "Can I add producers, writers, and cast members?"
+            ],
+
+            assets: [
+                "Is a trailer or screener required?",
+                "How many videos can I upload?",
+                "What subtitle file formats can I upload?"
+            ],
+
+            rights: [
+                "How do I add rights information?",
+                "What are Exclusive Rights?",
+                "How do I add territories?"
+            ],
+
+            review: [
+                "How do I submit a title for review?",
+                "What happens after submission?",
+                "Can I edit a title before review?"
+            ]
+        }
+    };
+
+    function loadSuggestions() {
+        const container = document.getElementById("suggestions");
+
+        if (!container) {
+            console.error("Suggestions container not found");
+            return;
+        }
+
+        if (!selectedAudience) {
+            container.innerHTML = "";
+            return;
+        }
+
+        const audienceSuggestions =
+            suggestionsByAudience[selectedAudience];
+
+        if (!audienceSuggestions) {
+            container.innerHTML = "";
+            return;
+        }
+
+        const questions =
+            audienceSuggestions[currentStep] ||
+            audienceSuggestions.start;
+
+        container.innerHTML = "";
+
+        questions.forEach(question => {
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "sug-chip";
+            button.textContent = question;
+
+            button.addEventListener("click", () => {
+                insertQ(question);
+            });
+
+            container.appendChild(button);
+        });
+    }
+
+    function toggleChat() {
+
+        chatbotOpen = !chatbotOpen;
+
+        const chatWidget = document.getElementById("chat-widget");
+        const launcher = document.getElementById("launcher");
+
+        if (!chatWidget) {
+            console.error("Chat widget not found");
+            return;
+        }
+
+        if (chatbotOpen) {
+            chatWidget.classList.add("open");
+            launcher.classList.add("open");
+        } else {
+            chatWidget.classList.remove("open");
+            launcher.classList.remove("open");
+        }
+    }
+
+    async function checkChatbotStatus() {
+        try {
+            const response = await fetch(`${API}/admin/chatbot/status`);
+
+            if (!response.ok) {
+                throw new Error(`Status API returned ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            chatbotEnabled = data.enabled === true;
+
+            const launcher = document.getElementById("launcher");
+            const widget = document.getElementById("chat-widget");
+
+            console.log("Chatbot enabled:", chatbotEnabled);
+
+            if (!chatbotEnabled) {
+
+                // Close chatbot
+                isOpen = false;
+
+                if (widget) {
+                    widget.classList.remove("open");
+                }
+
+                // Hide launcher
+                if (launcher) {
+                    launcher.style.display = "none";
+                }
+
+            } else {
+
+                // Show launcher
+                if (launcher) {
+                    launcher.style.display = "";
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Could not check chatbot status:",
+                error
+            );
+
+            // Fail closed
+            chatbotEnabled = false;
+
+            const launcher = document.getElementById("launcher");
+            const widget = document.getElementById("chat-widget");
+
+            if (widget) {
+                widget.classList.remove("open");
+            }
+
+            if (launcher) {
+                launcher.style.display = "none";
+            }
+        }
+    }
+
+setInterval(checkChatbotStatus, 500);
+
+const API_BASE_URL = "http://127.0.0.1:8000";
+
+
+async function loadChatbotStatus() {
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/chatbot/status`
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to load chatbot status");
+        }
+
+        const data = await response.json();
+
+        const toggle =
+            document.getElementById("chatbot-toggle");
+
+        const statusText =
+            document.getElementById("chatbot-status-text");
+
+        const status =
+            document.getElementById("chatbot-status");
+
+        if (!toggle || !statusText || !status) {
+            return;
+        }
+
+        toggle.checked = data.enabled;
+
+        updateChatbotStatusUI(data.enabled);
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load chatbot status:",
+            error
+        );
+
+    }
+}
+
+
+async function toggleChatbotAvailability(toggle) {
+
+    const newStatus = toggle.checked;
+
+    // Temporarily disable while request is running
+    toggle.disabled = true;
+
+    try {
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/chatbot/status?enabled=${newStatus}`,
+            {
+                method: "PUT"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to update chatbot status"
+            );
+        }
+
+        const data = await response.json();
+
+        updateChatbotStatusUI(data.enabled);
+
+        /*
+         * IMPORTANT:
+         * Also update the chatbot widget itself.
+         */
+        if (typeof updateChatbotVisibility === "function") {
+            updateChatbotVisibility(data.enabled);
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Failed to update chatbot status:",
+            error
+        );
+
+        // Revert toggle if backend update failed
+        toggle.checked = !newStatus;
+
+        updateChatbotStatusUI(!newStatus);
+
+    } finally {
+
+        toggle.disabled = false;
+    }
+}
+
+
+function updateChatbotStatusUI(enabled) {
+
+    const status =
+        document.getElementById("chatbot-status");
+
+    const statusText =
+        document.getElementById("chatbot-status-text");
+
+    if (!status || !statusText) {
+        return;
+    }
+
+    if (enabled) {
+
+        status.classList.remove("disabled");
+        status.classList.add("active");
+
+        statusText.textContent = "Active";
+
+    } else {
+
+        status.classList.remove("active");
+        status.classList.add("disabled");
+
+        statusText.textContent = "Disabled";
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadChatbotStatus();
+
+    if (selectedAudience) {
+        const roleQuestion = document.getElementById("role-question");
+
+        if (roleQuestion) {
+            roleQuestion.remove();
+        }
+    }
+
+    loadSuggestions();
+});
+setInterval(checkChatbotStatus, 1000);
+
+    function showAnswer(index){
+
+        const item = feedbackData[index];
+        selectedFeedbackId = item.id;
+
+        document.getElementById("modalQuestion").innerText =
+            item.question;
+
+        document.getElementById("modalAnswer").innerText =
+            item.chatbot_answer || "No answer available.";
+
+        document.getElementById("modalFeedback").innerHTML = `
+            <strong>Category:</strong> ${item.category || "-"}<br><br>
+            <strong>Comment:</strong> ${item.feedback || "-"}
+        `;
+
+        document.getElementById("answerModal").style.display = "flex";
+
+    }
+    function closeAnswerModal(){
+
+        document.getElementById("answerModal").style.display = "none";
+
+    }
+
+    function copyAnswer(){
+
+        const answer =
+            document.getElementById("modalAnswer").innerText;
+
+        navigator.clipboard.writeText(answer);
+
+        alert("Answer copied to clipboard!");
+
+    }
+
+    async function markFeedbackReviewed() {
+
+        if (!selectedFeedbackId) {
+            alert("No feedback selected.");
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `http://127.0.0.1:8000/feedback/${selectedFeedbackId}/review`,
+                {
+                    method: "POST"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Failed to mark feedback.");
+            }
+
+            alert(data.message);
+
+            closeAnswerModal();
+
+            loadUserFeedback();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(error.message);
+
+        }
+
+    }
+
+    function goToKnowledgeBase() {
+
+        closeAnswerModal();
+
+        const section = document.getElementById("knowledgeBaseSection");
+
+        if (!section) return;
+
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        section.classList.add("highlight-section");
+
+        setTimeout(() => {
+            section.classList.remove("highlight-section");
+        }, 2000);
+    }
+
+  async function checkHealth() {
+    try {
+      const r = await fetch(`${API}/health`);
+      const d = await r.json();
+      if (d.status === "ok") {
+        document.getElementById("status-dot").className = "status-dot";
+        document.getElementById("status-text").textContent = "Online · Ready to help";
+      }
+    } catch {
+      document.getElementById("status-dot").className = "status-dot offline";
+      document.getElementById("status-text").textContent = "Offline — start server.py";
+    }
+  }
+
+  function insertQ(t) { const i = document.getElementById("chat-input"); i.value = t; autoResize(); sendMessage(); }
+
+  function autoResize() { const i = document.getElementById("chat-input"); i.style.height = "auto"; i.style.height = Math.min(i.scrollHeight, 80) + "px"; }
+  document.getElementById("chat-input").addEventListener("input", autoResize);
+  document.getElementById("chat-input").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+  function renderMd(text) {
+    text = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    text = text.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
+    const lines = text.split("\n"); let html = "", inList = false;
+    for (const raw of lines) {
+      const line = raw.trimEnd();
+      if (/^[\*\-] /.test(line)) { if (!inList) { html += "<ul>"; inList = true; } html += `<li>${line.slice(2)}</li>`; }
+      else { if (inList) { html += "</ul>"; inList = false; } html += line ? `<p>${line}</p>` : ""; }
+    }
+    if (inList) html += "</ul>";
+    return html;
+  }
+
+    function appendMsg(
+        role,
+        content,
+        sources = [],
+        oos = false,
+        followups = []
+    ){
+    const c = document.getElementById("widget-messages");
+    const row = document.createElement("div"); row.className = `msg-row ${role}`;
+    const av = document.createElement("div"); av.className = `msg-avatar ${role === "user" ? "user" : "bot"}`; av.textContent = role === "user" ? "S" : "🤖";
+    let bub;
+    if (oos) { bub = document.createElement("div"); bub.className = "out-of-scope"; bub.textContent = content; }
+    else {
+      bub = document.createElement("div"); bub.className = `msg-bubble ${role === "user" ? "user" : "bot"}`;
+      if (role === "user") { bub.textContent = content; }
+      else {
+        bub.innerHTML = renderMd(content);
+        if (sources.length) {
+            const s = document.createElement("div");
+            s.className = "msg-sources";
+
+            s.innerHTML =
+                "📄 " +
+                sources
+                    .map(x => `
+                        <span
+                            class="src-tag"
+                            title="${x}">
+                            ${x}
+                        </span>
+                    `)
+                    .join(" ");
+
+            bub.appendChild(s);
+        }
+        if (followups.length) {
+
+            const container = document.createElement("div");
+            container.className = "followup-container";
+
+            if (role === "bot") {
+
+                const feedbackDiv = document.createElement("div");
+                feedbackDiv.className = "feedback-container";
+
+                const label = document.createElement("span");
+                label.innerText = "Was this answer helpful? ";
+
+                const yesBtn = document.createElement("button");
+                yesBtn.className = "feedback-btn";
+                yesBtn.innerText = "Yes";
+
+                yesBtn.onclick = () => {
+                    submitFeedback(
+                        true,
+                        content
+                    );
+
+                    feedbackDiv.innerHTML =
+                        "<span style='color:green'>✓ Thank you for your feedback!</span>";
+                };
+
+                const noBtn = document.createElement("button");
+                noBtn.className = "feedback-btn";
+                noBtn.innerText = "No";
+
+                noBtn.onclick = () => {
+
+                    showFeedbackInput(
+                        feedbackDiv,
+                        content
+                    );
+
+                };
+
+                const buttonRow = document.createElement("div");
+                buttonRow.className = "feedback-buttons";
+
+                buttonRow.appendChild(yesBtn);
+                buttonRow.appendChild(noBtn);
+
+                label.className = "feedback-label";
+
+                feedbackDiv.appendChild(label);
+                feedbackDiv.appendChild(buttonRow);
+
+                bub.appendChild(feedbackDiv);
+            }
+
+            const title = document.createElement("div");
+            title.className = "followup-title";
+            title.innerText = "Suggested Questions";
+
+            container.appendChild(title);
+
+            followups.forEach(question => {
+
+                const btn = document.createElement("button");
+
+                btn.className = "followup-chip";
+
+                btn.innerText = question;
+
+                btn.onclick = () => {
+
+                    sendFollowup(question);
+
+                };
+
+                container.appendChild(btn);
+
+            });
+
+            bub.appendChild(container);
+
+        }
+      }
+    }
+    row.appendChild(av); row.appendChild(bub); c.appendChild(row); c.scrollTop = c.scrollHeight;
+  }
+
+    async function submitFeedback(
+        helpful,
+        chatbotAnswer,
+        category="",
+        feedback = ""
+    ){
+        try{
+            await fetch(`${API}/feedback`,{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    question:
+                        history[history.length-2]?.content || "",
+                    chatbot_answer: chatbotAnswer,
+                    helpful: helpful,
+                    feedback_category: category,
+                    feedback: feedback
+                })
+            });
+        }
+        catch(err){
+            console.error(err);
+        }
+    }
+
+    function showFeedbackInput(container, chatbotAnswer){
+        container.classList.add("feedback-expanded");
+        container.innerHTML="";
+        const title = document.createElement("div");
+        title.className = "feedback-title";
+        title.innerText = "Help us improve this answer";
+        container.appendChild(title);
+        const options = [
+            "Incorrect Answer",
+            "Missing Information",
+            "Too Generic",
+            "Not Relevant"
+        ];
+        const radioContainer =
+            document.createElement("div");
+        radioContainer.className =
+            "feedback-options";
+        options.forEach(option => {
+            const label =
+                document.createElement("label");
+            label.className =
+                "feedback-option";
+            const radio =
+                document.createElement("input");
+            radio.type = "radio";
+            radio.name = "feedbackReason";
+            radio.value = option;
+            label.appendChild(radio);
+            label.append(" " + option);
+            radioContainer.appendChild(label);
+        });
+        container.appendChild(radioContainer);
+        const textarea =
+            document.createElement("textarea");
+        textarea.className =
+            "feedback-textarea";
+        textarea.placeholder =
+            "Other comments (optional)";
+        container.appendChild(textarea);
+        const submit =
+            document.createElement("button");
+        submit.className =
+            "feedback-submit";
+        submit.innerText =
+            "Submit Feedback";
+        submit.onclick = async () => {
+            const selected =
+                document.querySelector(
+                    'input[name="feedbackReason"]:checked'
+                );
+
+            const category =
+                selected ? selected.value : "";
+
+            const comment =
+                textarea.value.trim();
+
+            await submitFeedback(
+                false,
+                chatbotAnswer,
+                category,
+                comment
+            );
+            container.innerHTML =
+                "<span class='feedback-success'>✓ Thank you for helping us improve!</span>";
+            container.classList.remove("feedback-expanded");
+        };
+        container.appendChild(submit);
+    }
+
+    async function changeFeedbackPage(direction) {
+
+        currentFeedbackPage += direction;
+
+        if (currentFeedbackPage < 1) {
+
+            currentFeedbackPage = 1;
+
+        }
+
+        await loadUserFeedback();
+
+    }
+
+    async function changeFrequentPage(direction) {
+
+        currentFrequentPage += direction;
+
+        if (currentFrequentPage < 1) {
+            currentFrequentPage = 1;
+        }
+
+        await loadMostFrequentQuestions();
+
+    }
+
+    async function changeIrrelevantPage(direction) {
+
+        currentIrrelevantPage += direction;
+
+        if (currentIrrelevantPage < 1) {
+
+            currentIrrelevantPage = 1;
+
+        }
+
+        await loadIrrelevantQuestions();
+
+    }
+
+    async function loadUserFeedback(){
+
+        const data = await fetch(
+            `http://127.0.0.1:8000/recent-user-feedback?page=${currentFeedbackPage}&page_size=${feedbackPageSize}`
+        ).then(r => r.json());
+
+        const feedback = data.items;
+
+        feedbackData = feedback;
+
+        const filter =
+            document.getElementById(
+                "feedbackFilter"
+            ).value;
+
+        let filteredFeedback = feedback;
+
+        if (filter === "helpful") {
+
+            filteredFeedback = feedback.filter(
+                f => f.helpful
+            );
+
+        }
+        else if (filter === "not_helpful") {
+
+            filteredFeedback = feedback.filter(
+                f => !f.helpful
+            );
+
+        }
+        document.getElementById(
+            "user-feedback"
+        ).innerHTML = `
+        <table class="analytics-table">
+            <tr>
+                <th>Question</th>
+                <th>Helpful</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Comment</th>
+                <th>Answer</th>
+                <th>Time</th>
+            </tr>
+            ${
+                filteredFeedback.map(f => {
+
+                    const statusBadge = f.reviewed
+                        ? `<span class="feedback-status reviewed">
+                                Reviewed
+                        </span>`
+                        : `<span class="feedback-status pending">
+                                Pending
+                        </span>`;
+
+                    return `
+                    <tr>
+                        <td>${f.question}</td>
+
+                        <td>${f.helpful ? "Yes" : "No"}</td>
+
+                        <td>${f.category || "-"}</td>
+
+                        <td>${statusBadge}</td>
+
+                        <td>${f.feedback || "-"}</td>
+
+                        <td>
+                            ${
+                                !f.helpful
+                                ? `<button class="view-answer-btn"
+                                    onclick="showAnswer(${feedback.indexOf(f)})">
+                                    👁 View
+                                </button>`
+                                : "-"
+                            }
+                        </td>
+
+                        <td>${f.created_at}</td>
+                    </tr>
+                    `;
+
+                }).join("")
+            }
+        </table>
+
+        <div class="table-pagination">
+
+            <button
+                ${data.page === 1 ? "disabled" : ""}
+                onclick="changeFeedbackPage(-1)">
+
+                ◀ Previous
+
+            </button>
+
+            <span>
+
+                Showing
+                ${(data.page - 1) * data.page_size + 1}
+                -
+                ${Math.min(data.page * data.page_size, data.total)}
+                of
+                ${data.total}
+
+            </span>
+
+            <button
+                ${data.page === data.total_pages ? "disabled" : ""}
+                onclick="changeFeedbackPage(1)">
+
+                Next ▶
+
+            </button>
+
+        </div>
+        `;
+    }
+
+    async function loadIrrelevantQuestions(){
+
+        const data = await fetch(
+            `http://127.0.0.1:8000/recent-irrelevant-questions?page=${currentIrrelevantPage}&page_size=${irrelevantPageSize}`
+        ).then(r => r.json());
+
+        const questions = data.items;
+
+        document.getElementById(
+            "irrelevant-questions"
+        ).innerHTML = `
+
+        <table class="analytics-table">
+
+            <tr>
+
+                <th>Question</th>
+
+                <th>Reason</th>
+
+                <th>Time</th>
+
+            </tr>
+
+            ${
+                questions.map(q => `
+
+                <tr>
+
+                    <td>${q.question}</td>
+
+                    <td>${q.reason}</td>
+
+                    <td>${q.created_at}</td>
+
+                </tr>
+
+                `).join("")
+            }
+
+        </table>
+
+        <div class="table-pagination">
+
+            <button
+                ${data.page === 1 ? "disabled" : ""}
+                onclick="changeIrrelevantPage(-1)">
+
+                ◀ Previous
+
+            </button>
+
+            <span>
+
+                Showing
+                ${(data.page - 1) * data.page_size + 1}
+                -
+                ${Math.min(data.page * data.page_size, data.total)}
+                of
+                ${data.total}
+
+            </span>
+
+            <button
+                ${data.page === data.total_pages ? "disabled" : ""}
+                onclick="changeIrrelevantPage(1)">
+
+                Next ▶
+
+            </button>
+
+        </div>
+    `;
+
+    }
+  function showTyping() {
+    const c = document.getElementById("widget-messages");
+    const row = document.createElement("div"); row.id = "typing-row"; row.className = "msg-row bot";
+    const av = document.createElement("div"); av.className = "msg-avatar bot"; av.textContent = "🤖";
+    const bub = document.createElement("div"); bub.className = "msg-bubble bot"; bub.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+    row.appendChild(av); row.appendChild(bub); c.appendChild(row); c.scrollTop = c.scrollHeight;
+  }
+
+  function hideTyping() { document.getElementById("typing-row")?.remove(); }
+
+  async function sendFollowup(question){
+
+    document.getElementById("chat-input").value = question;
+
+    await sendMessage();
+
+    }
+
+    let busy = false;
+    let history = [];
+    async function sendMessage() {
+        console.log("1. sendMessage called");
+
+        if (busy) return;
+
+        const inp = document.getElementById("chat-input");
+        const msg = inp.value.trim();
+
+        console.log("2. Message:", msg);
+
+        if (!msg) return;
+
+        if (!selectedAudience) {
+            alert("Please select Buyer or Seller first.");
+            return;
+        }
+
+        inp.value = "";
+        autoResize();
+
+        busy = true;
+        document.getElementById("send-btn").disabled = true;
+
+        appendMsg("user", msg);
+
+        // Let the backend decide whether the question is relevant.
+
+        console.log("3. Before showTyping()");
+        showTyping();
+
+        try {
+
+            console.log("4. API:", API);
+            console.log("5. Sending:", `${API}/chat`);
+
+            const res = await fetch(`${API}/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: msg,
+                    history,
+                    audience: selectedAudience
+                })
+            });
+
+            console.log("6. Status:", res.status);
+
+            const text = await res.text();
+            console.log("7. Raw Response:", text);
+
+            const data = JSON.parse(text);
+
+            console.log("8. Parsed JSON:", data);
+
+            hideTyping();
+
+            if (!res.ok) {
+                throw new Error(
+                    data.detail ||
+                    data.error ||
+                    "Something went wrong while processing your question."
+                );
+            }
+
+            if (data.error) {
+
+                appendMsg("bot", `⚠️ ${data.error}`);
+
+            } else {
+
+                appendMsg(
+                    "bot",
+                    data.answer,
+                    data.sources || [],
+                    false,
+                    data.followups || []
+                );
+
+                history.push({
+                    role: "user",
+                    content: msg
+                });
+
+                history.push({
+                    role: "assistant",
+                    content: data.answer
+                });
+
+                if (history.length > 12) {
+                    history = history.slice(-12);
+                }
+            }
+
+        } catch (err) {
+
+            console.error("❌ Chat Error:", err);
+
+            hideTyping();
+
+            appendMsg(
+                "bot",
+                `⚠️ ${err.message}`
+            );
+
+        } finally {
+
+            busy = false;
+            document.getElementById("send-btn").disabled = false;
+            inp.focus();
+
+        }
+    }
+
+    // Speech Recognition
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    let recognition;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onresult = function (event) {
+            const transcript =
+                event.results[0][0].transcript;
+
+            const input =
+                document.getElementById("chat-input");
+
+            input.value = transcript;
+
+            autoResize();
+            input.focus();
+        };
+
+        recognition.onerror = function (event) {
+            console.error(
+                "Speech recognition error:",
+                event.error
+            );
+        };
+
+    } else {
+        console.warn(
+            "Speech recognition is not supported in this browser."
+        );
+    }
+
+    // Start speech recognition
+    function startSpeechRecognition() {
+        if (!recognition) {
+            alert(
+                "Speech recognition is not supported in this browser."
+            );
+            return;
+        }
+
+        recognition.start();
+    }
+
+    async function loadRecentUploads(page = 1) {
+
+        currentUploadsPage = page;
+
+        try {
+
+            const response = await fetch(
+                `${API}/admin/recent-uploads?page=${page}&page_size=${uploadsPageSize}`
+            );
+
+            const data = await response.json();
+
+            renderRecentUploads(data);
+
+        }
+        catch(error){
+
+            console.error(error);
+
+            document.getElementById("recentUploads").innerHTML =
+                `<div class="empty-state">
+                    Failed to load recent uploads.
+                </div>`;
+        }
+
+    }
+
+    async function loadMostFrequentQuestions() {
+
+        try {
+
+            const data = await fetch(
+                `http://127.0.0.1:8000/admin/most-frequent-questions?page=${currentFrequentPage}&page_size=${frequentPageSize}`
+            ).then(r => r.json());
+
+            const questions = data.items;
+
+            const container =
+                document.getElementById(
+                    "most-frequent-questions"
+                );
+
+            if (!questions.length) {
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        No questions available.
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="analytics-table">
+
+                    <tr>
+                        <th>Question</th>
+                        <th>Asked</th>
+                    </tr>
+
+                    ${
+                        questions.map(q => `
+                            <tr>
+
+                                <td>
+                                    ${q.question}
+                                </td>
+
+                                <td>
+                                    ${q.count}
+                                </td>
+
+                            </tr>
+                        `).join("")
+                    }
+
+                </table>
+
+                <div class="table-pagination">
+
+                    <button
+                        ${data.page === 1 ? "disabled" : ""}
+                        onclick="changeFrequentPage(-1)"
+                    >
+                        ◀ Previous
+                    </button>
+
+                    <span>
+                        Showing
+                        ${(data.page - 1) * data.page_size + 1}
+                        -
+                        ${Math.min(data.page * data.page_size, data.total)}
+                        of
+                        ${data.total}
+                    </span>
+
+                    <button
+                        ${data.page === data.total_pages ? "disabled" : ""}
+                        onclick="changeFrequentPage(1)"
+                    >
+                        Next ▶
+                    </button>
+
+                </div>
+                `;
+
+        }
+        catch (error) {
+
+            console.error(
+                "Most Frequent Questions Error:",
+                error
+            );
+
+            document.getElementById(
+                "most-frequent-questions"
+            ).innerHTML = `
+                <div class="empty-state">
+                    Failed to load questions.
+                </div>
+            `;
+        }
+    }
+    loadMostFrequentQuestions();
+
+    function renderRecentUploads(data) {
+        const uploads = data.items || [];
+        const container = document.getElementById("recentUploads");
+
+        if (!uploads.length) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    No documents uploaded yet.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="upload-table">
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Workflow</th>
+                        <th>Page</th>
+                        <th>Audience</th>
+                        <th>Uploaded</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${uploads.map(upload => {
+                        const documentName = String(
+                            upload.document_name || ""
+                        ).replace(/'/g, "\\'");
+
+                        return `
+                            <tr>
+                                <td>
+                                    ${upload.document_name || "N/A"}
+                                </td>
+
+                                <td>
+                                    ${upload.workflow || "N/A"}
+                                </td>
+
+                                <td>
+                                    ${upload.page_name || "N/A"}
+                                </td>
+
+                                <td>
+                                    <span class="audience-badge ${upload.audience || ""}">
+                                        ${upload.audience || "N/A"}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    ${upload.uploaded_at || "N/A"}
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">
+                                        ${upload.status || "Indexed"}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button
+                                        class="delete-btn"
+                                        onclick="deleteDocument(
+                                            '${upload.document_id}',
+                                            '${documentName}'
+                                        )">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join("")}
+                </tbody>
+            </table>
+
+            <div class="table-pagination">
+                <button
+                    ${data.page === 1 ? "disabled" : ""}
+                    onclick="loadRecentUploads(${data.page - 1})">
+                    ◀ Previous
+                </button>
+
+                <span>
+                    Showing
+                    ${(data.page - 1) * data.page_size + 1}
+                    -
+                    ${Math.min(
+                        data.page * data.page_size,
+                        data.total
+                    )}
+                    of
+                    ${data.total}
+                </span>
+
+                <button
+                    ${data.page === data.total_pages ? "disabled" : ""}
+                    onclick="loadRecentUploads(${data.page + 1})">
+                    Next ▶
+                </button>
+            </div>
+        `;
+    }
+
+    let pendingDelete = null;
+
+    // Open custom delete modal
+    function deleteDocument(documentId, documentName) {
+        pendingDelete = {
+            documentId: documentId,
+            documentName: documentName
+        };
+
+        document.getElementById("deleteModalMessage").textContent =
+            `Are you sure you want to delete "${documentName}"?`;
+
+        document.getElementById("deleteModal").style.display = "flex";
+    }
+
+    // Close custom modal
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").style.display = "none";
+        pendingDelete = null;
+    }
+
+    // Confirm deletion
+    async function confirmDeleteDocument() {
+        if (!pendingDelete) {
+            return;
+        }
+
+        const { documentId, documentName } = pendingDelete;
+
+        closeDeleteModal();
+
+        try {
+            const response = await fetch(
+                `${API}/documents/${documentId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Failed to delete document"
+                );
+            }
+
+            // Show custom success toast
+            document.getElementById("successToastMessage").textContent =
+                "Document deleted successfully.";
+
+            document.getElementById("successToast").style.display = "flex";
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                document.getElementById("successToast").style.display = "none";
+            }, 3000);
+
+            // Reload recent uploads
+            loadRecentUploads(currentUploadsPage);
+
+        } catch (error) {
+            console.error("Delete document error:", error);
+
+            document.getElementById("successToastMessage").textContent =
+                error.message || "Failed to delete document.";
+
+            document.getElementById("successToast").style.display = "flex";
+
+            setTimeout(() => {
+                document.getElementById("successToast").style.display = "none";
+            }, 3000);
+        }
+    }
+
+    // Modal button events
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("cancelDeleteBtn")
+            .addEventListener("click", closeDeleteModal);
+
+        document.getElementById("confirmDeleteBtn")
+            .addEventListener("click", confirmDeleteDocument);
+    });
+
+    function createPDFChart(
+        labels,
+        questions,
+        answered,
+        unanswered,
+        title
+    ) {
+
+        const canvas = document.createElement("canvas");
+
+        canvas.width = 1200;
+        canvas.height = 500;
+
+        const ctx = canvas.getContext("2d");
+
+        new Chart(ctx, {
+
+            type: "line",
+
+            data: {
+
+                labels: labels,
+
+                datasets: [
+
+                    {
+                        label: "Questions",
+                        data: questions,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: false
+                    },
+
+                    {
+                        label: "Answered",
+                        data: answered,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    },
+
+                    {
+                        label: "Unanswered",
+                        data: unanswered,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: false,
+
+                animation: false,
+
+                plugins: {
+
+                    legend: {
+                        position: "top"
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: title,
+
+                        font: {
+                            size: 20
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text: "Questions"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+        return canvas;
+    }
+
+  async function loadAnalytics() {
+
+    document.getElementById(
+      "analytics-dashboard"
+    ).style.display = "block";
+
+    document.getElementById("lastUpdated").innerText =
+    new Date().toLocaleString();
+
+
+    analyticsData =
+      await fetch(
+        "http://127.0.0.1:8000/analytics"
+      ).then(r => r.json());
+
+    topQuestions =
+      await fetch(
+        "http://127.0.0.1:8000/top-unanswered-questions"
+      ).then(r => r.json());
+
+    recentQuestions =
+      await fetch(
+        "http://127.0.0.1:8000/recent-unanswered-questions"
+      ).then(r => r.json());
+
+    knowledgeAnalytics =
+        await fetch(
+            `${API}/admin/unanswered-analytics`
+        ).then(r => r.json());
+    await loadRecentUploads();
+    const fromDate =
+      document.getElementById("fromDate").value;
+
+    const toDate =
+      document.getElementById("toDate").value;
+
+    dailyReport =
+    await fetch(
+        `http://127.0.0.1:8000/daily-report?from_date=${fromDate}&to_date=${toDate}`
+    ).then(r => r.json());
+
+    console.log("Selected From:", fromDate);
+    console.log("Selected To:", toDate);
+    console.log("Filtered Daily:", dailyReport);
+
+    weeklyReport = await fetch(
+        `http://127.0.0.1:8000/weekly-report?from_date=${fromDate}&to_date=${toDate}`
+    ).then(r => r.json());
+        
+    console.log("Weekly data:", weeklyReport);
+    console.log(
+        document.getElementById("weeklyChart")
+    );
+
+    console.log("Daily data:", dailyReport);
+
+    console.log(
+        document.getElementById("dailyChart")
+    );
+
+
+    document.getElementById(
+        "top-summary"
+    ).innerHTML =
+    `Top Unanswered Questions
+    <span class="badge">${topQuestions.length}</span>`;
+
+    document.getElementById(
+        "recent-summary"
+    ).innerHTML =
+    `Recent Unanswered Questions
+    <span class="badge">${recentQuestions.length}</span>`;
+
+    document.getElementById("analytics-cards").innerHTML = `
+
+
+    <div class="kpi-card blue">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📨</span>
+            <span class="kpi-title">Total Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.total_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Total chatbot interactions
+        </div>
+
+    </div>
+
+    <div class="kpi-card green">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">✅</span>
+            <span class="kpi-title">Relevant Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.relevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Successfully classified
+        </div>
+
+    </div>
+
+    <div class="kpi-card red">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">❌</span>
+            <span class="kpi-title">Irrelevant Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.irrelevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Outside documentation scope
+        </div>
+
+    </div>
+
+    <div class="kpi-card teal">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">💬</span>
+            <span class="kpi-title">Answered Relevant</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.answered_relevant_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Documentation answered
+        </div>
+
+    </div>
+
+    <div class="kpi-card orange">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">⚠️</span>
+            <span class="kpi-title">Knowledge Gaps</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.pending_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Needs documentation
+        </div>
+
+    </div>
+
+    <div class="kpi-card purple">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📈</span>
+            <span class="kpi-title">Answer Rate</span>
+        </div>
+
+        <div class="kpi-value">
+            ${analyticsData.answer_rate}%
+        </div>
+
+        <div class="kpi-footer">
+            Overall response quality
+        </div>
+
+    </div>
+
+    <div class="kpi-card green">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">🟢</span>
+            <span class="kpi-title">Resolved Questions</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.resolved_questions}
+        </div>
+
+        <div class="kpi-footer">
+            Automatically resolved after uploads
+        </div>
+
+    </div>
+
+    <div class="kpi-card pink">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📄</span>
+            <span class="kpi-title">Knowledge Documents</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.knowledge_documents}
+        </div>
+
+        <div class="kpi-footer">
+            Indexed knowledge documents
+        </div>
+
+    </div>
+
+    <div class="kpi-card orange">
+
+        <div class="kpi-header">
+            <span class="kpi-icon">📚</span>
+            <span class="kpi-title">Resolution Rate</span>
+        </div>
+
+        <div class="kpi-value">
+            ${knowledgeAnalytics.resolution_percentage}%
+        </div>
+
+        <div class="kpi-footer">
+            Knowledge gaps resolved
+        </div>
+
+    </div>
+
+    `;
+
+    document.getElementById(
+        "top-unanswered"
+    ).innerHTML = `
+    <table class="analytics-table">
+        <tr>
+            <th>Question</th>
+            <th>Count</th>
+        </tr>
+        ${
+            topQuestions.map(q => `
+            <tr>
+                <td>${q.question}</td>
+                <td>${q.count}</td>
+            </tr>
+            `).join("")
+        }
+    </table>
+    `;
+
+    document.getElementById(
+        "recent-unanswered"
+    ).innerHTML = `
+    <table class="analytics-table">
+        <tr>
+            <th>Question</th>
+            <th>Count</th>
+            <th>Status</th>
+            <th>Resolved By</th>
+            <th>Resolved At</th>
+            <th>Created</th>
+        </tr>
+        ${
+            recentQuestions.map(q => `
+            <tr>
+                <td>${q.question}</td>
+                <td>${q.count}</td>
+                <td>
+                    ${
+                        q.status === "Resolved"
+                        ? "🟢 Resolved"
+                        : "🟡 Pending"
+                    }
+                </td>
+                <td>${q.resolved_document ?? "-"}</td>
+                <td>${q.resolved_at ?? "-"}</td>
+                <td>${q.created_at}</td>
+            </tr>
+            `).join("")
+        }
+    </table>
+    `;
+    await loadUserFeedback();
+    await loadIrrelevantQuestions();
+
+    const ctx = document.getElementById("dailyChart");
+
+    if(!ctx){
+        return;
+    }
+
+    console.log("window.dailyChart =", window.dailyChart);
+    console.log("Type =", typeof window.dailyChart);
+
+    if (
+        window.dailyChart &&
+        typeof window.dailyChart.destroy === "function"
+    ){
+        window.dailyChart.destroy();
+    }
+    window.dailyChart = new Chart(ctx,{
+        type:"line",
+        data:{
+            labels:dailyReport.map(
+                d => d.date
+            ),
+            datasets:[
+                {
+                    label:"Questions",
+                    data:dailyReport.map(d => d.questions),
+
+                    borderColor:"#4f8cff",
+                    backgroundColor:"rgba(79,140,255,0.15)",
+
+                    fill:true,
+                    tension:0.4,
+
+                    pointRadius:4,
+                    pointHoverRadius:7,
+
+                    pointBackgroundColor:"#4f8cff",
+
+                    borderWidth:3
+                },
+                {
+                    label:"Answered",
+                    data:dailyReport.map(d => d.answered),
+
+                    borderColor:"#33cc66",
+                    backgroundColor:"rgba(51,204,102,0.12)",
+
+                    fill:true,
+                    tension:0.4,
+
+                    pointRadius:4,
+                    pointHoverRadius:7,
+
+                    pointBackgroundColor:"#33cc66",
+
+                    borderWidth:3
+                },
+                {
+                    label:"Unanswered",
+                    data:dailyReport.map(d => d.unanswered),
+
+                    borderColor:"#ff6666",
+                    backgroundColor:"rgba(255,102,102,0.12)",
+
+                    fill:true,
+                    tension:0.4,
+
+                    pointRadius:4,
+                    pointHoverRadius:7,
+
+                    pointBackgroundColor:"#ff6666",
+
+                    borderWidth:3
+                }
+            ]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{
+                legend:{
+                    position:"top",
+
+                    align:"start",
+
+                    labels:{
+                        color:"#fff",
+
+                        usePointStyle:true,
+
+                        pointStyle:"circle",
+
+                        padding:20,
+
+                        font:{
+                            size:13,
+                            weight:"600"
+                        }
+                    }
+                },
+
+                tooltip:{
+                    backgroundColor:"#202742",
+
+                    titleColor:"#fff",
+
+                    bodyColor:"#fff",
+
+                    borderColor:"#4f8cff",
+
+                    borderWidth:1,
+
+                    padding:12,
+
+                    cornerRadius:10,
+
+                    displayColors:true
+                }
+            },
+            scales:{
+                x:{
+                    grid:{
+                        display:false
+                    },
+
+                    ticks:{
+                        color:"#bfc7e0"
+                    }
+                },
+                y:{
+                    beginAtZero:true,
+
+                    grace:"5%",
+
+                    grid:{
+                        color:"rgba(255,255,255,0.06)"
+                    },
+
+                    ticks:{
+                        color:"#bfc7e0",
+
+                        stepSize:1,
+
+                        precision:0
+                    }
+                }
+            }
+        }
+    });
+
+    const weeklyCtx =
+    document.getElementById("weeklyChart");
+
+    if (weeklyCtx) {
+
+        if (weeklyChartInstance) {
+            weeklyChartInstance.destroy();
+        }
+
+        weeklyChartInstance = new Chart(
+            weeklyCtx,
+            {
+                type:"bar",
+                data:{
+                    labels:weeklyReport.map(
+                        w => w.week
+                    ),
+                    datasets:[
+                        {
+                            label:"Questions",
+                            data:weeklyReport.map(
+                                w => w.questions
+                            ),
+                            backgroundColor:"#4f8cff",
+
+                            borderRadius:10,
+
+                            borderSkipped:false,
+
+                            barPercentage:0.7,
+
+                            categoryPercentage:0.65
+                        },
+                        {
+                            label:"Answered",
+                            data:weeklyReport.map(
+                                w => w.answered
+                            ),
+                            backgroundColor:"#4f8cff",
+
+                            borderRadius:10,
+
+                            borderSkipped:false,
+
+                            barPercentage:0.7,
+
+                            categoryPercentage:0.65
+                        },
+                        {
+                            label:"Unanswered",
+                            data:weeklyReport.map(
+                                w => w.unanswered
+                            ),
+                            backgroundColor:"#4f8cff",
+
+                            borderRadius:10,
+
+                            borderSkipped:false,
+
+                            barPercentage:0.7,
+
+                            categoryPercentage:0.65
+                        }
+                    ]
+                },
+                options:{
+                    responsive:true,
+                    maintainAspectRatio:false,
+                    plugins:{
+                        legend:{
+                            position:"top",
+
+                            align:"start",
+
+                            labels:{
+                                color:"#fff",
+
+                                usePointStyle:true,
+
+                                pointStyle:"circle",
+
+                                padding:20,
+
+                                font:{
+                                    size:13,
+                                    weight:"600"
+                                }
+                            }
+                        },
+
+                        tooltip:{
+                            backgroundColor:"#202742",
+
+                            titleColor:"#fff",
+
+                            bodyColor:"#fff",
+
+                            borderColor:"#4f8cff",
+
+                            borderWidth:1,
+
+                            padding:12,
+
+                            cornerRadius:10,
+
+                            displayColors:true
+                        }
+                    },
+                    scales:{
+                        x:{
+                            grid:{
+                                display:false
+                            },
+
+                            ticks:{
+                                color:"#bfc7e0"
+                            }
+                        },
+                        y:{
+                            beginAtZero:true,
+
+                            grace:"5%",
+
+                            grid:{
+                                color:"rgba(255,255,255,0.06)"
+                            },
+
+                            ticks:{
+                                color:"#bfc7e0",
+
+                                stepSize:1,
+
+                                precision:0
+                            }
+                        }
+                    }
+                }
+            }
+        );
+        console.log("Weekly chart created!");
+        console.log(weeklyChartInstance);
+    }
+
+    document.getElementById("exportCsvBtn").onclick = function(){
+
+        let csv = "";
+
+        csv += "Knowledge Gap Analytics Report\n\n";
+
+        csv += "Metric,Value\n";
+
+        csv += `Total Questions,${analyticsData.total_questions}\n`;
+        csv += `Relevant Questions,${analyticsData.relevant_questions}\n`;
+        csv += `Irrelevant Questions,${analyticsData.irrelevant_questions}\n`;
+        csv += `Answered Relevant,${analyticsData.answered_relevant_questions}\n`;
+        csv += `Knowledge Gaps,${knowledgeAnalytics.pending_questions}\n`;
+        csv += `Answer Rate,${analyticsData.answer_rate}%\n\n`;
+
+        csv += "Top Unanswered Questions\n";
+        csv += "Question,Count\n";
+
+        topQuestions.forEach(q=>{
+            csv += `"${q.question}",${q.count}\n`;
+        });
+
+        csv += "\nRecent Unanswered Questions\n";
+        csv += "Question\n";
+
+        recentQuestions.forEach(q=>{
+            csv += `"${q.question}"\n`;
+        });
+
+        const blob = new Blob(
+            [csv],
+            {type:"text/csv"}
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+
+        a.href = url;
+
+        a.download =
+            "Knowledge_Gap_Report.csv";
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+    };
+  }
+
+    document
+        .getElementById("uploadKnowledgeBtn")
+        .onclick = uploadKnowledge;
+
+    window.addEventListener("load", () => {
+        checkChatbotStatus();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+
+        document
+            .getElementById("exportPdfBtn")
+            .addEventListener("click", exportPDF);
+
+        document
+            .getElementById("knowledgeFile")
+            .addEventListener("change", function () {
+
+                const fileName =
+                    this.files.length
+                        ? this.files[0].name
+                        : "No file selected";
+
+                document.getElementById("selectedFile").innerText =
+                    fileName;
+
+            });
+
+    });
+
+    function showKnowledgeSummary(summary) {
+
+        const fileName =
+            document.getElementById("knowledgeFile").files[0]?.name || "-";
+
+        document.getElementById("uploadSummaryContent").innerHTML = `
+
+            <div class="summary-item">
+                📄 <strong>${fileName}</strong>
+            </div>
+
+            <div class="summary-item">
+                ✅ Upload Successful
+            </div>
+
+            <div class="summary-item">
+                🕒 Just now
+            </div>
+
+            <div class="summary-stats">
+
+                <div class="summary-stat">
+                    <span>Questions Resolved</span>
+                    <span>${summary.resolved_count}</span>
+                </div>
+
+                <div class="summary-stat">
+                    <span>Pending Questions</span>
+                    <span>${summary.pending_count}</span>
+                </div>
+
+                <div class="summary-stat">
+                    <span>Indexed Chunks</span>
+                    <span>2</span>
+                </div>
+
+            </div>
+
+        `;
+
+    }
+    async function uploadKnowledge() {
+
+        const fileInput = document.getElementById("knowledgeFile");
+        const status = document.getElementById("uploadStatus");
+
+        if (fileInput.files.length === 0) {
+            status.innerHTML = "⚠️ Please choose a document.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        status.innerHTML = "Uploading document...";
+
+        try {
+
+            const response = await fetch(`${API}/upload-knowledge`, {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+
+            console.log("Upload Response:", result);
+
+            if (!response.ok) {
+                throw new Error(result.message || "Upload failed.");
+            }
+
+            status.innerHTML = `✅ ${result.message}`;
+
+            if (result.resolution_summary) {
+                showKnowledgeSummary(result.resolution_summary);
+            }
+
+            await loadAnalytics();
+
+        }
+        catch (error) {
+
+            console.error("Upload Error:", error);
+
+            status.innerHTML = `❌ ${error.message}`;
+
+        }
+
+    }
+
+    async function exportPDF() {
+
+        const { jsPDF } = window.jspdf;
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // ===============================
+        // COVER / EXECUTIVE OVERVIEW
+        // ===============================
+
+        pdf.setFillColor(26, 115, 232);
+        pdf.rect(0, 0, 210, 35, "F");
+
+        pdf.setTextColor(255, 255, 255);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(25);
+        pdf.text("MediaShippers", 20, 18);
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(12);
+        pdf.text(
+            "Knowledge Intelligence & Analytics",
+            20,
+            27
+        );
+
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(22);
+        pdf.text(
+            "Knowledge Dashboard Report",
+            20,
+            52
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.text(
+            `Generated: ${new Date().toLocaleString()}`,
+            20,
+            61
+        );
+
+        pdf.text(
+            "Generated by: MediaShippers Admin Portal",
+            20,
+            67
+        );
+
+        pdf.setDrawColor(210);
+        pdf.line(20, 74, 190, 74);
+
+
+        // ===============================
+        // EXECUTIVE SUMMARY
+        // ===============================
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(16);
+
+        pdf.text(
+            "Executive Overview",
+            20,
+            88
+        );
+
+
+        // ===============================
+        // KPI SECTION
+        // ===============================
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.text(
+            "Dashboard performance indicators",
+            20,
+            96
+        );
+
+
+        // ===============================
+        // KPI DATA
+        // ===============================
+
+        const kpis = [
+
+            {
+                title: "Total Questions",
+                value: analyticsData.total_questions,
+                description: "Total chatbot interactions"
+            },
+
+            {
+                title: "Relevant Questions",
+                value: analyticsData.relevant_questions,
+                description: "Successfully classified"
+            },
+
+            {
+                title: "Irrelevant Questions",
+                value: analyticsData.irrelevant_questions,
+                description: "Outside documentation scope"
+            },
+
+            {
+                title: "Answered Relevant",
+                value: analyticsData.answered_relevant_questions,
+                description: "Documentation answered"
+            },
+
+            {
+                title: "Knowledge Gaps",
+                value: knowledgeAnalytics.pending_questions,
+                description: "Needs documentation"
+            },
+
+            {
+                title: "Answer Rate",
+                value: `${analyticsData.answer_rate}%`,
+                description: "Overall response quality"
+            },
+
+            {
+                title: "Resolved Questions",
+                value: knowledgeAnalytics.resolved_questions,
+                description: "Automatically resolved"
+            },
+
+            {
+                title: "Knowledge Documents",
+                value: knowledgeAnalytics.knowledge_documents,
+                description: "Indexed documents"
+            },
+
+            {
+                title: "Resolution Rate",
+                value: `${knowledgeAnalytics.resolution_percentage}%`,
+                description: "Knowledge gaps resolved"
+            }
+
+        ];
+
+        // ===============================
+        // KPI CARD LAYOUT
+        // ===============================
+
+        const cardWidth = 55;
+        const cardHeight = 30;
+
+        const gapX = 7;
+        const gapY = 8;
+
+        const startX = 20;
+        const startY = 105;
+
+        kpis.forEach((kpi, index) => {
+
+            const column = index % 3;
+            const row = Math.floor(index / 3);
+
+            const x = startX + column * (cardWidth + gapX);
+            const y = startY + row * (cardHeight + gapY);
+
+            // Card background
+            pdf.setFillColor(248, 250, 252);
+
+            pdf.roundedRect(
+                x,
+                y,
+                cardWidth,
+                cardHeight,
+                3,
+                3,
+                "F"
+            );
+
+            // Border
+            pdf.setDrawColor(220, 225, 230);
+
+            pdf.roundedRect(
+                x,
+                y,
+                cardWidth,
+                cardHeight,
+                3,
+                3,
+                "S"
+            );
+
+            // KPI title
+            pdf.setTextColor(70, 80, 90);
+
+            pdf.setFont(
+                "helvetica",
+                "bold"
+            );
+
+            pdf.setFontSize(9);
+
+            pdf.text(
+                kpi.title,
+                x + 5,
+                y + 8
+            );
+
+            // KPI value
+            pdf.setTextColor(26, 115, 232);
+
+            pdf.setFontSize(17);
+
+            pdf.text(
+                String(kpi.value),
+                x + 5,
+                y + 19
+            );
+
+            // Description
+            pdf.setTextColor(120, 125, 130);
+
+            pdf.setFont(
+                "helvetica",
+                "normal"
+            );
+
+            pdf.setFontSize(6.5);
+
+            pdf.text(
+                kpi.description,
+                x + 5,
+                y + 26
+            );
+
+        });
+
+        // ===============================
+        // ACTIVITY & TRENDS PAGE
+        // ===============================
+
+        pdf.addPage();
+
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(20);
+
+        pdf.text(
+            "Activity & Trends",
+            20,
+            22
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.setTextColor(100);
+
+        pdf.text(
+            "Chatbot activity and response performance over the selected period.",
+            20,
+            30
+        );
+
+        pdf.setTextColor(0);
+
+
+        // ===============================
+        // DAILY ACTIVITY
+        // ===============================
+
+        const dailyCanvas = createPDFChart(
+
+            dailyReport.map(x => x.date),
+
+            dailyReport.map(x => x.questions),
+
+            dailyReport.map(x => x.answered),
+
+            dailyReport.map(x => x.unanswered),
+
+            "Daily Chatbot Activity"
+
+        );
+
+        const dailyImage =
+            dailyCanvas.toDataURL("image/png");
+
+        pdf.addImage(
+            dailyImage,
+            "PNG",
+            15,
+            40,
+            180,
+            75
+        );
+
+        // ===============================
+        // WEEKLY ACTIVITY
+        // ===============================
+
+        const weeklyCanvas = createPDFChart(
+
+            weeklyReport.map(x => x.week),
+
+            weeklyReport.map(x => x.questions),
+
+            weeklyReport.map(x => x.answered),
+
+            weeklyReport.map(x => x.unanswered),
+
+            "Weekly Chatbot Activity"
+
+        );
+
+        const weeklyImage =
+            weeklyCanvas.toDataURL("image/png");
+
+        pdf.addImage(
+            weeklyImage,
+            "PNG",
+            15,
+            130,
+            180,
+            75
+        );
+
+        // ===============================
+        // KNOWLEDGE INTELLIGENCE
+        // ===============================
+
+        pdf.addPage();
+
+        pdf.setTextColor(0, 0, 0);
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(20);
+
+        pdf.text(
+            "Knowledge Intelligence",
+            20,
+            22
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        pdf.setTextColor(100);
+
+        pdf.text(
+            "Summary of knowledge coverage, gaps, feedback and resolution activity.",
+            20,
+            30
+        );
+
+        pdf.setTextColor(0);
+
+        const knowledgeSummary = [
+
+            [
+                "Knowledge Documents",
+                knowledgeAnalytics.knowledge_documents
+            ],
+
+            [
+                "Pending Knowledge Gaps",
+                knowledgeAnalytics.pending_questions
+            ],
+
+            [
+                "Resolved Knowledge Gaps",
+                knowledgeAnalytics.resolved_questions
+            ],
+
+            [
+                "Knowledge Resolution Rate",
+                `${knowledgeAnalytics.resolution_percentage}%`
+            ],
+
+            [
+                "Relevant Questions",
+                analyticsData.relevant_questions
+            ],
+
+            [
+                "Answered Relevant",
+                analyticsData.answered_relevant_questions
+            ],
+
+            [
+                "Overall Answer Rate",
+                `${analyticsData.answer_rate}%`
+            ]
+
+        ];
+
+        let summaryY = 45;
+
+        knowledgeSummary.forEach((item, index) => {
+
+            const column = index % 2;
+            const row = Math.floor(index / 2);
+
+            const x = column === 0 ? 20 : 110;
+
+            const y = summaryY + row * 25;
+
+            pdf.setFillColor(248, 250, 252);
+
+            pdf.roundedRect(
+                x,
+                y,
+                80,
+                18,
+                2,
+                2,
+                "F"
+            );
+
+            pdf.setDrawColor(225);
+
+            pdf.roundedRect(
+                x,
+                y,
+                80,
+                18,
+                2,
+                2,
+                "S"
+            );
+
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(8);
+
+            pdf.setTextColor(100);
+
+            pdf.text(
+                item[0],
+                x + 5,
+                y + 7
+            );
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(13);
+
+            pdf.setTextColor(26, 115, 232);
+
+            pdf.text(
+                String(item[1]),
+                x + 5,
+                y + 14
+            );
+
+        });
+
+        // ===============================
+        // MOST FREQUENT QUESTION
+        // ===============================
+
+        const frequentResponse = await fetch(
+            "http://127.0.0.1:8000/most-frequent-questions?page=1&page_size=1"
+        );
+
+        const frequentData = await frequentResponse.json();
+
+        const mostFrequent =
+            frequentData.items &&
+            frequentData.items.length
+                ? frequentData.items[0]
+                : null;
+
+        const insightY = 145;
+
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+
+        pdf.setTextColor(0);
+
+        pdf.text(
+            "Most Frequently Asked Question",
+            20,
+            insightY
+        );
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(10);
+
+        if (mostFrequent) {
+
+            const questionLines =
+                pdf.splitTextToSize(
+                    mostFrequent.question,
+                    150
+                );
+
+            pdf.text(
+                questionLines,
+                20,
+                insightY + 12
+            );
+
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(11);
+
+            pdf.text(
+                `Asked ${mostFrequent.count} times`,
+                20,
+                insightY + 12 +
+                questionLines.length * 5
+            );
+
+        }
+        else {
+
+            pdf.setFont("helvetica", "normal");
+
+            pdf.text(
+                "No frequently repeated questions were identified.",
+                20,
+                insightY + 12
+            );
+
+        }
+        
+
+
+        // ===============================
+        // FOOTER
+        // ===============================
+
+        pdf.setFontSize(8);
+        pdf.setTextColor(120);
+
+        pdf.text(
+            "MediaShippers Confidential",
+            20,
+            290
+        );
+
+        pdf.text(
+            `Page 1`,
+            175,
+            290
+        );
+
+        pdf.save("MediaShippers_Knowledge_Dashboard_Report.pdf");
+    }
+</script>
+<div id="answerModal" class="answer-modal">
+
+    <div class="answer-modal-content">
+
+        <div class="answer-modal-header">
+
+            <h2>🤖 Chatbot Response</h2>
+
+            <button
+                class="close-modal"
+                onclick="closeAnswerModal()">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="modal-section">
+
+            <h4>Question</h4>
+
+            <p id="modalQuestion"></p>
+
+        </div>
+
+        <div class="modal-section">
+
+            <h4>Chatbot Answer</h4>
+
+            <div id="modalAnswer" class="answer-box"></div>
+
+        </div>
+
+        <div class="modal-section">
+
+            <h4>Feedback</h4>
+
+            <p id="modalFeedback"></p>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="upload-btn"
+                onclick="goToKnowledgeBase()">
+
+                📄 Upload Supporting Document
+
+            </button>
+
+            <button
+                class="review-btn"
+                onclick="markFeedbackReviewed()">
+
+                ✓ Mark Reviewed
+
+            </button>
+
+            <button
+                class="copy-btn"
+                onclick="copyAnswer()">
+
+                📋 Copy Answer
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="custom-modal">
+    <div class="modal-content">
+        <div class="modal-icon">⚠️</div>
+
+        <h3>Delete Document?</h3>
+
+        <p id="deleteModalMessage">
+            Are you sure you want to delete this document?
+        </p>
+
+        <div class="modal-actions">
+            <button id="cancelDeleteBtn" class="modal-cancel-btn">
+                Cancel
+            </button>
+
+            <button id="confirmDeleteBtn" class="modal-delete-btn">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message -->
+<div id="successToast" class="success-toast">
+    <span>✓</span>
+    <span id="successToastMessage">
+        Document deleted successfully.
+    </span>
+</div>
+</html>

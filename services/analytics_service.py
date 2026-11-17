@@ -4,7 +4,8 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 
 from database.mongo_helpers import (
-    get_unanswered_questions_collection
+    get_unanswered_questions_collection,
+    prompt_logs_collection
 )
 
 
@@ -125,12 +126,12 @@ def get_top_unanswered_questions():
 # --------------------------------------------------
 
 def get_recent_unanswered_questions():
-
-    collection = get_unanswered_questions_collection()
-
     questions = (
-        collection
-        .find({})
+        prompt_logs_collection
+        .find({
+            "relevant": "YES",
+            "answered": "NO"
+        })
         .sort(
             "created_at",
             -1
@@ -141,43 +142,15 @@ def get_recent_unanswered_questions():
     result = []
 
     for q in questions:
-
-        resolved_at = q.get(
-            "resolved_at"
-        )
-
-        created_at = q.get(
-            "created_at"
-        )
+        created_at = q.get("created_at")
 
         result.append({
             "question": q.get("question"),
-
-            "count": q.get(
-                "count",
-                0
-            ),
-
-            "status": q.get(
-                "status"
-            ),
-
-            "source_document": q.get(
-                "source_document"
-            ),
-
-            "resolved_document": q.get(
-                "resolved_document"
-            ),
-
-            "resolved_at": (
-                resolved_at.strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
-                if resolved_at
-                else None
-            ),
-
+            "count": 1,
+            "status": "Pending",
+            "source_document": None,
+            "resolved_document": None,
+            "resolved_at": None,
             "created_at": (
                 created_at.strftime(
                     "%Y-%m-%d %H:%M:%S"

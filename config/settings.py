@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
 
     GEMINI_API_KEY: str = ""
+    N8N_KNOWLEDGE_GAP_WEBHOOK_URL: str = ""
 
     MONGODB_URI: str
     MONGODB_DATABASE: str

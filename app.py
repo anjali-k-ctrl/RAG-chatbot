@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-
+from routes.deal_assistant import router as deal_router
 import csv
 import os
+import logging
 
 from database.mongo_helpers import (
     get_documents_collection,
@@ -16,10 +17,11 @@ from routes.analytics import router as analytics_router
 from routes.health import router as health_router
 from routes.feedback import router as feedback_router
 from routes.upload import router as upload_router
-
+from fastapi import HTTPException
+from services.email_service import send_knowledge_gap_email
 
 app = FastAPI()
-
+logger = logging.getLogger(__name__)
 
 # ============================================================
 # CORS
@@ -63,14 +65,12 @@ app.include_router(
 )
 
 # Feedback routes
-app.include_router(
-    feedback_router
-)
+app.include_router( feedback_router )
 
 # Upload routes
-app.include_router(
-    upload_router
-)
+app.include_router( upload_router )
+# Deal Assistant routes
+app.include_router(deal_router)
 
 
 # ============================================================
@@ -212,3 +212,26 @@ def export_knowledge_gaps():
         media_type="text/csv",
         filename=filename
     )
+
+
+# ============================================================
+# SEND KNOWLEDGE GAP EMAIL
+# ============================================================
+
+@app.post("/send-knowledge-gap-email")
+def send_knowledge_gap_email_endpoint(payload: dict):
+    try:
+        send_knowledge_gap_email(payload)
+
+        return {
+            "success": True,
+            "message": "Knowledge-gap email sent successfully."
+        }
+
+    except Exception:
+        logger.exception("Failed to send knowledge-gap email")
+
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to send knowledge-gap email."
+        )
